@@ -6,6 +6,12 @@ enable_testing()
 add_executable(main main.cpp)
 add_test(NAME main COMMAND main)
 
+add_executable(ugen unicode/generator.cpp)
+
 set_target_properties(main PROPERTIES
+    CXX_STANDARD 17
+    CXX_EXTENSIONS OFF)
+
+set_target_properties(ugen PROPERTIES
     CXX_STANDARD 17
     CXX_EXTENSIONS OFF)
