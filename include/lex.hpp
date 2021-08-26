@@ -5,34 +5,40 @@
 namespace feiparser
 {
     template<typename Rule, typename It>
-    int lex(It & current, It end);
+    void lex1(It & current, It end, int & token, It & matchEnd);
 
     template<typename Rule, int Ch, typename It>
-    int lex0(It & current, It end)
+    void lex0(It & current, It end, int & token, It & matchEnd)
     {
         ++current;
         typedef typename simplify<Rule>::type S;
         typedef typename next<S,Ch>::type N;
         typedef typename simplify<N>::type SN;
-        return lex<SN>(current, end);
+        return lex1<SN>(current, end, token, matchEnd);
     }
 
     template<typename Rule> struct rejects { static const bool value = false; };
     template<> struct rejects<reject> { static const bool value = true; };
 
     template<typename Rule, typename It>
-    int lex1(It & current, It end)
+    void lex1(It & current, It end, int & token, It & matchEnd)
     {
         using S = typename simplify<Rule>::type;
 
+        if(accepts<S>::value)
+        {
+            token = accepts<S>::token;
+            matchEnd = current;
+        }
+
         if(rejects<S>::value || current == end)
         {
-            return NoMatch;
+            return;
         }
 
         switch((unsigned char)*current)
         {
-#define FP_CASE(N) case N: return lex0<S, N>(current, end);
+#define FP_CASE(N) case N: return lex0<S, N>(current, end, token, matchEnd);
 #define FP_CASE_BLOCK(N) FP_CASE(N) FP_CASE(N+1) FP_CASE(N+2) FP_CASE(N+3) FP_CASE(N+4) FP_CASE(N+5) FP_CASE(N+6) FP_CASE(N+7) FP_CASE(N+8) FP_CASE(N+9)
                 
                 FP_CASE_BLOCK(0)
@@ -67,25 +73,15 @@ namespace feiparser
                 FP_CASE(254)
                 FP_CASE(255)
         }
-
-        // Should not get here!
-        return NoMatch;
     }
 
     template<typename Rule, typename It>
     int lex(It & current, It end)
     {
-        using S = typename simplify<Rule>::type;
-
-        auto c0 = current;
-        auto tok = lex1<S>(current, end);
-        
-        if(tok == NoMatch && accepts<S>::value)
-        {
-            current = c0;
-            return accepts<S>::token;
-        }
-        
-        return tok;
+        It me;
+        int token = NoMatch;
+        lex1<Rule>(current, end, token, me);
+        current = me; // Backtrack to result
+        return token;
     }
 }
