@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rules.hpp"
-#include "simplify.hpp"
+#include "normalize.hpp"
 #include "lex.hpp"
 
 
