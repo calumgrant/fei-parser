@@ -1,5 +1,6 @@
 #pragma once
 
+#include <utility>
 #include "lexer.hpp"
 
 namespace feiparser
@@ -11,9 +12,17 @@ namespace feiparser
     }
 
     template<typename Rule, typename It>
-    bool regex_search(It first, It last)
+    std::pair<It,It> regex_search(It first, It last)
     {
-        return lex<Rule>(first, last)!=NoMatch && first == last;
+        while(first != last)
+        {
+            auto start = first;
+            if(lex<Rule>(first,last)!=NoMatch)
+            {
+                return std::make_pair(start, first);
+            }
+        }
+        return std::make_pair(last,last);
     }
 
     template<typename Rule, int N>
@@ -21,4 +30,11 @@ namespace feiparser
     {
         return regex_match<Rule>(str, str+N-1);
     }
+
+    template<typename Rule, int N>
+    std::pair<const char*, const char*> regex_search(const char (&str)[N])
+    {
+        return regex_search<Rule>(str, str+N-1);
+    }
+
 }

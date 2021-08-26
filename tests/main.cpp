@@ -107,6 +107,22 @@ void testMatch()
     check_not_matches<id>("123");
 }
 
+void testSearch()
+{
+    using bcd = fp::string<'b', 'c', 'd'>;
+
+    auto r = fp::regex_search<bcd>("abcdef");
+    assert(r.second - r.first == 3);
+    assert(fp::regex_match<bcd>(r.first, r.second));
+    
+    // Find the longest match possible
+    
+    using as = fp::plus<fp::ch<'a'>>;
+
+    r = fp::regex_search<as>("bbaaaaaabb");
+    assert(r.second - r.first == 6);
+}
+
 int main()
 {
     testAny();
@@ -114,4 +130,5 @@ int main()
     testStar();
     testOptional();
     testMatch();
+    testSearch();
 }

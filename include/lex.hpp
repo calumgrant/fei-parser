@@ -81,7 +81,8 @@ namespace feiparser
         It me;
         int token = NoMatch;
         lex1<Rule>(current, end, token, me);
-        current = me; // Backtrack to result
+        if(token != NoMatch)
+            current = me; // Backtrack to result
         return token;
     }
 }
