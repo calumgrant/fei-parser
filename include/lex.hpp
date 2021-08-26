@@ -93,7 +93,6 @@ static const int NoMatch = -2;
     template<typename Rule, typename It>
     int lex(It & current, It end);
 
-
     template<typename Rule, int Ch, typename It>
     int lex0(It & current, It end)
     {
@@ -103,22 +102,20 @@ static const int NoMatch = -2;
         return lex<s>(current, end);
     }
 
-template<typename Rule> struct rejects { static const bool value = false; };
-template<> struct rejects<reject> { static const bool value = true; };
+    template<typename Rule> struct rejects { static const bool value = false; };
+    template<> struct rejects<reject> { static const bool value = true; };
 
     template<typename Rule, typename It>
-    int lex(It & current, It end)
+    int lex1(It & current, It end)
     {
         using S = typename simplify<Rule>::type;
-        
-        if(rejects<S>::value) return NoMatch;
 
-        if(accepts<S>::value && current == end)
+        if(rejects<S>::value || current == end)
         {
-            return accepts<S>::token;
+            return NoMatch;
         }
 
-        switch(*current)
+        switch((unsigned char)*current)
         {
             case 0: return lex0<S, 0>(current, end);
             case 1: return lex0<S, 1>(current, end);
@@ -133,4 +130,20 @@ template<> struct rejects<reject> { static const bool value = true; };
 
         return NoMatch;
     }
+
+    template<typename Rule, typename It>
+    int lex(It & current, It end)
+    {
+        using S = typename simplify<Rule>::type;
+
+        auto tok = lex1<S>(current, end);
+        
+        if(tok == NoMatch && accepts<S>::value)
+        {
+            return accepts<S>::token;
+        }
+        
+        return tok;
+    }
+
 }

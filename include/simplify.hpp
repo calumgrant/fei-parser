@@ -206,5 +206,4 @@ namespace feiparser
     {
         static const bool value = true;
     };
-
 }
