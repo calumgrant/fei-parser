@@ -10,9 +10,6 @@ namespace feiparser
     struct ch {};
 
     template<int...Chs>
-    struct chseq {};
-
-    template<int...Chs>
     struct chalt {};
 
     template<int C1, int C2>

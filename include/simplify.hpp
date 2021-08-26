@@ -1,15 +1,36 @@
 #pragma once
 
 /*
-    Defines simplify<>, so rewrite rules into a more simple form.
-    This also desugars more complex rules into simpler elements.
+    simplify<> rewrites rules into a more simple form.
+    This is particularly true of "synthesised" rules (for example, those rules
+    produced by next<>).
+
+    simplify<> also desugars more complex rules into simpler elements. For example,
+    string<A,B,C> gets simplified to seq<ch<A>, seq<ch<B>, ch<C>>>
 */
+
+// !! Rename this to normalize
 
 namespace feiparser
 {
     // Rewrites lexer rules to a canonical form.
     template<typename Rule>
     struct simplify;
+
+    template<bool B, typename T, typename F>
+    struct type_if;
+
+    template<typename T, typename F>
+    struct type_if<true, T, F>
+    {
+        typedef T type;
+    };
+
+    template<typename T, typename F>
+    struct type_if<false, T, F>
+    {
+        typedef F type;
+    };
 
     // The base types do not simplify
     template<int Ch>
@@ -19,21 +40,21 @@ namespace feiparser
     };
 
     template<>
-    struct simplify<chseq<>>
+    struct simplify<string<>>
     {
         typedef empty type;
     };
 
     template<int Ch>
-    struct simplify<chseq<Ch>>
+    struct simplify<string<Ch>>
     {
         typedef ch<Ch> type;
     };
 
-    template<int Ch, int...Chs>
-    struct simplify<chseq<Ch, Chs...>>
+    template<int C1, int C2, int...Cs>
+    struct simplify<string<C1, C2, Cs...>>
     {
-        typedef seq<ch<Ch>, typename simplify<chseq<Chs...>>::type> type;
+        typedef seq<ch<C1>, typename simplify<string<C2, Cs...>>::type> type;
     };
 
     template<typename T1, typename T2, typename T3, typename... T4>
@@ -58,13 +79,6 @@ namespace feiparser
     struct simplify<seq<T1,T2>>
     {
         typedef seq<typename simplify<T1>::type, typename simplify<T2>::type> type;
-    };
-
-    template<typename T1, typename T2>
-    struct simplify<alt<T1,T2>>
-    {
-        // NB: Could simplify further here
-        typedef alt<typename simplify<T1>::type, typename simplify<T2>::type> type;
     };
 
     template<typename T>
@@ -124,10 +138,10 @@ namespace feiparser
 
     // Simplifying seq
 
-    template<typename...Rules>
-    struct simplify<seq<empty, Rules...>>
+    template<typename T>
+    struct simplify<seq<empty, T>>
     {
-        typedef typename simplify<seq<Rules...>>::type type;
+        typedef typename simplify<T>::type type;
     };
 
     template<>
@@ -136,8 +150,8 @@ namespace feiparser
         typedef reject type;
     };
 
-    template<typename...Rules>
-    struct simplify<seq<reject, Rules...>>
+    template<typename T>
+    struct simplify<seq<reject, T>>
     {
         typedef reject type;
     };
@@ -175,35 +189,56 @@ namespace feiparser
         typedef typename simplify<R>::type type;
     };
 
-    template<typename...Rules>
-    struct simplify<alt<Rules...>>
-    {
-        // Algorithm: Implement lift_empty_rule on all members
-
-    };
-
     template<typename Rule>
-    struct lift_empty_rules;
-
-    template<typename H, typename...T>
-    struct lift_empty_rules<alt<H, T...>>
+    struct make_nonempty
     {
-        typedef typename lift_empty_rules<alt<T...>>::type tail;
-        static const bool is_empty = tail::is_empty;
+        static const bool empty = false;
+        typedef Rule type;
     };
 
-    template<typename...Rules>
-    struct lift_empty_rules<alt<empty, Rules...>>
+    template<typename T>
+    struct make_nonempty<alt<empty, T>>
     {
-        static const bool is_empty = true;
+        typedef typename make_nonempty<T>::type type;
     };
 
-    template<typename...Rules>
-    struct can_be_empty;
-
-    template<typename... Rules>
-    struct can_be_empty<empty, Rules...>
+    template<typename T>
+    struct make_nonempty<alt<T, empty>>
     {
-        static const bool value = true;
+        typedef typename make_nonempty<T>::type type;
+    };
+
+    template<typename T>
+    struct simplify<alt<T,T>>
+    {
+        typedef typename simplify<T>::type type;
+    };
+
+    template<typename T1, typename T2>
+    struct make_nonempty<seq<T1,T2>>
+    {
+        typedef typename make_nonempty<T1>::type n1;
+        typedef typename make_nonempty<T2>::type n2;
+        typedef alt<seq<T1, n2>, seq<n1, T2>> type;
+    };
+
+    template<typename T1, typename T2>
+    struct make_nonempty<alt<T1,T2>>
+    {
+        typedef make_nonempty<T1> n1;
+        typedef make_nonempty<T2> n2;
+        typedef alt<typename n1::type, typename n2::type> type;
+        static const bool empty = n1::empty || n2::empty;
+    };
+
+    template<typename T1, typename T2>
+    struct simplify<alt<T1,T2>>
+    {
+        typedef make_nonempty<T1> n1;
+        typedef make_nonempty<T2> n2;
+        typedef alt<typename n1::type, typename n2::type> t1;
+//         typedef typename simplify<t1>::type t2;
+
+        typedef typename type_if<n1::empty || n2::empty, alt<empty, t1>, t1>::type type;
     };
 }

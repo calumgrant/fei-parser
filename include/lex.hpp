@@ -11,9 +11,10 @@ namespace feiparser
     int lex0(It & current, It end)
     {
         ++current;
-        typedef typename next<Rule,Ch>::type n;
-        typedef typename simplify<n>::type s;
-        return lex<s>(current, end);
+        typedef typename simplify<Rule>::type S;
+        typedef typename next<S,Ch>::type N;
+        typedef typename simplify<N>::type SN;
+        return lex<SN>(current, end);
     }
 
     template<typename Rule> struct rejects { static const bool value = false; };
@@ -49,7 +50,6 @@ namespace feiparser
                 FP_CASE_BLOCK(120)
                 FP_CASE_BLOCK(130)
                 FP_CASE_BLOCK(140)
-
                 FP_CASE_BLOCK(150)
                 FP_CASE_BLOCK(160)
                 FP_CASE_BLOCK(170)
@@ -66,9 +66,9 @@ namespace feiparser
                 FP_CASE(253)
                 FP_CASE(254)
                 FP_CASE(255)
-
         }
 
+        // Should not get here!
         return NoMatch;
     }
 

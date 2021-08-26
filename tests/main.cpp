@@ -1,5 +1,6 @@
 #include <feiparser.hpp>
 #include <cassert>
+#include <cstring>
 
 struct foo {};
 
@@ -17,11 +18,69 @@ void testAny()
     }
 }
 
-int main()
+template<typename Rule>
+void check_matches(const char * str)
 {
-    testAny();
+    assert(fp::regex_match<Rule>(str, str+std::strlen(str)));
+}
+
+template<typename Rule>
+void check_not_matches(const char * str)
+{
+    assert(!fp::regex_match<Rule>(str, str+std::strlen(str)));
+}
+
+void testString()
+{
+    using e = fp::string<>;
+    using a = fp::string<'a'>;
+    using abc = fp::string <'a', 'b', 'c'>;
+
+    check_matches<e>("");
+    check_not_matches<e>("x");
+    
+    check_matches<a>("a");
+    check_not_matches<a>("b");
+    check_not_matches<a>("ab");
+
+    check_matches<abc>("abc");
+    check_not_matches<abc>("abcdef");
+    check_not_matches<abc>("ab");
+}
+
+void testStar()
+{
+    using as = fp::star<fp::ch<'a'>>;
+    
+    using ss = fp::star<as>;
+    
+    check_matches<as>("");
+    check_matches<as>("a");
+    check_matches<as>("aaaa");
+    check_not_matches<as>("b");
+    check_not_matches<as>("aab");
+
+    check_matches<ss>("");
+    check_matches<ss>("a");
+    check_matches<ss>("aaaa");
+    check_not_matches<ss>("b");
+    check_not_matches<ss>("aab");
+}
+
+void testOptional()
+{
+    using oa = fp::optional<fp::ch<'a'>>;
+    
+    check_matches<oa>("");
+    check_matches<oa>("a");
+    check_not_matches<oa>("b");
+    check_not_matches<oa>("ab");
+}
+
+void testMatch()
+{
     using a = fp::ch<'a'>;
-    using calum = fp::chseq<'c', 'a', 'l', 'u', 'm'>;
+    using calum = fp::string<'c', 'a', 'l', 'u', 'm'>;
     using digit = fp::chrange<'0','9'>;
     using lc = fp::chrange<'a','z'>;
     using uc = fp::chrange<'A','Z'>;
@@ -36,7 +95,23 @@ int main()
     using utf8_4 = fp::seq<fp::chrange<240, 247>, utf8_continuation, utf8_continuation, utf8_continuation>;
     using utf8 = fp::alt<utf8_2, utf8_3, utf8_4>;
 
+    using id = fp::seq<alpha, fp::star<alnum>>;
+    
     assert(fp::regex_match<alnum>("a"));
     assert(fp::regex_match<fp::empty>(""));
     assert(!fp::regex_match<alnum>(" "));
+    
+    check_matches<id>("abc123");
+    check_matches<id>("X");
+    check_not_matches<id>("");
+    check_not_matches<id>("123");
+}
+
+int main()
+{
+    testAny();
+    testString();
+    testStar();
+    testOptional();
+    testMatch();
 }
