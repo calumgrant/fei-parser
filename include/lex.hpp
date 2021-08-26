@@ -1,95 +1,9 @@
+#pragma once
+#include "accepts.hpp"
+#include "next.hpp"
 
 namespace feiparser
 {
-static const int Match = -1;
-static const int NoMatch = -2;
-
-    template<typename Rule>
-    struct accepts;
-
-    template<>
-    struct accepts<reject>
-    {
-        static const bool value = false;
-        static const int token = NoMatch;
-    };
-
-    template<>
-    struct accepts<empty>
-    {
-        static const bool value = true;
-        static const int token = Match;
-    };
-
-    template<typename Rule, int Value>
-    struct accepts<accept<Rule, Value>>
-    {
-        static const bool value = can_be_empty<Rule>::value;
-        static const int token = Value;
-    };
-
-    template<int C1, int C2>
-    struct accepts<chrange<C1,C2>>
-    {
-        static const bool value = false;
-        static const int token = NoMatch;
-    };
-
-    template<typename T1, typename T2>
-    struct accepts<alt<T1,T2>>
-    {
-        static const bool value = accepts<T1>::value || accepts<T2>::value;
-        static const int token = accepts<T1>::value && accepts<T2>::value ? 
-            (accepts<T1>::token < accepts<T2>::token ? accepts<T1>::token : accepts<T2>::token) :
-            accepts<T1>::value ? accepts<T1>::token : accepts<T2>::token;
-    };
-
-    //template<typename R1, typename R2>
-    //struct accepts<
-
-    template<typename Rule, int Ch>
-    struct next;
-
-    template<int Ch>
-    struct next<reject, Ch>
-    {
-        typedef reject type;
-    };
-
-    template<int Ch>
-    struct next<empty, Ch>
-    {
-        typedef reject type;
-    };
-
-    template<bool B, typename T, typename F>
-    struct type_if;
-
-    template<typename T, typename F>
-    struct type_if<true, T, F>
-    {
-        typedef T type;
-    };
-
-    template<typename T, typename F>
-    struct type_if<false, T, F>
-    {
-        typedef F type;
-    };
-
-    template<int C1, int C2, int Ch>
-    struct next<chrange<C1,C2>, Ch>
-    {
-        typedef typename type_if<C1<=Ch && Ch<=C2, empty, reject>::type type;
-    };
-
-    template<typename T1, typename T2, int Ch>
-    struct next<alt<T1,T2>, Ch>
-    {
-        typedef alt<typename next<T1,Ch>::type, typename next<T2,Ch>::type> t;
-        typedef typename simplify<t>::type type;
-    };
-
     template<typename Rule, typename It>
     int lex(It & current, It end);
 
@@ -117,15 +31,42 @@ static const int NoMatch = -2;
 
         switch((unsigned char)*current)
         {
-            case 0: return lex0<S, 0>(current, end);
-            case 1: return lex0<S, 1>(current, end);
-
-            case 32: return lex0<S, 32>(current, end);
-
-            case 97: return lex0<S, 97>(current, end);
-            case 98: return lex0<S, 98>(current, end);
-            case 99: return lex0<S, 99>(current, end);
+#define FP_CASE(N) case N: return lex0<S, N>(current, end);
+#define FP_CASE_BLOCK(N) FP_CASE(N) FP_CASE(N+1) FP_CASE(N+2) FP_CASE(N+3) FP_CASE(N+4) FP_CASE(N+5) FP_CASE(N+6) FP_CASE(N+7) FP_CASE(N+8) FP_CASE(N+9)
                 
+                FP_CASE_BLOCK(0)
+                FP_CASE_BLOCK(10)
+                FP_CASE_BLOCK(20)
+                FP_CASE_BLOCK(30)
+                FP_CASE_BLOCK(40)
+                FP_CASE_BLOCK(50)
+                FP_CASE_BLOCK(60)
+                FP_CASE_BLOCK(70)
+                FP_CASE_BLOCK(80)
+                FP_CASE_BLOCK(90)
+                FP_CASE_BLOCK(100)
+                FP_CASE_BLOCK(110)
+                FP_CASE_BLOCK(120)
+                FP_CASE_BLOCK(130)
+                FP_CASE_BLOCK(140)
+
+                FP_CASE_BLOCK(150)
+                FP_CASE_BLOCK(160)
+                FP_CASE_BLOCK(170)
+                FP_CASE_BLOCK(180)
+                FP_CASE_BLOCK(190)
+                FP_CASE_BLOCK(200)
+                FP_CASE_BLOCK(210)
+                FP_CASE_BLOCK(220)
+                FP_CASE_BLOCK(230)
+                FP_CASE_BLOCK(240)
+                FP_CASE(250)
+                FP_CASE(251)
+                FP_CASE(252)
+                FP_CASE(253)
+                FP_CASE(254)
+                FP_CASE(255)
+
         }
 
         return NoMatch;
@@ -136,14 +77,15 @@ static const int NoMatch = -2;
     {
         using S = typename simplify<Rule>::type;
 
+        auto c0 = current;
         auto tok = lex1<S>(current, end);
         
         if(tok == NoMatch && accepts<S>::value)
         {
+            current = c0;
             return accepts<S>::token;
         }
         
         return tok;
     }
-
 }

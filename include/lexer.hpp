@@ -1,3 +1,5 @@
+#pragma once
+
 #include "rules.hpp"
 #include "simplify.hpp"
 #include "lex.hpp"

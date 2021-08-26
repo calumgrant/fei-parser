@@ -5,8 +5,21 @@ struct foo {};
 
 namespace fp = feiparser;
 
+void testAny()
+{
+    using any = fp::chrange<0,255>;
+
+    assert(!fp::regex_match<any>(""));
+    for(auto i=0; i<=255; ++i)
+    {
+        auto c = (unsigned char)(i);
+        assert(fp::regex_match<any>(&c, 1+&c));
+    }
+}
+
 int main()
 {
+    testAny();
     using a = fp::ch<'a'>;
     using calum = fp::chseq<'c', 'a', 'l', 'u', 'm'>;
     using digit = fp::chrange<'0','9'>;
