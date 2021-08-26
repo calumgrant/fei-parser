@@ -38,10 +38,10 @@ namespace feiparser
     template<typename T1, typename T2, int Ch>
     struct next<alt<T1,T2>, Ch>
     {
-        typedef typename simplify<T1>::type S1;
-        typedef typename simplify<T2>::type S2;
+        typedef typename normalize<T1>::type S1;
+        typedef typename normalize<T2>::type S2;
         typedef alt<typename next<S1,Ch>::type, typename next<S2,Ch>::type> t;
-        typedef typename simplify<t>::type type;
+        typedef typename normalize<t>::type type;
     };
 
     template<typename T1, typename T2, int Ch>
@@ -54,13 +54,13 @@ namespace feiparser
         typedef typename next<T2, Ch>::type t2;
         typedef alt<t1, t2> t3;
         typedef typename type_if<accepts<T1>::value, t3, t1>::type t4;
-        typedef typename simplify<t4>::type type;
+        typedef typename normalize<t4>::type type;
     };
 
     template<typename T, int Ch>
     struct next<star<T>, Ch>
     {
         typedef seq<typename next<T, Ch>::type, star<T>> U;
-        typedef typename simplify<U>::type type;
+        typedef typename normalize<U>::type type;
     };
 }

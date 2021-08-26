@@ -11,9 +11,9 @@ namespace feiparser
     void lex0(It & current, It end, int & token, It & matchEnd)
     {
         ++current;
-        typedef typename simplify<Rule>::type S;
+        typedef typename normalize<Rule>::type S;
         typedef typename next<S,Ch>::type N;
-        typedef typename simplify<N>::type SN;
+        typedef typename normalize<N>::type SN;
         return lex1<SN>(current, end, token, matchEnd);
     }
 
@@ -23,7 +23,7 @@ namespace feiparser
     template<typename Rule, typename It>
     void lex1(It & current, It end, int & token, It & matchEnd)
     {
-        using S = typename simplify<Rule>::type;
+        using S = typename normalize<Rule>::type;
 
         if(accepts<S>::value)
         {

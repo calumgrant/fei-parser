@@ -1,11 +1,11 @@
 #pragma once
 
 /*
-    simplify<> rewrites rules into a more simple form.
+    normalize<> rewrites rules into a more simple form.
     This is particularly true of "synthesised" rules (for example, those rules
     produced by next<>).
 
-    simplify<> also desugars more complex rules into simpler elements. For example,
+    normalize<> also desugars more complex rules into simpler elements. For example,
     string<A,B,C> gets simplified to seq<ch<A>, seq<ch<B>, ch<C>>>
 */
 
@@ -15,7 +15,7 @@ namespace feiparser
 {
     // Rewrites lexer rules to a canonical form.
     template<typename Rule>
-    struct simplify;
+    struct normalize;
 
     template<bool B, typename T, typename F>
     struct type_if;
@@ -32,161 +32,161 @@ namespace feiparser
         typedef F type;
     };
 
-    // The base types do not simplify
+    // The base types do not normalize
     template<int Ch>
-    struct simplify<ch<Ch>>
+    struct normalize<ch<Ch>>
     {
         typedef ch<Ch> type;
     };
 
     template<>
-    struct simplify<string<>>
+    struct normalize<string<>>
     {
         typedef empty type;
     };
 
     template<int Ch>
-    struct simplify<string<Ch>>
+    struct normalize<string<Ch>>
     {
         typedef ch<Ch> type;
     };
 
     template<int C1, int C2, int...Cs>
-    struct simplify<string<C1, C2, Cs...>>
+    struct normalize<string<C1, C2, Cs...>>
     {
-        typedef seq<ch<C1>, typename simplify<string<C2, Cs...>>::type> type;
+        typedef seq<ch<C1>, typename normalize<string<C2, Cs...>>::type> type;
     };
 
     template<typename T1, typename T2, typename T3, typename... T4>
-    struct simplify<seq<T1, T2, T3, T4...>>
+    struct normalize<seq<T1, T2, T3, T4...>>
     {
-        typedef typename simplify<seq<T1, seq<T2, T3, T4...>>>::type type; 
+        typedef typename normalize<seq<T1, seq<T2, T3, T4...>>>::type type; 
     };
 
     template<typename T1, typename T2, typename T3, typename... T4>
-    struct simplify<alt<T1, T2, T3, T4...>>
+    struct normalize<alt<T1, T2, T3, T4...>>
     {
-        typedef typename simplify<alt<T1, seq<T2, T3, T4...>>>::type type; 
+        typedef typename normalize<alt<T1, seq<T2, T3, T4...>>>::type type; 
     };
 
     template<typename T1, typename T2, typename T3>
-    struct simplify<alt<alt<T1,T2>,T3>>
+    struct normalize<alt<alt<T1,T2>,T3>>
     {
-        typedef typename simplify<alt<T1,alt<T2,T3>>>::type type;
+        typedef typename normalize<alt<T1,alt<T2,T3>>>::type type;
     };
 
     template<typename T1, typename T2>
-    struct simplify<seq<T1,T2>>
+    struct normalize<seq<T1,T2>>
     {
-        typedef seq<typename simplify<T1>::type, typename simplify<T2>::type> type;
+        typedef seq<typename normalize<T1>::type, typename normalize<T2>::type> type;
     };
 
     template<typename T>
-    struct simplify<alt<reject, T>>
+    struct normalize<alt<reject, T>>
     {
-        typedef typename simplify<T>::type type;
+        typedef typename normalize<T>::type type;
     };
 
     template<typename T>
-    struct simplify<alt<T, reject>>
+    struct normalize<alt<T, reject>>
     {
-        typedef typename simplify<T>::type type;
+        typedef typename normalize<T>::type type;
     };
 
     template<>
-    struct simplify<alt<reject, reject>>
+    struct normalize<alt<reject, reject>>
     {
         typedef reject type;
     };
 
     template<>
-    struct simplify<chalt<>>
+    struct normalize<chalt<>>
     {
         typedef reject type;
     };
 
     template<>
-    struct simplify<empty>
+    struct normalize<empty>
     {
         typedef empty type;
     };
 
 
     template<int Ch>
-    struct simplify<chalt<Ch>>
+    struct normalize<chalt<Ch>>
     {
         typedef ch<Ch> type;
     };
 
     template<int Ch, int...Chs>
-    struct simplify<chalt<Ch, Chs...>>
+    struct normalize<chalt<Ch, Chs...>>
     {
-        typedef alt<ch<Ch>, typename simplify<chalt<Chs...>>::type> type;
+        typedef alt<ch<Ch>, typename normalize<chalt<Chs...>>::type> type;
     };
 
     template<int Ch>
-    struct simplify<chrange<Ch,Ch>>
+    struct normalize<chrange<Ch,Ch>>
     {
         typedef ch<Ch> type;
     };
 
     template<int Ch1, int Ch2>
-    struct simplify<chrange<Ch1,Ch2>>
+    struct normalize<chrange<Ch1,Ch2>>
     {
         typedef chrange<Ch1, Ch2> type;
     };
 
-    // Simplifying seq
+    // normalizeing seq
 
     template<typename T>
-    struct simplify<seq<empty, T>>
+    struct normalize<seq<empty, T>>
     {
-        typedef typename simplify<T>::type type;
+        typedef typename normalize<T>::type type;
     };
 
     template<>
-    struct simplify<reject>
+    struct normalize<reject>
     {
         typedef reject type;
     };
 
     template<typename T>
-    struct simplify<seq<reject, T>>
+    struct normalize<seq<reject, T>>
     {
         typedef reject type;
     };
 
     template<typename Rule>
-    struct simplify<optional<Rule>>
+    struct normalize<optional<Rule>>
     {
-        typedef alt<empty, typename simplify<Rule>::type> type;
+        typedef alt<empty, typename normalize<Rule>::type> type;
     };
 
     template<typename Rule>
-    struct simplify<plus<Rule>>
+    struct normalize<plus<Rule>>
     {
-        typedef typename simplify<Rule>::type S;
+        typedef typename normalize<Rule>::type S;
 
         typedef seq<S, star<S>> type;
     };
 
     template<typename Rule>
-    struct simplify<star<Rule>>
+    struct normalize<star<Rule>>
     {
-        typedef typename simplify<Rule>::type S;
+        typedef typename normalize<Rule>::type S;
         typedef star<S> type;
     };
 
     template<>
-    struct simplify<alt<>>
+    struct normalize<alt<>>
     {
         typedef reject type;
     };
 
     template<typename R>
-    struct simplify<alt<R>>
+    struct normalize<alt<R>>
     {
-        typedef typename simplify<R>::type type;
+        typedef typename normalize<R>::type type;
     };
 
     template<typename Rule>
@@ -209,9 +209,9 @@ namespace feiparser
     };
 
     template<typename T>
-    struct simplify<alt<T,T>>
+    struct normalize<alt<T,T>>
     {
-        typedef typename simplify<T>::type type;
+        typedef typename normalize<T>::type type;
     };
 
     template<typename T1, typename T2>
@@ -232,12 +232,12 @@ namespace feiparser
     };
 
     template<typename T1, typename T2>
-    struct simplify<alt<T1,T2>>
+    struct normalize<alt<T1,T2>>
     {
         typedef make_nonempty<T1> n1;
         typedef make_nonempty<T2> n2;
         typedef alt<typename n1::type, typename n2::type> t1;
-//         typedef typename simplify<t1>::type t2;
+//         typedef typename normalize<t1>::type t2;
 
         typedef typename type_if<n1::empty || n2::empty, alt<empty, t1>, t1>::type type;
     };
