@@ -94,6 +94,18 @@ namespace feiparser
     };
 
     template<>
+    struct normalize<alt<empty, reject>>
+    {
+        typedef empty type;
+    };
+
+    template<>
+    struct normalize<alt<reject, empty>>
+    {
+        typedef empty type;
+    };
+
+    template<>
     struct normalize<alt<reject, reject>>
     {
         typedef reject type;
@@ -215,11 +227,25 @@ namespace feiparser
     };
 
     template<typename T1, typename T2>
+    struct normalize<alt<T1,alt<T1,T2>>>
+    {
+        typedef alt<T1,T2> t;
+        typedef typename normalize<t>::type type;
+    };
+
+    template<typename T1, typename T2>
     struct make_nonempty<seq<T1,T2>>
     {
-        typedef typename make_nonempty<T1>::type n1;
-        typedef typename make_nonempty<T2>::type n2;
-        typedef alt<seq<T1, n2>, seq<n1, T2>> type;
+        // Too difficult so just ignore this case
+
+        static const bool empty = false;
+        typedef seq<T1,T2> type;
+
+        //typedef make_nonempty<T1> n1;
+        //typedef make_nonempty<T2> n2;
+
+        //typedef alt<seq<T1, typename n2::type>, seq<typename n1::type, T2>> type;
+        //static const bool empty = n1::empty && n2::empty;
     };
 
     template<typename T1, typename T2>
@@ -227,8 +253,24 @@ namespace feiparser
     {
         typedef make_nonempty<T1> n1;
         typedef make_nonempty<T2> n2;
-        typedef alt<typename n1::type, typename n2::type> type;
+        typedef alt<typename n1::type, typename n2::type> t;
+        typedef typename normalize<t>::type type;
         static const bool empty = n1::empty || n2::empty;
+    };
+
+    template<>
+    struct make_nonempty<empty>
+    {
+        typedef empty type;
+        static const bool empty = true;
+    };
+
+    template<typename T2>
+    struct normalize<alt<empty,T2>>
+    {
+        typedef typename make_nonempty<T2>::type n2;
+        typedef typename normalize<T2>::type t2;
+        typedef alt<empty, t2> type;
     };
 
     template<typename T1, typename T2>

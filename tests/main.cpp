@@ -196,11 +196,16 @@ public:
     explicit StateGraph(Rule r)
     {
         using S = typename fp::normalize<Rule>::type;
+        std::stringstream ss;
+        ss << S();
+        initialState = ss.str();
         AddState(S());
     }
 
+    std::string initialState;
     std::set<std::string> states;
     std::multimap<std::string, std::string> transitions;
+    std::set<std::pair<std::string, std::string>> transitions2;
 
 private:
 
@@ -235,17 +240,53 @@ private:
             AddTransitions<Rule>::Add(*this);
         }
     }
+    
+    void AddState(fp::reject)
+    {
+        // Do not add the reject state
+    }
 
+    template<typename R1>
+    void AddTransition(R1 r1, fp::reject r2, int Ch)
+    {
+        // Do not add the reject transition
+    }
+    
     template<typename R1, typename R2>
     void AddTransition(R1 r1, R2 r2, int Ch)
     {
         std::stringstream ss1, ss2;
         ss1 << r1;
-        ss2 << r2;
-        transitions.insert(std::make_pair(ss1.str(), ss2.str()));
-        AddState(r2);
+        ss2 << '-' << char(Ch) << "-> " << r2;
+
+        auto p = std::make_pair(ss1.str(), ss2.str());
+        
+        if(transitions2.find(p) == transitions2.end())
+        {
+            transitions.insert(p);
+            transitions2.insert(p);
+            AddState(r2);
+        }
     }
 };
+
+std::ostream & operator<<(std::ostream & os, const StateGraph & sg)
+{
+    for(auto & s : sg.states)
+    {
+        if(s == sg.initialState)
+            os << "Initial state ";
+        os << s << std::endl;
+        
+        auto r = sg.transitions.equal_range(s);
+
+        for(auto i=r.first; i!=r.second; ++i)
+        {
+            os << "    " << i->second << std::endl;
+        }
+    }
+    return os;
+}
 
 void viewStateGraph()
 {
@@ -262,8 +303,15 @@ void viewStateGraph()
     std::cout << n3() << std::endl;
 
     StateGraph g1 {n3()};
+    std::cout << g1;
 
     StateGraph g2 {fp::star<fp::string<'a','b'>>()};
+    std::cout << g2;
+
+    using r4 = fp::plus<fp::seq<fp::ch<'a'>,fp::optional<fp::ch<'b'>>>>;
+    StateGraph g3 {r4()};
+    std::cout << g3;
+
 }
 
 int main()

@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.16)
 enable_testing()
 include_directories(include)
 
-add_executable(tests tests/main.cpp)
+add_executable(tests tests/main.cpp include/next.hpp include/normalize.hpp)
 add_test(NAME maintests COMMAND tests)
 
 add_executable(ugen unicode/generator.cpp)
