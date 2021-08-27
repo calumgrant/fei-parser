@@ -13,7 +13,9 @@ namespace feiparser
     struct chalt {};
 
     template<int C1, int C2>
-    struct chrange {};
+    struct chrange {
+        static_assert(C1<=C2, "The second character in a chrange is less than the first");
+    };
 
     template<typename...Rules>
     struct seq {};
@@ -35,8 +37,11 @@ namespace feiparser
 
     struct reject {};
 
-    template<typename Rule, int Value>
-    struct accept {};
+    template<int Value, typename... Rules>
+    struct token {};
+
+    template<int Rule, typename... Rules>
+    struct rule {};
 
     struct empty {};
 

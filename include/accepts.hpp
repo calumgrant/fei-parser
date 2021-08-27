@@ -24,7 +24,7 @@ namespace feiparser
     };
 
     template<typename Rule, int Value>
-    struct accepts<accept<Rule, Value>>
+    struct accepts<token<Value, Rule>>
     {
         static const bool value = accepts<Rule>::value;
         static const int token = Value;

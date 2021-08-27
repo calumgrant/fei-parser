@@ -1,6 +1,11 @@
 #include <feiparser.hpp>
 #include <cassert>
 #include <cstring>
+#include <set>
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <map>
 
 struct foo {};
 
@@ -123,6 +128,144 @@ void testSearch()
     assert(r.second - r.first == 6);
 }
 
+void longTest()
+{
+    // Tests tail recursion
+    // Only do this with tail recursion enabled
+#ifdef _NDEBUG
+    std::vector as('a', 1000000);
+    auto r = fp::regex_match<fp::plus<fp::ch<'a'>>>(as.begin(), as.end());
+    if(!r) throw "Failed test";
+#endif
+}
+
+namespace feiparser
+{
+    template<int Ch>
+    std::ostream & operator<<(std::ostream & os, ch<Ch>)
+    {
+        return os << char(Ch);
+    }
+
+    template<char Ch>
+    std::ostream & operator<<(std::ostream & os, string<Ch>)
+    {
+        return os << char(Ch);
+    }
+
+    template<char Ch1, char Ch2, char...Chs>
+    std::ostream & operator<<(std::ostream & os, string<Ch1, Ch2, Chs...>)
+    {
+        return os << char(Ch1) << fp::string<Ch2, Chs...>();
+    }
+
+    template<typename R1, typename R2>
+    std::ostream & operator<<(std::ostream & os, seq<R1,R2>)
+    {
+        return os << '(' << R1() << ")(" << R2() << ')';
+    }
+
+    template<typename R1, typename R2>
+    std::ostream & operator<<(std::ostream & os, alt<R1,R2>)
+    {
+        return os << '(' << R1() << ")|(" << R2() << ')';
+    }
+
+    std::ostream & operator<<(std::ostream & os, empty)
+    {
+        return os << "()";
+    }
+
+    std::ostream & operator<<(std::ostream & os, reject)
+    {
+        return os << "<reject>";
+    }
+
+    template<typename R>
+    std::ostream & operator<<(std::ostream & os, star<R>)
+    {
+        return os << "*(" << R() << ')';
+    }
+}
+
+class StateGraph
+{
+
+public:
+    template<typename Rule>
+    explicit StateGraph(Rule r)
+    {
+        using S = typename fp::normalize<Rule>::type;
+        AddState(S());
+    }
+
+    std::set<std::string> states;
+    std::multimap<std::string, std::string> transitions;
+
+private:
+
+    template<typename Rule, int I=0>
+    struct AddTransitions
+    {
+        using next = typename fp::next<Rule, I>::type;
+        using S = typename fp::normalize<next>::type;
+
+        static void Add(StateGraph & sg)
+        {
+            sg.AddTransition(Rule(), S(), I);
+            AddTransitions<Rule, I+1>::Add(sg);
+        }
+    };
+
+    template<typename Rule>
+    struct AddTransitions<Rule, 256>
+    {
+        static void Add(StateGraph & sg) {}
+    };
+
+    template<typename Rule>
+    void AddState(Rule r)
+    {
+        std::stringstream ss;
+        ss << r;
+        
+        if(states.find(ss.str()) == states.end())
+        {
+            states.insert(ss.str());
+            AddTransitions<Rule>::Add(*this);
+        }
+    }
+
+    template<typename R1, typename R2>
+    void AddTransition(R1 r1, R2 r2, int Ch)
+    {
+        std::stringstream ss1, ss2;
+        ss1 << r1;
+        ss2 << r2;
+        transitions.insert(std::make_pair(ss1.str(), ss2.str()));
+        AddState(r2);
+    }
+};
+
+void viewStateGraph()
+{
+    using r1 = fp::ch<'a'>;
+    using r2 = fp::string<'a', 'b', 'c'>;
+    using n2 = fp::normalize<r2>::type;
+    using r3 = fp::star<r1>;
+    using n3 = fp::next<r3, 'a'>::type;
+
+    std::cout << r1() << std::endl;
+    std::cout << r2() << std::endl;
+    std::cout << n2() << std::endl;
+    std::cout << r3() << std::endl;
+    std::cout << n3() << std::endl;
+
+    StateGraph g1 {n3()};
+
+    StateGraph g2 {fp::star<fp::string<'a','b'>>()};
+}
+
 int main()
 {
     testAny();
@@ -131,4 +274,7 @@ int main()
     testOptional();
     testMatch();
     testSearch();
+    longTest();
+
+    viewStateGraph();
 }
