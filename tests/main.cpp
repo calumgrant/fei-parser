@@ -1,4 +1,7 @@
+#include "output.hpp"
 #include <feiparser.hpp>
+
+
 #include <cassert>
 #include <cstring>
 #include <set>
@@ -139,54 +142,6 @@ void longTest()
 #endif
 }
 
-namespace feiparser
-{
-    template<int Ch>
-    std::ostream & operator<<(std::ostream & os, ch<Ch>)
-    {
-        return os << char(Ch);
-    }
-
-    template<char Ch>
-    std::ostream & operator<<(std::ostream & os, string<Ch>)
-    {
-        return os << char(Ch);
-    }
-
-    template<char Ch1, char Ch2, char...Chs>
-    std::ostream & operator<<(std::ostream & os, string<Ch1, Ch2, Chs...>)
-    {
-        return os << char(Ch1) << fp::string<Ch2, Chs...>();
-    }
-
-    template<typename R1, typename R2>
-    std::ostream & operator<<(std::ostream & os, seq<R1,R2>)
-    {
-        return os << '(' << R1() << ")(" << R2() << ')';
-    }
-
-    template<typename R1, typename R2>
-    std::ostream & operator<<(std::ostream & os, alt<R1,R2>)
-    {
-        return os << '(' << R1() << ")|(" << R2() << ')';
-    }
-
-    std::ostream & operator<<(std::ostream & os, empty)
-    {
-        return os << "()";
-    }
-
-    std::ostream & operator<<(std::ostream & os, reject)
-    {
-        return os << "<reject>";
-    }
-
-    template<typename R>
-    std::ostream & operator<<(std::ostream & os, star<R>)
-    {
-        return os << "*(" << R() << ')';
-    }
-}
 
 class StateGraph
 {
@@ -303,14 +258,14 @@ void viewStateGraph()
     std::cout << n3() << std::endl;
 
     StateGraph g1 {n3()};
-    std::cout << g1;
+    std::cout << g1 << std::endl;
 
     StateGraph g2 {fp::star<fp::string<'a','b'>>()};
-    std::cout << g2;
+    std::cout << g2 << std::endl;
 
     using r4 = fp::plus<fp::seq<fp::ch<'a'>,fp::optional<fp::ch<'b'>>>>;
     StateGraph g3 {r4()};
-    std::cout << g3;
+    std::cout << g3 << std::endl;
 
 }
 

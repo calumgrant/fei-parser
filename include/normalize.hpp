@@ -276,8 +276,10 @@ namespace feiparser
     template<typename T1, typename T2>
     struct normalize<alt<T1,T2>>
     {
-        typedef make_nonempty<T1> n1;
-        typedef make_nonempty<T2> n2;
+        typedef typename normalize<T1>::type s1;
+        typedef typename normalize<T2>::type s2;
+        typedef make_nonempty<s1> n1;
+        typedef make_nonempty<s2> n2;
         typedef alt<typename n1::type, typename n2::type> t1;
 
         typedef typename type_if<n1::empty || n2::empty, alt<empty, t1>, t1>::type type;
