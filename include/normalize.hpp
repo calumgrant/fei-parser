@@ -76,6 +76,13 @@ namespace feiparser
     };
 
     template<typename T1, typename T2>
+    struct normalize<alt<alt<T1,T2>,reject>>
+    {
+        typedef typename normalize<alt<T1,T2>>::type type;
+    };
+
+
+    template<typename T1, typename T2>
     struct normalize<seq<T1,T2>>
     {
         typedef seq<typename normalize<T1>::type, typename normalize<T2>::type> type;
@@ -233,6 +240,14 @@ namespace feiparser
         typedef typename normalize<t>::type type;
     };
 
+    template<typename T2>
+    struct normalize<alt<empty,alt<empty,T2>>>
+    {
+        typedef alt<empty,T2> t;
+        typedef typename normalize<t>::type type;
+    };
+
+
     template<typename T1, typename T2>
     struct make_nonempty<seq<T1,T2>>
     {
@@ -289,5 +304,17 @@ namespace feiparser
     struct normalize<token<Tok, R>>
     {
         typedef token<Tok, typename normalize<R>::type> type;
+    };
+
+    template<char...Chs>
+    struct normalize<notch<Chs...>>
+    {
+        typedef notch<Chs...> type;
+    };
+
+    template<typename Rule>
+    struct normalize<whitespace<Rule>>
+    {
+        typedef typename normalize<token<Whitespace, Rule>>::type type;
     };
 }

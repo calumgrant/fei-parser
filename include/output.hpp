@@ -13,13 +13,13 @@ namespace feiparser
         return os << "ch<'" << char(Ch) << "'>";
     }
 
-    template<char Ch>
+    template<int Ch>
     std::ostream & operator<<(std::ostream & os, string<Ch>)
     {
         return os << "ch<'" << char(Ch) << "'>";
     }
 
-    template<char Ch1, char Ch2, char...Chs>
+    template<int Ch1, int Ch2, int...Chs>
     std::ostream & operator<<(std::ostream & os, string<Ch1, Ch2, Chs...>)
     {
         return os << "seq<char<'" << char(Ch1) << "'>," << string<Ch2, Chs...>() << ">";;

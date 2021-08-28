@@ -70,4 +70,24 @@ namespace feiparser
     {
         typedef token<Tok, typename next<R, Ch>::type> type;
     };
+
+    template<int Ch>
+    struct next<notch<>, Ch>
+    {
+        typedef empty type;
+    };
+
+    template<int Ch, int...Chs>
+    struct next<notch<Ch, Chs...>, Ch>
+    {
+        typedef reject type;
+    };
+
+    template<int C1, int C2, int...Chs>
+    struct next<notch<C1, Chs...>, C2>
+    {
+        typedef typename next<notch<Chs...>, C2>::type type;
+    };
+
+
 }

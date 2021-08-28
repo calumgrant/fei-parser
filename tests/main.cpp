@@ -316,6 +316,15 @@ void testLexer()
     }
 }
 
+void testNotCh()
+{
+    using g1 = fp::notch<'a', 'b'>;
+
+    check_matches<g1>("c");
+    check_not_matches<g1>("a");
+    check_not_matches<g1>("b");
+}
+
 int main()
 {
     testAny();
@@ -325,6 +334,7 @@ int main()
     testMatch();
     testSearch();
     longTest();
+    testNotCh();
     viewStateGraph();
     testLexer();
 }

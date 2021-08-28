@@ -62,6 +62,13 @@ namespace feiparser
     struct accepts<star<T>>
     {
         static const bool value = true;
-        static const bool token = Match;
+        static const int token = Match;
+    };
+
+    template<char...Chs>
+    struct accepts<notch<Chs...>>
+    {
+        static const bool value = false;
+        static const int token = NoMatch;
     };
 }

@@ -48,7 +48,7 @@ namespace feiparser
     template<int Ch>
     struct utf8ch {};
 
-    template<char... Values> struct string {};
+    template<int... Values> struct string {};
 
     template<typename Rule, int Group>
     struct capture {};
@@ -56,4 +56,7 @@ namespace feiparser
     // Defines whitespace, which is normally skipped as output from the lexer.
     template<typename Rule>
     struct whitespace {};
+
+    template<int...Chs>
+    struct notch {};
 }
