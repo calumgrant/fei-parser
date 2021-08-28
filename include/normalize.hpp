@@ -219,12 +219,14 @@ namespace feiparser
     struct make_nonempty<alt<empty, T>>
     {
         typedef typename make_nonempty<T>::type type;
+        static const bool empty = true;
     };
 
     template<typename T>
     struct make_nonempty<alt<T, empty>>
     {
         typedef typename make_nonempty<T>::type type;
+        static const bool empty = true;
     };
 
     template<typename T>
@@ -284,7 +286,7 @@ namespace feiparser
     struct normalize<alt<empty,T2>>
     {
         typedef typename make_nonempty<T2>::type n2;
-        typedef typename normalize<T2>::type t2;
+        typedef typename normalize<n2>::type t2;
         typedef alt<empty, t2> type;
     };
 
@@ -317,4 +319,17 @@ namespace feiparser
     {
         typedef typename normalize<token<Whitespace, Rule>>::type type;
     };
+
+    template<typename T>
+    struct normalize<seq<T>>
+    {
+        typedef typename normalize<T>::type type;
+    };
+
+    template<>
+    struct normalize<seq<>>
+    {
+        typedef empty type;
+    };
+
 }

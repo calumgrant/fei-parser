@@ -58,8 +58,8 @@ using java = alt<
     token<Comma, ch<','>>,
     token<Dot, ch<'.'>>,
     token<Lt, ch<'<'>>,
-    token<Gt, ch<'>'>>//,
-    //token<DecimalIntegerLiteral, DecimalIntegerLiteralT>
+    token<Gt, ch<'>'>>,
+    token<DecimalIntegerLiteral, DecimalIntegerLiteralT>
     >;
 
 auto javalexer = make_lexer<java>();

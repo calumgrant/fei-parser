@@ -325,6 +325,25 @@ void testNotCh()
     check_not_matches<g1>("b");
 }
 
+void testX()
+{
+    using namespace feiparser;
+    using IntegerTypeSuffix = chalt<'l','L'>;
+    using NonZeroDigit = chrange<'1','9'>;
+    using Digit = alt<ch<'0'>, NonZeroDigit>;
+    using DigitOrUnderscore = alt<Digit, ch<'_'>>;
+    using Underscores = plus<ch<'_'>>;
+    using DigitsAndUnderscores = plus<DigitOrUnderscore>;
+    using Digits = alt<Digit, seq<Digit, optional<DigitsAndUnderscores>, Digit>>;
+    using DecimalNumeral = alt<ch<'0'>, seq<NonZeroDigit, optional<Digits>>, seq<NonZeroDigit, Underscores, Digits>>;
+
+    using DecimalIntegerLiteralT = seq<DecimalNumeral, optional<IntegerTypeSuffix>>;
+
+    auto g1 =  fp::make_lexer<DecimalIntegerLiteralT>();
+    // auto g1 =  fp::make_lexer<seq<Underscores, Digits>>();
+    // auto g1 =  fp::make_lexer<seq<NonZeroDigit, optional<Digits>>>();
+}
+
 int main()
 {
     testAny();
