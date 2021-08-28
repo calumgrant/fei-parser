@@ -1,4 +1,5 @@
 #pragma once
+#include "normalize.hpp"
 
 namespace feiparser
 {

@@ -3,8 +3,6 @@
 
 namespace feiparser
 {
-    static const int Match = -1;
-    static const int NoMatch = -2;
 
     template<typename Rule>
     struct accepts;

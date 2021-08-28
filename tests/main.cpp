@@ -1,4 +1,5 @@
-#include "output.hpp"
+#include <output.hpp>
+
 #include <feiparser.hpp>
 
 
@@ -267,6 +268,16 @@ void viewStateGraph()
     StateGraph g3 {r4()};
     std::cout << g3 << std::endl;
 
+    check_matches<r4>("a");
+    check_matches<r4>("ab");
+    check_matches<r4>("aba");
+    check_matches<r4>("abab");
+    check_not_matches<r4>("ababb");
+}
+
+void testLexer()
+{
+    auto l1 = fp::make_lexer<fp::ch<'x'>>();
 }
 
 int main()
@@ -278,6 +289,6 @@ int main()
     testMatch();
     testSearch();
     longTest();
-
     viewStateGraph();
+    testLexer();
 }

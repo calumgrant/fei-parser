@@ -1,45 +1,38 @@
 #pragma once
-
-#include "rules.hpp"
-#include "normalize.hpp"
-#include "lex.hpp"
-
+#include <utility>
 
 namespace feiparser
 {
+    static const int Match = -1;
+    static const int NoMatch = -2;
+    static const int Whitespace = -3;
 
-template<typename It>
-struct lexer_function
-{
-
-};
-
-template<typename Rule, typename It>
-lexer_function<It> make_lexer();
-
-template<typename It>
-class lexer
-{
-public:
-    typedef int(*fn)(It & fist, It last);
-    fn f;
-
-    bool regex_match(It first, It last);
-    bool regex_find(It &first, It last);
-    int lex(It & first, It last);
-
-    struct token
+    template<typename It>
+    class lexer
     {
+    public:
+        typedef int(*lex)(It & current, It end);
 
+        lexer(lex fn) : fn(fn) {}
+
+        bool regex_match(It start, It end)
+        {
+            return fn(start, end)!=NoMatch && start==end;
+        }
+
+        template<int N>
+        bool regex_match(const char (&str)[N])
+        {
+            return regex_match(str, str+N-1);
+        }
+
+        std::pair<It,It> regex_search(It start, It end)
+        {
+
+        }
+    private:
+        lex fn;
     };
-private:
-};
 
-template<typename It, typename Rule>
-class lex_stream
-{
-    Rule rule;
-    It current, end;
-};
-
+    typedef lexer<const char*> char_lexer;
 }

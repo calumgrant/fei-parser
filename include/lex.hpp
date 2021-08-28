@@ -1,9 +1,11 @@
 #pragma once
+#include "lexer.hpp"
 #include "accepts.hpp"
 #include "next.hpp"
 
 namespace feiparser
 {
+
     template<typename Rule, typename It>
     void lex1(It & current, It end, int & token, It & matchEnd);
 
@@ -84,5 +86,11 @@ namespace feiparser
         if(token != NoMatch)
             current = me; // Backtrack to result
         return token;
+    }
+
+    template<typename Rule, typename It=const char*>
+    auto make_lexer()
+    {
+        return lexer<It>(&lex<Rule>);
     }
 }
