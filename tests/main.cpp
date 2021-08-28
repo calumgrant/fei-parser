@@ -296,6 +296,24 @@ void testLexer()
     assert(t.lex());
     assert(t.lex());
     assert(!t.lex());
+
+    using digit = fp::chrange<'0','9'>;
+    using alpha  = fp::alt<fp::chrange<'a','z'>,fp::chrange<'a','z'>>;
+    using digits = fp::plus<fp::chrange<'0','9'>>;
+    using alnum = fp::alt<alpha, digit>;
+
+    using g2 = fp::alt<
+        fp::token<100, digits>,
+        fp::token<101, fp::seq<alpha, fp::star<alnum>>>
+        >;
+
+    auto l2 = fp::make_lexer<g2>();
+
+    t = l2.tokenize("  123 4 abc g123");
+    while(t.lex())
+    {
+        std::cout << t << " ";
+    }
 }
 
 int main()
