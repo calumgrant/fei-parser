@@ -277,7 +277,25 @@ void viewStateGraph()
 
 void testLexer()
 {
-    auto l1 = fp::make_lexer<fp::ch<'x'>>();
+    using t1 = fp::token<100, fp::ch<'x'>>;
+    auto l1 = fp::make_lexer<t1>();
+    
+    auto t = l1.tokenize("x");
+    assert(t.lex());
+    assert(!t.lex());
+
+    t = l1.tokenize("ax");
+    assert(t.lex());
+    assert(!t.lex());
+
+    t = l1.tokenize("aaxaa");
+    assert(t.lex());
+    assert(!t.lex());
+    
+    t = l1.tokenize("aaxaaxa");
+    assert(t.lex());
+    assert(t.lex());
+    assert(!t.lex());
 }
 
 int main()

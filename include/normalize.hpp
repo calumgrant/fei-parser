@@ -284,4 +284,10 @@ namespace feiparser
 
         typedef typename type_if<n1::empty || n2::empty, alt<empty, t1>, t1>::type type;
     };
+
+    template<int Tok, typename R>
+    struct normalize<token<Tok, R>>
+    {
+        typedef token<Tok, typename normalize<R>::type> type;
+    };
 }

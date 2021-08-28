@@ -64,4 +64,10 @@ namespace feiparser
         typedef seq<typename next<T, Ch>::type, star<T>> U;
         typedef typename normalize<U>::type type;
     };
+
+    template<int Tok, typename R, int Ch>
+    struct next<token<Tok, R>, Ch>
+    {
+        typedef token<Tok, typename next<R, Ch>::type> type;
+    };
 }

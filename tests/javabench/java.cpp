@@ -4,6 +4,9 @@
 
 using namespace feiparser;
 
-using java = feiparser::ch<'a'>;
+using digit = chrange<'0','9'>;
+using digits = plus<digit>;
+
+using java = token<100, digits>;
 
 char_lexer javalexer = make_lexer<java>();

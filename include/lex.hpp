@@ -19,8 +19,16 @@ namespace feiparser
         return lex1<SN>(current, end, token, matchEnd);
     }
 
+    // Move to a new file !!
     template<typename Rule> struct rejects { static const bool value = false; };
     template<> struct rejects<reject> { static const bool value = true; };
+    template<int Tok> struct rejects<token<Tok, reject>> { static const bool value = true; };
+
+    template<typename T1, typename T2>
+    struct rejects<alt<T1,T2>>
+    {
+        static const bool value = rejects<T1>::value && rejects<T2>::value;
+    };
 
     template<typename Rule, typename It>
     void lex1(It & current, It end, int & token, It & matchEnd)

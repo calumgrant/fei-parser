@@ -6,6 +6,8 @@
 #include <vector>
 #include <fstream>
 
+#include "output.hpp"
+
 #include "java.hpp"
 
 class BenchmarkSuite
@@ -89,7 +91,7 @@ int main(int argc, char**argv)
     std::cout << "Number of Java files found = " << list.files.size() << std::endl;
     std::cout << "Total bytes in Java files = " << list.totalSize << std::endl;
 
-    if(mode=="find")
+    if( mode=="find" )
     {
     }
     else if(mode == "read")
@@ -106,7 +108,27 @@ int main(int argc, char**argv)
     }
     else if(mode == "tokenize")
     {
+        std::vector<char> contents;
 
+        std::size_t number_of_tokens = 0;
+
+        for(auto & p : list.files)
+        {
+            if(!ReadFile(p.c_str(), contents))
+            {
+                std::cout << "Error reading file " << p << std::endl;
+            }
+            else
+            {
+                auto p = javalexer.tokenize(contents.data(), contents.data() + contents.size());
+                while(p.lex())
+                {
+                    //std::cout << p;
+                    ++number_of_tokens;
+                }
+            }
+        }
+        std::cout << "Total number of tokens = " << number_of_tokens << std::endl;
     }
     else if(mode == "parse")
     {

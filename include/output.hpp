@@ -1,6 +1,8 @@
 #pragma once
 
 #include "rules.hpp"
+#include "lex.hpp"
+
 #include <iostream>
 
 namespace feiparser
@@ -49,5 +51,15 @@ namespace feiparser
     std::ostream & operator<<(std::ostream & os, star<R>)
     {
         return os << "star<" << R() << ">";
+    }
+
+    template<typename It>
+    std::ostream & operator<<(std::ostream & os, const token_stream<It> & ts)
+    {
+        os << "[";
+        for(auto i : ts)
+            os << i;
+        os << "]=" << ts.token();
+        return os;
     }
 }
