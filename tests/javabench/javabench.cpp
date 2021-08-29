@@ -123,7 +123,7 @@ int main(int argc, char**argv)
                 auto p = JavaParser::lexer.tokenize(contents.data(), contents.data() + contents.size());
                 while(p.lex())
                 {
-                    if(p.token() == 1000)
+                    if(p.token() == JavaParser::BinaryIntegerLiteral)
                         std::cout << p;
                     ++number_of_tokens;
                 }

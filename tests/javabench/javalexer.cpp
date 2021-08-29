@@ -78,6 +78,7 @@ using KeywordToken = alt<
 
 // 3.10 Literals
 
+// 3.10.1 Integer literals
 
 using IntegerTypeSuffix = chalt<'l','L'>;
 using NonZeroDigit = chrange<'1','9'>;
@@ -114,12 +115,48 @@ using BinaryIntegerLiteralToken = token<BinaryIntegerLiteral, seq<BinaryNumeral,
 using IntegerLiteralToken = alt<
     DecimalIntegerLiteralToken, HexIntegerLiteralToken, OctalIntegerLiteralToken, BinaryIntegerLiteralToken>;
 
+// 3.10.2 Floating point literals
+
+using Sign = chalt<'+', '-'>;
+using FloatTypeSuffix = chalt<'f', 'F', 'd', 'D'>;
+using SignedInteger = seq<optional<Sign>, Digits>;
+using ExponentIndicator = chalt<'e','E'>;
+using ExponentPart = seq<ExponentIndicator, SignedInteger>;
+
+using DecimalFloatingPointLiteral = alt<
+    seq<Digits, ch<'.'>, optional<Digits>, optional<ExponentPart>, optional<FloatTypeSuffix>>,
+    seq<ch<'.'>, Digits, optional<ExponentPart>, optional<FloatTypeSuffix>>,
+    seq<Digits, ExponentPart, optional<FloatTypeSuffix>>,
+    seq<Digits, optional<ExponentPart>, FloatTypeSuffix>
+    >;
+
+using HexSignificand = alt<
+    seq<HexNumeral, optional<ch<'.'>>>,
+    seq<ch<'0'>, chalt<'x', 'X'>, optional<HexDigits>, ch<'.'>, HexDigits>
+    >;
+
+using BinaryExponentIndicator = chalt<'p', 'P'>;
+using BinaryExponent = seq<BinaryExponentIndicator, SignedInteger>;
+
+using HexadecimalFloatingPointLiteral = seq<HexSignificand, BinaryExponent, optional<FloatTypeSuffix>>;
+
+using FloatingPointLiteralToken = alt<
+    token<JavaParser::DecimalFloatingPointLiteral, ::DecimalFloatingPointLiteral>,
+    token<JavaParser::HexadecimalFloatingPointLiteral, ::HexadecimalFloatingPointLiteral>>;
+
+// 3.10.3
 
 using BooleanLiteralToken = alt<string<'t','r','u','e'>, string<'f','a','l','s','e'>>;
 
+// 3.10.7 The null literal
+
 using NullLiteralToken = string <'n','u','l','l'>;
 
-using LiteralToken = alt<BooleanLiteralToken, NullLiteralToken, IntegerLiteralToken
+using LiteralToken = alt<
+    BooleanLiteralToken,
+    NullLiteralToken,
+    IntegerLiteralToken,
+    FloatingPointLiteralToken
     // TODO
     >;
 

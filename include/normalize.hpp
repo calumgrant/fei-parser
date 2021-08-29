@@ -249,6 +249,13 @@ namespace feiparser
         typedef typename normalize<t>::type type;
     };
 
+    template<typename T>
+    struct normalize<alt<reject,alt<reject,T>>>
+    {
+        typedef typename normalize<T>::type type;
+    };
+
+
     template<typename T2>
     struct normalize<alt<empty,alt<empty,T2>>>
     {
