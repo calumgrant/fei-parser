@@ -24,6 +24,7 @@ namespace JavaParser
         Final,
         Finally,
         Float,
+        While,
         Identifier,  // Note: This must be after the keywords so they take precedence
         DecimalIntegerLiteral,
         HexIntegerLiteral,

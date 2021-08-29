@@ -15,28 +15,6 @@
 using namespace feiparser;
 using namespace JavaParser;
 
-using digit = chrange<'0','9'>;
-using digits = plus<digit>;
-
-using javaOld = token<100, digits>;
-
-using digit = chrange<'0','9'>;
-using alpha  = alt<chrange<'a','z'>, chrange<'A','Z'>>;
-using digits = plus<digit>;
-using alnum = alt<alpha, digit>;
-
-
-
-
-using ccomment = seq<
-    ch<'/'>, ch<'*'>, 
-    star<alt<notch<'*'>, seq<ch<'*'>, notch<'/'>>>>, 
-    ch<'*'>, ch<'/'>>;
-using cppcomment = seq<ch<'/'>, ch<'/'>, star<notch<'\n'>> >;
-using comment = alt<ccomment, cppcomment>;
-
-
-
 // 3.1 Unicode
 
 // 3.3 Unicode Escapes
@@ -68,6 +46,39 @@ using JavaLetterOrDigit = alt<JavaLetter, digit>;
 using IdentifierChars = seq<JavaLetter, star<JavaLetterOrDigit>>;
 using IdentifierToken = token<Identifier, IdentifierChars>;
 
+// 3.9 Keywords
+
+using KeywordToken = alt<
+    token<Abstract, string<'a', 'b','s','t','r','a','c','t'>>,
+    token<Assert, string<'a','s','s','e','r','t'>>,
+    token<Boolean, string<'b','o','o','l','e','a','n'>>,
+    token<Break, string<'b','r','e','a','k'>>,
+    token<Byte, string<'b','y','t','e'>>,
+    token<Case, string<'c','a','s','e'>>,
+    token<Catch, string<'c','a','t','c','h'>>,
+    token<Char, string<'c','h','a','r'>>,
+    token<Class, string<'c','l','a','s','s'>>,
+    token<Const, string<'c','o','n','s','t'>>,
+
+    token<Continue, string<'c','o','n','t','i','n','u','e'>>,
+    token<Default, string<'d','e','f','a','u','l','t'>>,
+    token<Do, string<'d','o'>>,
+    token<Double, string<'d','o','u','b','l','e'>>,
+    token<Else, string<'e','l','s','e'>>,
+    token<Enum, string<'e','n','u','m'>>,
+    token<Extends, string<'e','x','t','e','n','d','s'>>,
+    token<Final, string<'f','i','n','a','l'>>,
+    token<Finally, string<'f','i','n','a','l','l','y'>>,
+    token<Float, string<'f','l','o','a','t'>>,
+
+// TODO!!
+
+    token<While, string<'w','h','i','l','e'>>
+>;
+
+// 3.10 Literals
+
+
 using IntegerTypeSuffix = chalt<'l','L'>;
 using NonZeroDigit = chrange<'1','9'>;
 using Digit = alt<ch<'0'>, NonZeroDigit>;
@@ -83,16 +94,7 @@ using BooleanLiteralT = alt<string<'t','r','u','e'>, string<'f','a','l','s','e'>
 
 using NullLiteralT = string <'n','u','l','l'>;
 
-using KeywordToken = alt<
-    token<Abstract, string<'a', 'b','s','t','r','a','c','t'>>,
-    token<Assert, string<'a','s','s','e','r','t'>>,
-    token<Boolean, string<'b','o','o','l','e','a','n'>>,
-    token<Break, string<'b','r','e','a','k'>>,
-    token<Byte, string<'b','y','t','e'>>,
-    token<Case, string<'c','a','s','e'>>,
-    token<Catch, string<'c','a','t','c','h'>>,
-    token<Char, string<'c','h','a','r'>>
->;
+
 
 using SymbolToken = alt<
     token<OpenBrace, ch<'{'>>,
@@ -107,7 +109,6 @@ using SymbolToken = alt<
 >;
 
 using java = alt<
-    token<100, digits>,
     CommentToken,
     WhiteSpaceToken,
     KeywordToken,
