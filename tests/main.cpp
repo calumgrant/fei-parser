@@ -1,7 +1,6 @@
+
 #include <output.hpp>
-
 #include <feiparser.hpp>
-
 
 #include <cassert>
 #include <cstring>
@@ -213,7 +212,8 @@ private:
     {
         std::stringstream ss1, ss2;
         ss1 << r1;
-        ss2 << '-' << char(Ch) << "-> " << r2;
+        //ss2 << '-' << char(Ch) << "-> ";
+        ss2 << r2;
 
         auto p = std::make_pair(ss1.str(), ss2.str());
         
@@ -312,7 +312,7 @@ void testLexer()
     t = l2.tokenize("  123 4 abc g123");
     while(t.lex())
     {
-        std::cout << t << " ";
+        std::cout << t << std::endl;
     }
 }
 
@@ -323,6 +323,7 @@ void testNotCh()
     check_matches<g1>("c");
     check_not_matches<g1>("a");
     check_not_matches<g1>("b");
+    check_not_matches<g1>("");
 }
 
 void testX()
@@ -344,6 +345,39 @@ void testX()
     // auto g1 =  fp::make_lexer<seq<NonZeroDigit, optional<Digits>>>();
 }
 
+void testComment()
+{
+    using namespace feiparser;
+    using NotStar = notch<'*'>;
+    using NotSlash = notch<'/'>;
+    using NotStarNotSlash = notch<'*','/'>;
+    using InputCharacter = notch<'\n','\r'>;
+    
+    using CommentBody = star<alt<NotStar, seq<plus<ch<'*'>>, NotStarNotSlash>>>;
+    using TraditionalComment = seq<ch<'/'>, ch<'*'>, CommentBody, ch<'*'>, star<ch<'*'>>, ch<'/'>>;
+    
+    check_matches<TraditionalComment>("/*abc*/");
+    check_matches<TraditionalComment>("/**/");
+    check_matches<TraditionalComment>("/***/");
+    check_matches<TraditionalComment>("/* **/");
+    check_matches<TraditionalComment>("/* *** */");
+
+    StateGraph g{TraditionalComment()};
+    std::cout << g;
+    
+    using CommentChar = alt<NotStar, seq<plus<ch<'*'>>, NotStarNotSlash>>;
+    check_not_matches<star<ch<'a'>>>("b");
+    check_not_matches<CommentChar>("*/");
+    check_not_matches<CommentBody>("*/");
+
+    check_not_matches<TraditionalComment>("/**/ ");
+    check_not_matches<TraditionalComment>("/*abc*/ ");
+    check_not_matches<TraditionalComment>("/* ... */ /* ... */");
+    check_not_matches<TraditionalComment>("/***/ ");
+    check_not_matches<TraditionalComment>("/* **/ ");
+    check_not_matches<TraditionalComment>("/* *** */ ");
+}
+
 int main()
 {
     testAny();
@@ -356,4 +390,5 @@ int main()
     testNotCh();
     viewStateGraph();
     testLexer();
+    testComment();
 }

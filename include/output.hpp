@@ -14,6 +14,18 @@ namespace feiparser
     }
 
     template<int Ch>
+    std::ostream & operator<<(std::ostream & os, notch<Ch>)
+    {
+        return os << "notch<'" << char(Ch) << "'>";
+    }
+
+    template<int Ch, int C2, int... Chs>
+    std::ostream & operator<<(std::ostream & os, notch<Ch, C2, Chs...>)
+    {
+        return os << "notch<'" << char(Ch) << "," << notch<C2, Chs...>() << "'>";
+    }
+
+    template<int Ch>
     std::ostream & operator<<(std::ostream & os, string<Ch>)
     {
         return os << "ch<'" << char(Ch) << "'>";
@@ -51,6 +63,18 @@ namespace feiparser
     std::ostream & operator<<(std::ostream & os, star<R>)
     {
         return os << "star<" << R() << ">";
+    }
+
+    template<int Ch1, int Ch2>
+    std::ostream & operator<<(std::ostream & os, chrange<Ch1, Ch2>)
+    {
+        return os << "chrange<'" << (char)Ch1 << "','" << (char)Ch2 << ">";
+    }
+
+    template<int Token, typename Rule>
+    std::ostream & operator<<(std::ostream & os, token<Token,Rule>)
+    {
+        return os << "token<'" << Token << "," << Rule() << ">";
     }
 
     template<typename It>

@@ -11,7 +11,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include_directories(include)
 
 add_executable(tests tests/main.cpp include/next.hpp include/normalize.hpp include/lexer.hpp include/lex.hpp)
-add_executable(javabench tests/javabench/javabench.cpp tests/javabench/java.cpp)
+add_executable(javabench tests/javabench/javabench.cpp tests/javabench/javalexer.cpp tests/javabench/java.hpp)
 
 add_test(NAME maintests COMMAND tests)
 add_test(NAME javaparse COMMAND javabench ${CMAKE_CURRENT_SOURCE_DIR}/data/AllInOne8.java)

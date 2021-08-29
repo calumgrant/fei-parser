@@ -54,7 +54,7 @@ namespace feiparser
     template<typename T1, typename T2>
     struct accepts<seq<T1,T2>>
     {
-        static const bool value = accepts<T1>::value;
+        static const bool value = accepts<T1>::value && accepts<T2>::value;
         static const int token = accepts<T2>::value && accepts<T2>::token < accepts<T1>::token ? accepts<T2>::token : accepts<T1>::token;
     };
 

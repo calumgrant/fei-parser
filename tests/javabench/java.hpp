@@ -31,6 +31,8 @@ enum JavaTokens
     HexadecimalFloatingPointLiteral,
     CharaterLiteral,
     StringLiteral,
+    BooleanLiteral,
+    NullLiteral,
     OpenParen,
     CloseParen,
     OpenBrace,

@@ -123,8 +123,8 @@ int main(int argc, char**argv)
                 auto p = javalexer.tokenize(contents.data(), contents.data() + contents.size());
                 while(p.lex())
                 {
-                    //if(p.token() == Char)
-                    //    std::cout << p;
+                    if(p.token() == 1000)
+                        std::cout << p;
                     ++number_of_tokens;
                 }
             }

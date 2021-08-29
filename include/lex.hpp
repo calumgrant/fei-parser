@@ -3,6 +3,12 @@
 #include "accepts.hpp"
 #include "next.hpp"
 
+#if VERBOSE_LEXER
+#include <iostream>
+#include "output.hpp"
+#endif
+
+
 namespace feiparser
 {
 
@@ -34,12 +40,18 @@ namespace feiparser
     void lex1(It & current, It end, int & token, It & matchEnd)
     {
         using S = typename normalize<Rule>::type;
-
+        
         if(accepts<S>::value)
         {
             token = accepts<S>::token;
             matchEnd = current;
         }
+
+#if VERBOSE_LEXER
+        if(accepts<S>::value)
+            std::cout << "accepts - ";
+        std::cout << Rule() << std::endl;
+#endif
 
         if(rejects<S>::value || current == end)
         {
@@ -90,7 +102,8 @@ namespace feiparser
     {
         It me;
         int token = NoMatch;
-        lex1<Rule>(current, end, token, me);
+        using S = typename normalize<Rule>::type;
+        lex1<S>(current, end, token, me);
         if(token != NoMatch)
             current = me; // Backtrack to result
         return token;
@@ -99,6 +112,7 @@ namespace feiparser
     template<typename Rule, typename It=const char*>
     auto make_lexer()
     {
-        return lexer<It>(&lex<Rule>);
+        using S = typename normalize<Rule>::type;
+        return lexer<It>(&lex<S>);
     }
 }
