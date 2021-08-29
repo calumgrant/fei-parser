@@ -88,13 +88,40 @@ using DigitsAndUnderscores = plus<DigitOrUnderscore>;
 using Digits = alt<Digit, seq<Digit, optional<DigitsAndUnderscores>, Digit>>;
 using DecimalNumeral = alt<ch<'0'>, seq<NonZeroDigit, optional<Digits>>, seq<NonZeroDigit, Underscores, Digits>>;
 
-using DecimalIntegerLiteralT = seq<DecimalNumeral, optional<IntegerTypeSuffix>>;
+using DecimalIntegerLiteralToken = seq<DecimalNumeral, optional<IntegerTypeSuffix>>;
 
-using BooleanLiteralT = alt<string<'t','r','u','e'>, string<'f','a','l','s','e'>>;
+using HexDigitsAndUnderscores = plus<alt<HexDigit, ch<'_'>>>;
+using HexDigits = alt<HexDigit, seq<HexDigit, HexDigitsAndUnderscores, HexDigit>>;
+using HexNumeral = seq<ch<'0'>, chalt<'x','X'>, HexDigits>;
 
-using NullLiteralT = string <'n','u','l','l'>;
+using HexIntegerLiteral = seq<HexNumeral, optional<IntegerTypeSuffix>>;
+using HexIntegerLiteralToken = token<JavaParser::HexIntegerLiteral, ::HexIntegerLiteral>;
+
+using OctalDigit = chrange<'0','7'>;
+using OctalDigitOrUnderscore = alt<OctalDigit, ch<'_'>>;
+using OctalDigitsAndUnderscores = plus<OctalDigitOrUnderscore>;
+using OctalDigits = alt<OctalDigit, seq<OctalDigit, optional<OctalDigitsAndUnderscores>, OctalDigit>>;
+using OctalNumeral = seq<ch<'0'>, optional<Underscores>, OctalDigits>;
+using OctalIntegerLiteralToken = token<OctalIntegerLiteral, seq<OctalNumeral, optional<IntegerTypeSuffix>>>;
+
+using BinaryDigit = chalt<'0', '1'>;
+using BinaryDigitOrUnderscore = alt<BinaryDigit, ch<'_'>>;
+using BinaryDigitsAndUnderscores = plus<BinaryDigitOrUnderscore>;
+using BinaryDigits = alt<BinaryDigit, seq<BinaryDigit, optional<BinaryDigitsAndUnderscores>, BinaryDigit>>;
+using BinaryNumeral = seq<ch<'0'>, chalt<'b','B'>, BinaryDigits>;
+using BinaryIntegerLiteralToken = token<BinaryIntegerLiteral, seq<BinaryNumeral, optional<IntegerTypeSuffix>>>;
+
+using IntegerLiteralToken = alt<
+    DecimalIntegerLiteralToken, HexIntegerLiteralToken, OctalIntegerLiteralToken, BinaryIntegerLiteralToken>;
 
 
+using BooleanLiteralToken = alt<string<'t','r','u','e'>, string<'f','a','l','s','e'>>;
+
+using NullLiteralToken = string <'n','u','l','l'>;
+
+using LiteralToken = alt<BooleanLiteralToken, NullLiteralToken, IntegerLiteralToken
+    // TODO
+    >;
 
 using SymbolToken = alt<
     token<OpenBrace, ch<'{'>>,
@@ -115,12 +142,7 @@ using java = alt<
     WhiteSpaceToken,
     SymbolToken,
     IdentifierToken,
-
-
-
-    token<DecimalIntegerLiteral, DecimalIntegerLiteralT>,
-    token<BooleanLiteral, BooleanLiteralT>,
-    token<NullLiteral, NullLiteralT>
+    LiteralToken
     >;
 
 auto JavaParser::lexer = make_lexer<java>();
