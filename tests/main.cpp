@@ -354,16 +354,13 @@ void testComment()
     using InputCharacter = notch<'\n','\r'>;
     
     using CommentBody = star<alt<NotStar, seq<plus<ch<'*'>>, NotStarNotSlash>>>;
-    using TraditionalComment = seq<ch<'/'>, ch<'*'>, CommentBody, ch<'*'>, star<ch<'*'>>, ch<'/'>>;
+    using TraditionalComment = seq<ch<'/'>, ch<'*'>, CommentBody, plus<ch<'*'>>, ch<'/'>>;
     
     check_matches<TraditionalComment>("/*abc*/");
     check_matches<TraditionalComment>("/**/");
     check_matches<TraditionalComment>("/***/");
     check_matches<TraditionalComment>("/* **/");
     check_matches<TraditionalComment>("/* *** */");
-
-    StateGraph g{TraditionalComment()};
-    std::cout << g;
     
     using CommentChar = alt<NotStar, seq<plus<ch<'*'>>, NotStarNotSlash>>;
     check_not_matches<star<ch<'a'>>>("b");

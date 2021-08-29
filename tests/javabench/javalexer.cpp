@@ -13,6 +13,7 @@
 #include "feiparser.hpp"
 
 using namespace feiparser;
+using namespace JavaParser;
 
 using digit = chrange<'0','9'>;
 using digits = plus<digit>;
@@ -54,23 +55,18 @@ using WhiteSpaceToken = whitespace<plus<WhiteSpace>>;
 using NotStar = notch<'*'>;
 using NotStarNotSlash  = notch<'*','/'>;
 using InputCharacter = notch<'\n','\r'>;
-
-/*
-// Need to rewrite the grammar.
-// Morally was this:
-// using CommentTailStar = alt<ch<'/', seq<ch<'*'>, CommentTailStar>
-// using CommentTail = alt<seq<NotStar, CommentTail>, seq<ch<'*'>, CommentTailStar>;
-
-*/
-
 using CommentBody = star<alt<NotStar, seq<plus<ch<'*'>>, NotStarNotSlash>>>;
-using TraditionalComment = seq<ch<'/'>, ch<'*'>, CommentBody>; // , ch<'*'>, ch<'/'>>;
-
-
+using TraditionalComment = seq<ch<'/'>, ch<'*'>, CommentBody, plus<ch<'*'>>, ch<'/'>>;
 using EndOfLineComment = seq<ch<'/'>, ch<'/'>, star<InputCharacter>>;
 using Comment = alt<TraditionalComment, EndOfLineComment>;
 using CommentToken = whitespace<Comment>;
-// using CommentToken = token<1000, TraditionalComment>;
+
+// 3.8 Identifiers
+
+using JavaLetter = alt<utf8, alpha, ch<'$'>, ch<'_'>>;
+using JavaLetterOrDigit = alt<JavaLetter, digit>;
+using IdentifierChars = seq<JavaLetter, star<JavaLetterOrDigit>>;
+using IdentifierToken = token<Identifier, IdentifierChars>;
 
 using IntegerTypeSuffix = chalt<'l','L'>;
 using NonZeroDigit = chrange<'1','9'>;
@@ -112,16 +108,12 @@ using SymbolToken = alt<
 
 using java = alt<
     token<100, digits>,
-    token<Identifier, seq<alpha, star<alnum>>>,
     CommentToken,
     WhiteSpaceToken,
-    //whitespace<comment>,
-    // whitespace<plus<chalt<' ','\n','\r','\t','\f'>>>,
-
-    // TODO: Other keywords
     KeywordToken,
     WhiteSpaceToken,
     SymbolToken,
+    IdentifierToken,
 
 
 
@@ -130,4 +122,4 @@ using java = alt<
     token<NullLiteral, NullLiteralT>
     >;
 
-auto javalexer = make_lexer<java>();
+auto JavaParser::lexer = make_lexer<java>();

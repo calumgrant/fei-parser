@@ -41,7 +41,7 @@ public:
     }
 
     std::vector<std::string> files;
-    std::size_t totalSize;
+    std::size_t totalSize = 0;
 private:
 
     void TryAdd(const std::filesystem::directory_entry & entry)
@@ -120,7 +120,7 @@ int main(int argc, char**argv)
             }
             else
             {
-                auto p = javalexer.tokenize(contents.data(), contents.data() + contents.size());
+                auto p = JavaParser::lexer.tokenize(contents.data(), contents.data() + contents.size());
                 while(p.lex())
                 {
                     if(p.token() == 1000)
@@ -141,7 +141,7 @@ int main(int argc, char**argv)
         return 1;
     }
 
-    assert(javalexer.regex_match("a"));
+    assert(JavaParser::lexer.regex_match("a"));
 
     auto t2 = std::chrono::high_resolution_clock::now();
     auto time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
