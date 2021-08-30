@@ -10,7 +10,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include_directories(include)
 
-add_executable(tests tests/main.cpp include/next.hpp include/normalize.hpp include/lexer.hpp include/lex.hpp)
+add_executable(tests tests/main.cpp 
+    include/accepts.hpp include/charclasses.hpp include/feiparser.hpp include/lex.hpp include/lexer.hpp
+    include/next.hpp include/node.hpp include/normalize.hpp include/output.hpp include/regex.hpp
+    include/rules.hpp include/tree.hpp include/unicode.hpp
+    )
 add_executable(javabench tests/javabench/javabench.cpp tests/javabench/javalexer.cpp tests/javabench/java.hpp)
 
 add_test(NAME maintests COMMAND tests)

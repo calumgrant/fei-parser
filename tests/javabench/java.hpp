@@ -32,7 +32,7 @@ namespace JavaParser
         BinaryIntegerLiteral,
         DecimalFloatingPointLiteral,
         HexadecimalFloatingPointLiteral,
-        CharaterLiteral,
+        CharacterLiteral,
         StringLiteral,
         BooleanLiteral,
         NullLiteral,

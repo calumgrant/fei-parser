@@ -144,9 +144,49 @@ using FloatingPointLiteralToken = alt<
     token<JavaParser::DecimalFloatingPointLiteral, ::DecimalFloatingPointLiteral>,
     token<JavaParser::HexadecimalFloatingPointLiteral, ::HexadecimalFloatingPointLiteral>>;
 
-// 3.10.3
+// 3.10.3 Boolean Literals
 
 using BooleanLiteralToken = alt<string<'t','r','u','e'>, string<'f','a','l','s','e'>>;
+
+// 3.10.4 Charactar Literals
+
+using SingleCharacter = notch<'\r', '\n', '\'', '\\'>;
+
+using ZeroToThree = chrange<'0', '3'>;
+
+using OctalEscape = alt<
+    seq<ch<'\\'>, OctalDigit>,
+    seq<ch<'\\'>, OctalDigit, OctalDigit>,
+    seq<ch<'\\'>, ZeroToThree, OctalDigit, OctalDigit>
+    >;
+
+using EscapeSequence = alt<
+    UnicodeEscape, // Standards violation as this should be done by the preprocessor
+    string<'\\', 'b'>,
+    string<'\\', 't'>,
+    string<'\\', 'n'>,
+    string<'\\', 'f'>,
+    string<'\\', 'r'>,
+    string<'\\', '\"'>,
+    string<'\\', '\''>,
+    OctalEscape
+    >;
+
+using CharacterLiteral = alt<
+    seq<ch<'\''>, SingleCharacter, ch<'\''>>,
+    seq<ch<'\''>, EscapeSequence, ch<'\''>>
+    >;
+using CharacterLiteralToken = token<JavaParser::CharacterLiteral, ::CharacterLiteral>;
+
+// 3.10.5 String Literals
+
+using StringCharacter = alt<
+    notch<'\r', '\n', '\"', '\\'>,
+    EscapeSequence
+    >;
+
+using StringLiteral = seq<ch<'\"'>, star<StringCharacter>, ch<'\"'>>;
+using StringLiteralToken = token<JavaParser::StringLiteral, ::StringLiteral>;
 
 // 3.10.7 The null literal
 
@@ -156,8 +196,9 @@ using LiteralToken = alt<
     BooleanLiteralToken,
     NullLiteralToken,
     IntegerLiteralToken,
-    FloatingPointLiteralToken
-    // TODO
+    FloatingPointLiteralToken,
+    CharacterLiteralToken,
+    StringLiteralToken
     >;
 
 using SymbolToken = alt<
