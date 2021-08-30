@@ -41,6 +41,7 @@ using CommentToken = whitespace<Comment>;
 
 // 3.8 Identifiers
 
+// Incorrect here as utf8 should be preprocessed
 using JavaLetter = alt<utf8, alpha, ch<'$'>, ch<'_'>>;
 using JavaLetterOrDigit = alt<JavaLetter, digit>;
 using IdentifierChars = seq<JavaLetter, star<JavaLetterOrDigit>>;
@@ -71,8 +72,36 @@ using KeywordToken = alt<
     token<Finally, string<'f','i','n','a','l','l','y'>>,
     token<Float, string<'f','l','o','a','t'>>,
 
-// TODO!!
+    token<For, string<'f','o','r'>>,
+    token<If, string<'i','f'>>,
+    token<Goto, string<'g','o','t','o'>>,
+    token<Implements, string<'i','m','p','l','e','m','e','n','t','s'>>,
+    token<Import, string<'i','m','p','o','r','t'>>,
+    token<Instanceof, string<'i','n','s','t','a','n','c','e','o','f'>>,
+    token<Int, string<'i','n','t'>>,
+    token<Interface, string<'i','n','t','e','r','f','a','c','e'>>,
+    token<Long, string<'l','o','n','g'>>,
+    token<Native, string<'n','a','t','i','v','e'>>,
 
+    token<New, string<'n','e','w'>>,
+    token<Package, string<'p','a','c','k','a','g','e'>>,
+    token<Private, string<'p','r','i','v','a','t','e'>>,
+    token<Protected, string<'p','r','o','t','e','c','t','e','d'>>,
+    token<Public, string<'p','u','b','l','i','c'>>,
+    token<Return, string<'r','e','t','u','r','n'>>,
+    token<Short, string<'s','h','o','r','t'>>,
+    token<Static, string<'s','t','a','t','i','c'>>,
+    token<Strictfp, string<'s','t','r','i','c','t','f','p'>>,
+    token<Super, string<'s','u','p','e','r'>>,
+
+    token<Switch, string<'s','w','i','t','c','h'>>,
+    token<Synchronized, string<'s','y','n','c','h','r','o','n','i','z','e','d'>>,
+    token<This, string<'t','h','i','s'>>,
+    token<Throw, string<'t','h','r','o','w'>>,
+    token<Transient, string<'t','r','a','n','s','i','e','n','t'>>,
+    token<Try, string<'t','r','y'>>,
+    token<Void, string<'v','o','i','d'>>,
+    token<Volatile, string<'v','o','l','a','t','i','l','e'>>,
     token<While, string<'w','h','i','l','e'>>
 >;
 
@@ -201,13 +230,21 @@ using LiteralToken = alt<
     StringLiteralToken
     >;
 
-using SymbolToken = alt<
-    token<OpenBrace, ch<'{'>>,
-    token<CloseBrace, ch<'}'>>,
+// 3.11 Separators
+
+using SeparatorToken = alt<
     token<OpenParen, ch<'('>>,
     token<CloseParen, ch<')'>>,
+    token<OpenBrace, ch<'{'>>,
+    token<CloseBrace, ch<'}'>>,
     token<Comma, ch<','>>,
-    token<Dot, ch<'.'>>,
+    token<Dot, ch<'.'>>
+    // TODO
+>;
+
+// 3.12 Operators
+
+using OperatorToken = alt<
     token<Lt, ch<'<'>>,
     token<Gt, ch<'>'>>
     // TODO
@@ -218,9 +255,10 @@ using java = alt<
     WhiteSpaceToken,
     KeywordToken,
     WhiteSpaceToken,
-    SymbolToken,
     IdentifierToken,
-    LiteralToken
+    LiteralToken,
+    SeparatorToken,
+    OperatorToken
     >;
 
 auto JavaParser::lexer = make_lexer<java>();
