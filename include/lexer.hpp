@@ -1,12 +1,13 @@
 #pragma once
 #include <utility>
+#include "linecounter.hpp"
 
 namespace feiparser
 {
     static const int Match = -1;
     static const int NoMatch = -2;
     static const int Whitespace = -3;
-
+    static const int EndOfStream = -4;
 
     template<typename It>
     class token_stream
@@ -90,5 +91,5 @@ namespace feiparser
         LexerFn fn;
     };
 
-    typedef lexer<const char*> char_lexer;
+    typedef lexer<linecounter<const char*>> char_lexer;
 }

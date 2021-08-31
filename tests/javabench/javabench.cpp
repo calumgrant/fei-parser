@@ -123,10 +123,10 @@ int main(int argc, char**argv)
                 auto stream = JavaParser::lexer.tokenize(contents.data(), contents.data() + contents.size());
                 while(stream.lex_including_whitespace())
                 {
-                    const bool show_errors = false;
+                    const bool show_errors = true;
                     if(show_errors && stream.token() <0 && stream.token() != feiparser::Whitespace)
                     {
-                        std::cout << "Lexer error in " << p << ": " << stream << std::endl;
+                        std::cout << "Lexer error in " << p << ":" << stream.begin().row << ": " << stream << std::endl;
                     }
                     if(stream.token()>=0)
                         ++number_of_tokens;
@@ -144,8 +144,6 @@ int main(int argc, char**argv)
         std::cerr << "Unrecognised mode - must be one of: find, read, tokenize or parse\n";
         return 1;
     }
-
-    // assert(JavaParser::lexer.regex_match("a"));
 
     auto t2 = std::chrono::high_resolution_clock::now();
     auto time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);

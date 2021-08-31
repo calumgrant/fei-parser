@@ -100,7 +100,9 @@ namespace feiparser
     template<typename Rule, typename It>
     int lex(It & current, It end)
     {
-        It me;
+        if(current == end) return EndOfStream;
+
+        It me = end;
         int token = NoMatch;
         using S = typename normalize<Rule>::type;
         lex1<S>(current, end, token, me);
@@ -128,7 +130,7 @@ namespace feiparser
         static const bool value = is_valid_lexer<Rule1>::value && is_valid_lexer<Rule2>::value;
     };
 
-    template<typename Rule, typename It=const char*>
+    template<typename Rule, typename It=linecounter<const char*>>
     auto make_lexer()
     {
         using S = typename normalize<Rule>::type;

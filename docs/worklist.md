@@ -1,8 +1,5 @@
 
-- Tokenizer
-- Java
-  - char literals
-  - string literals
+
 
 - Remember to reserve space in vectors, e.g. for the parse tree
 
