@@ -1,4 +1,5 @@
 #include "lexer.hpp"
+#include "parser.hpp"
 
 namespace JavaParser
 {
@@ -115,4 +116,5 @@ namespace JavaParser
     };
 
     extern feiparser::char_lexer lexer;
+    extern feiparser::char_parser parser;
 }

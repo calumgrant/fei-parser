@@ -6,7 +6,10 @@
    - This would allow the user to use a supplied grammar without breaking it.
    - Have a datatype on each parse node.
 
-- Avoid infinite recursion
+- Avoid infinite stack depths
+
+- Reporting syntax errors
+- Error recovery
 
 ```
 template<typename Rule>

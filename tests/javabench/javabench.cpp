@@ -111,6 +111,7 @@ int main(int argc, char**argv)
         std::vector<char> contents;
 
         std::size_t number_of_tokens = 0;
+        std::size_t number_of_lexer_errors = 0;
 
         for(auto & p : list.files)
         {
@@ -126,6 +127,7 @@ int main(int argc, char**argv)
                     const bool show_errors = true;
                     if(show_errors && stream.token() <0 && stream.token() != feiparser::Whitespace)
                     {
+                        ++number_of_lexer_errors;
                         std::cout << "Lexer error in " << p << ":" << stream.begin().row << ": " << stream << std::endl;
                     }
                     if(stream.token()>=0)

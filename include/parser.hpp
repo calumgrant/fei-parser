@@ -1,26 +1,32 @@
 #pragma once
 
+#include "tree.hpp"
+
 namespace feiparser
 {
-    template<typename Lexer>
-    class LRParser
+    template<typename It>
+    class parser
     {
-        Lexer lexer;
+    public:
+        typedef void (*ParseFn)(It start, It end, tree & output);
 
-        typedef void(*ParseFn)(LRParser&);
-        std::vector<ParseFn> states;
+        parser(ParseFn fn) : fn(fn) {}
+
+        void parse(It start, It end, tree & output) const
+        {
+            fn(start, end, output);
+        }
+
+        tree parse(It start, It end) const
+        {
+            tree tree;
+            parse(start, end, tree);
+            return std::move(tree);
+        }
+
+    private:
+        ParseFn fn;
     };
 
-    template<typename ParseState>
-    void parse()
-    {
-    }
-
-    template<typename It, typename Rule>
-    struct parser
-    {
-
-        // Need stacks for stuff...
-
-    };
+    typedef parser<const char*> char_parser;
 }
