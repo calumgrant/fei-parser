@@ -74,7 +74,7 @@ namespace feiparser
     template<int Token, typename Rule>
     std::ostream & operator<<(std::ostream & os, token<Token,Rule>)
     {
-        return os << "token<'" << Token << "," << Rule() << ">";
+        return os << "token<" << Token << "," << Rule() << ">";
     }
 
     template<typename It>

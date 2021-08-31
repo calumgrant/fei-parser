@@ -255,7 +255,6 @@ namespace feiparser
         typedef typename normalize<T>::type type;
     };
 
-
     template<typename T2>
     struct normalize<alt<empty,alt<empty,T2>>>
     {
@@ -320,6 +319,12 @@ namespace feiparser
     struct normalize<token<Tok, R>>
     {
         typedef token<Tok, typename normalize<R>::type> type;
+    };
+
+    template<int Tok>
+    struct normalize<token<Tok, reject>>
+    {
+        typedef reject type;
     };
 
     template<char...Chs>

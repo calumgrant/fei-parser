@@ -250,7 +250,18 @@ using OperatorToken = alt<
     // TODO
 >;
 
-using java = alt<
+using javasmall = alt<
+    // CommentToken,
+    //WhiteSpaceToken,
+    KeywordToken,
+    //WhiteSpaceToken,
+    //IdentifierToken,
+    //LiteralToken,
+    SeparatorToken,
+    OperatorToken
+    >;
+
+using javafull = alt<
     CommentToken,
     WhiteSpaceToken,
     KeywordToken,
@@ -261,4 +272,5 @@ using java = alt<
     OperatorToken
     >;
 
-auto JavaParser::lexer = make_lexer<java>();
+
+auto JavaParser::lexer = make_lexer<javafull>();

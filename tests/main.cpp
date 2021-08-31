@@ -148,7 +148,7 @@ class StateGraph
 
 public:
     template<typename Rule>
-    explicit StateGraph(Rule r)
+    explicit StateGraph(Rule r, bool label) : labelEdges(label)
     {
         using S = typename fp::normalize<Rule>::type;
         std::stringstream ss;
@@ -156,6 +156,7 @@ public:
         initialState = ss.str();
         AddState(S());
     }
+    
 
     std::string initialState;
     std::set<std::string> states;
@@ -163,6 +164,7 @@ public:
     std::set<std::pair<std::string, std::string>> transitions2;
 
 private:
+    bool labelEdges;
 
     template<typename Rule, int I=0>
     struct AddTransitions
@@ -186,6 +188,8 @@ private:
     template<typename Rule>
     void AddState(Rule r)
     {
+        if(fp::rejects<Rule>::value) return;
+
         std::stringstream ss;
         ss << r;
         
@@ -200,6 +204,12 @@ private:
     {
         // Do not add the reject state
     }
+    
+    template<int Ch>
+    void AddState(fp::token<Ch, fp::reject>)
+    {
+        
+    }
 
     template<typename R1>
     void AddTransition(R1 r1, fp::reject r2, int Ch)
@@ -210,9 +220,19 @@ private:
     template<typename R1, typename R2>
     void AddTransition(R1 r1, R2 r2, int Ch)
     {
+        if(fp::rejects<R2>::value) return;
+        
         std::stringstream ss1, ss2;
         ss1 << r1;
-        //ss2 << '-' << char(Ch) << "-> ";
+        if(labelEdges)
+        {
+            ss2 << "-";
+            if(std::isprint(Ch))
+                ss2 << '\'' << char(Ch) << '\'';
+            else
+                ss2 << "'\\" << Ch << '\'';
+            ss2 << "-> ";
+        }
         ss2 << r2;
 
         auto p = std::make_pair(ss1.str(), ss2.str());
@@ -258,14 +278,14 @@ void viewStateGraph()
     std::cout << r3() << std::endl;
     std::cout << n3() << std::endl;
 
-    StateGraph g1 {n3()};
+    StateGraph g1 {n3(), true};
     std::cout << g1 << std::endl;
 
-    StateGraph g2 {fp::star<fp::string<'a','b'>>()};
+    StateGraph g2 {fp::star<fp::string<'a','b'>>(), true};
     std::cout << g2 << std::endl;
 
     using r4 = fp::plus<fp::seq<fp::ch<'a'>,fp::optional<fp::ch<'b'>>>>;
-    StateGraph g3 {r4()};
+    StateGraph g3 {r4(), true};
     std::cout << g3 << std::endl;
 
     check_matches<r4>("a");
@@ -375,6 +395,126 @@ void testComment()
     check_not_matches<TraditionalComment>("/* *** */ ");
 }
 
+
+void testKeywords()
+{
+    enum Tokens
+    {
+        Abstract,
+        Assert,
+        Boolean,
+        Break,
+        Byte,
+        Case,
+        Catch,
+        Char,
+        Class,
+        Const,
+        Continue,
+        Default,
+        Do,
+        Double,
+        Else,
+        Enum,
+        Extends,
+        Final,
+        Finally,
+        Float,
+        For,
+        If,
+        Goto,
+        Implements,
+        Import,
+        Instanceof,
+        Int,
+        Interface,
+        Long,
+        Native,
+        New,
+        Package,
+        Private,
+        Protected,
+        Public,
+        Return,
+        Short,
+        Static,
+        Strictfp,
+        Super,
+        Switch,
+        Synchronized,
+        This,
+        Throw,
+        Transient,
+        Try,
+        Void,
+        Volatile,
+        While
+    };
+
+    using namespace feiparser;
+
+    using KeywordToken = alt<
+    /*
+        token<Abstract, string<'a', 'b','s','t','r','a','c','t'>>,
+        token<Assert, string<'a','s','s','e','r','t'>>,
+        token<Boolean, string<'b','o','o','l','e','a','n'>>,
+        token<Break, string<'b','r','e','a','k'>>,
+        token<Byte, string<'b','y','t','e'>>,
+        token<Case, string<'c','a','s','e'>>,
+        token<Catch, string<'c','a','t','c','h'>>,
+        token<Char, string<'c','h','a','r'>>,
+        token<Class, string<'c','l','a','s','s'>>,
+        token<Const, string<'c','o','n','s','t'>>,
+
+        token<Continue, string<'c','o','n','t','i','n','u','e'>>,
+        token<Default, string<'d','e','f','a','u','l','t'>>,
+        token<Do, string<'d','o'>>,
+        token<Double, string<'d','o','u','b','l','e'>>,
+        token<Else, string<'e','l','s','e'>>,
+        token<Enum, string<'e','n','u','m'>>,
+        token<Extends, string<'e','x','t','e','n','d','s'>>,
+        token<Final, string<'f','i','n','a','l'>>,
+        token<Finally, string<'f','i','n','a','l','l','y'>>,
+        token<Float, string<'f','l','o','a','t'>>,
+
+        token<For, string<'f','o','r'>>,
+        token<If, string<'i','f'>>,
+        token<Goto, string<'g','o','t','o'>>,
+        token<Implements, string<'i','m','p','l','e','m','e','n','t','s'>>,
+        token<Import, string<'i','m','p','o','r','t'>>,
+        token<Instanceof, string<'i','n','s','t','a','n','c','e','o','f'>>,
+        token<Int, string<'i','n','t'>>,
+        token<Interface, string<'i','n','t','e','r','f','a','c','e'>>,
+        token<Long, string<'l','o','n','g'>>,
+        token<Native, string<'n','a','t','i','v','e'>>,
+
+        token<New, string<'n','e','w'>>,
+        token<Package, string<'p','a','c','k','a','g','e'>>,
+        token<Private, string<'p','r','i','v','a','t','e'>>,
+        token<Protected, string<'p','r','o','t','e','c','t','e','d'>>,
+        token<Public, string<'p','u','b','l','i','c'>>,
+        token<Return, string<'r','e','t','u','r','n'>>,
+        token<Short, string<'s','h','o','r','t'>>,
+        token<Static, string<'s','t','a','t','i','c'>>,
+        token<Strictfp, string<'s','t','r','i','c','t','f','p'>>,
+        token<Super, string<'s','u','p','e','r'>>,
+
+        token<Switch, string<'s','w','i','t','c','h'>>,
+        token<Synchronized, string<'s','y','n','c','h','r','o','n','i','z','e','d'>>,
+        token<This, string<'t','h','i','s'>>,
+        token<Throw, string<'t','h','r','o','w'>>,
+        token<Transient, string<'t','r','a','n','s','i','e','n','t'>>,
+        token<Try, string<'t','r','y'>>,
+        token<Void, string<'v','o','i','d'>>,
+    */
+        token<Volatile, string<'v','o','l','a','t','i','l'>>,
+        token<While, string<'w','h','i','l','e'>>
+    >;    
+
+    // StateGraph{KeywordToken(), true};
+    //  std::cout << sg;
+}
+
 int main()
 {
     testAny();
@@ -388,4 +528,5 @@ int main()
     viewStateGraph();
     testLexer();
     testComment();
+    testKeywords();
 }
