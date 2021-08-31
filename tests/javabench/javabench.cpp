@@ -128,7 +128,8 @@ int main(int argc, char**argv)
                     {
                         std::cout << "Lexer error in " << p << ": " << stream << std::endl;
                     }
-                    ++number_of_tokens;
+                    if(stream.token()>=0)
+                        ++number_of_tokens;
                 }
             }
         }
