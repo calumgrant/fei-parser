@@ -224,7 +224,17 @@ using StringCharacter = alt<
     EscapeSequence
     >;
 
-using StringLiteral = seq<ch<'\"'>, star<StringCharacter>, ch<'\"'>>;
+using StringBlockTerminator = string<'\"','\"','\"'>;
+
+using TextBlockCh = 
+    seq<seq<optional<ch<'\"'>>, optional<ch<'\"'>>>, notch<'\"'>>;
+
+// Not in the standard, but a proposal needed to parse the JDK
+using TextBlock = seq<StringBlockTerminator, star<TextBlockCh>, StringBlockTerminator>;
+
+using StringLiteral = alt<
+    seq<ch<'\"'>, star<StringCharacter>, ch<'\"'>>,
+    TextBlock>;
 using StringLiteralToken = token<JavaParser::StringLiteral, ::StringLiteral>;
 
 // 3.10.7 The null literal

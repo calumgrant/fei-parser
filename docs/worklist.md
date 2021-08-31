@@ -1,9 +1,5 @@
 
-
-
 - Remember to reserve space in vectors, e.g. for the parse tree
-
-- A linecounter class
 
 
 - Have a seperate actions class - that can be compiled in as a "policy" object
