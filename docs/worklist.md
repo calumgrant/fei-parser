@@ -10,6 +10,8 @@
    - This would allow the user to use a supplied grammar without breaking it.
    - Have a datatype on each parse node.
 
+- Avoid infinite recursion
+
 ```
 template<typename Rule>
 struct action

@@ -10,6 +10,7 @@ namespace feiparser
     public:
         int row=1;
         int col=1;
+        int offset=0;
 
         linecounter(It i) : it(i)
         {
@@ -21,6 +22,7 @@ namespace feiparser
                 col=1, row++;
             else
                 col++;
+            ++offset;
             return *this;
         }
 

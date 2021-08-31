@@ -13,10 +13,10 @@ namespace feiparser
 {
 
     template<typename Rule, typename It>
-    void lex1(It & current, It end, int & token, It & matchEnd);
+    void lex1(It & current, const It & end, int & token, It & matchEnd);
 
     template<typename Rule, int Ch, typename It>
-    void lex0(It & current, It end, int & token, It & matchEnd)
+    void lex0(It & current, const It & end, int & token, It & matchEnd)
     {
         ++current;
         typedef typename normalize<Rule>::type S;
@@ -37,7 +37,7 @@ namespace feiparser
     };
 
     template<typename Rule, typename It>
-    void lex1(It & current, It end, int & token, It & matchEnd)
+    void lex1(It & current, const It & end, int & token, It & matchEnd)
     {
         using S = typename normalize<Rule>::type;
         
@@ -100,7 +100,7 @@ namespace feiparser
     template<typename Rule, typename It>
     int lex(It & current, It end)
     {
-        if(current == end) return EndOfStream;
+        //if(current == end) return EndOfStream;
 
         It me = end;
         int token = NoMatch;
