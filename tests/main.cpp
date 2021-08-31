@@ -360,7 +360,7 @@ void testX()
 
     using DecimalIntegerLiteralT = seq<DecimalNumeral, optional<IntegerTypeSuffix>>;
 
-    auto g1 =  fp::make_lexer<DecimalIntegerLiteralT>();
+    auto g1 =  fp::make_lexer<token<123, DecimalIntegerLiteralT>>();
     // auto g1 =  fp::make_lexer<seq<Underscores, Digits>>();
     // auto g1 =  fp::make_lexer<seq<NonZeroDigit, optional<Digits>>>();
 }

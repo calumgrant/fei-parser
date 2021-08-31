@@ -109,10 +109,31 @@ namespace feiparser
         return token;
     }
 
+    template<typename Rule>
+    struct is_valid_lexer
+    {
+        static const bool value = false;
+        static_assert(value, "Lexer is invalid here");
+    };
+
+    template<int Ch, typename Rule>
+    struct is_valid_lexer<token<Ch, Rule>>
+    {
+        static const bool value = true;
+    };
+
+    template<typename Rule1, typename Rule2>
+    struct is_valid_lexer<alt<Rule1, Rule2>>
+    {
+        static const bool value = is_valid_lexer<Rule1>::value && is_valid_lexer<Rule2>::value;
+    };
+
     template<typename Rule, typename It=const char*>
     auto make_lexer()
     {
         using S = typename normalize<Rule>::type;
+        static_assert(!accepts<S>::value, "Lexers cannot accept the empty token");
+        static_assert(is_valid_lexer<S>::value, "Lexer rule is invalid - must consist of only token<> and alt<>");
         return lexer<It>(&lex<S>);
     }
 }

@@ -30,6 +30,13 @@ namespace feiparser
             return true;
         }
 
+        bool lex_including_whitespace()
+        {
+            tok_start = tok_end;
+            token_value = fn(tok_end, stream_end);
+            return tok_start != tok_end;
+        }
+
         typedef It iterator;
         typedef int token_type;
         typedef std::size_t size_type;

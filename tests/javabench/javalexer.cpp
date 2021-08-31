@@ -1,15 +1,18 @@
 /*
- A lexical analyser for Java written using the fei-parser.
- 
- This is in a separate file and can be compiled seperately.
- The generated parser is the `javalexer` object.
- 
- The lexer is specified using C++ datatypes.
+    A lexical analyser for Java written using the fei-parser.
+    
+    This is in a separate file and can be compiled seperately.
+    The generated parser is the `JavaParser::lexer` object.
+    
+    The lexer is specified using C++ datatypes, and compiled using just a C++ compiler.
+
+    See the Java Language Specification Chapter 3 for the specification of the 
+    lexical analyser.
+    https://docs.oracle.com/javase/specs/jls/se8/html/jls-3.html
+
  */
 
-
 #include "java.hpp"
-
 #include "feiparser.hpp"
 
 using namespace feiparser;
@@ -103,7 +106,7 @@ using KeywordToken = alt<
     token<Void, string<'v','o','i','d'>>,
     token<Volatile, string<'v','o','l','a','t','i','l','e'>>,
     token<While, string<'w','h','i','l','e'>>
->;
+    >;
 
 // 3.10 Literals
 
@@ -118,7 +121,7 @@ using DigitsAndUnderscores = plus<DigitOrUnderscore>;
 using Digits = alt<Digit, seq<Digit, optional<DigitsAndUnderscores>, Digit>>;
 using DecimalNumeral = alt<ch<'0'>, seq<NonZeroDigit, optional<Digits>>, seq<NonZeroDigit, Underscores, Digits>>;
 
-using DecimalIntegerLiteralToken = seq<DecimalNumeral, optional<IntegerTypeSuffix>>;
+using DecimalIntegerLiteralToken = token<DecimalIntegerLiteral, seq<DecimalNumeral, optional<IntegerTypeSuffix>>>;
 
 using HexDigitsAndUnderscores = plus<alt<HexDigit, ch<'_'>>>;
 using HexDigits = alt<HexDigit, seq<HexDigit, HexDigitsAndUnderscores, HexDigit>>;
@@ -142,7 +145,11 @@ using BinaryNumeral = seq<ch<'0'>, chalt<'b','B'>, BinaryDigits>;
 using BinaryIntegerLiteralToken = token<BinaryIntegerLiteral, seq<BinaryNumeral, optional<IntegerTypeSuffix>>>;
 
 using IntegerLiteralToken = alt<
-    DecimalIntegerLiteralToken, HexIntegerLiteralToken, OctalIntegerLiteralToken, BinaryIntegerLiteralToken>;
+    DecimalIntegerLiteralToken,
+    HexIntegerLiteralToken,
+    OctalIntegerLiteralToken,
+    BinaryIntegerLiteralToken
+    >;
 
 // 3.10.2 Floating point literals
 
@@ -171,11 +178,12 @@ using HexadecimalFloatingPointLiteral = seq<HexSignificand, BinaryExponent, opti
 
 using FloatingPointLiteralToken = alt<
     token<JavaParser::DecimalFloatingPointLiteral, ::DecimalFloatingPointLiteral>,
-    token<JavaParser::HexadecimalFloatingPointLiteral, ::HexadecimalFloatingPointLiteral>>;
+    token<JavaParser::HexadecimalFloatingPointLiteral, ::HexadecimalFloatingPointLiteral>
+    >;
 
 // 3.10.3 Boolean Literals
 
-using BooleanLiteralToken = alt<string<'t','r','u','e'>, string<'f','a','l','s','e'>>;
+using BooleanLiteralToken = token<BooleanLiteral, alt<string<'t','r','u','e'>, string<'f','a','l','s','e'>>>;
 
 // 3.10.4 Charactar Literals
 
@@ -198,6 +206,7 @@ using EscapeSequence = alt<
     string<'\\', 'r'>,
     string<'\\', '\"'>,
     string<'\\', '\''>,
+    string<'\\', '\\'>,
     OctalEscape
     >;
 
@@ -205,6 +214,7 @@ using CharacterLiteral = alt<
     seq<ch<'\''>, SingleCharacter, ch<'\''>>,
     seq<ch<'\''>, EscapeSequence, ch<'\''>>
     >;
+
 using CharacterLiteralToken = token<JavaParser::CharacterLiteral, ::CharacterLiteral>;
 
 // 3.10.5 String Literals
@@ -219,7 +229,7 @@ using StringLiteralToken = token<JavaParser::StringLiteral, ::StringLiteral>;
 
 // 3.10.7 The null literal
 
-using NullLiteralToken = string <'n','u','l','l'>;
+using NullLiteralToken = token<NullLiteral, string <'n','u','l','l'>>;
 
 using LiteralToken = alt<
     BooleanLiteralToken,
@@ -237,20 +247,60 @@ using SeparatorToken = alt<
     token<CloseParen, ch<')'>>,
     token<OpenBrace, ch<'{'>>,
     token<CloseBrace, ch<'}'>>,
+    token<OpenSquare, ch<'['>>,
+    token<CloseSquare, ch<']'>>,
+    token<Semicolon, ch<';'>>,
     token<Comma, ch<','>>,
-    token<Dot, ch<'.'>>
-    // TODO
+    token<Dot, ch<'.'>>,
+    token<DotDotDot, string<'.', '.', '.'>>,
+    token<At, ch<'@'>>,
+    token<ColonColon, string<':', ':'>>
 >;
 
 // 3.12 Operators
 
 using OperatorToken = alt<
+    token<Eq, ch<'='>>,
+    token<EqEq, string<'=', '='>>,
+    token<Plus, ch<'+'>>,
+    token<PlusEq, string<'+', '='>>,
+    token<Gt, ch<'>'>>,
+    token<GtEq, string<'>', '='>>,
+    token<Minus, ch<'-'>>,
+    token<MinusEq, string<'-', '='>>,
     token<Lt, ch<'<'>>,
-    token<Gt, ch<'>'>>
-    // TODO
+    token<LtEq, string<'<','='>>,
+    token<Times, ch<'*'>>,
+    token<TimesEq, string<'*', '='>>,
+    token<Not, ch<'!'>>,
+    token<NotEq, string<'!','='>>,
+    token<Div, ch<'/'>>,
+    token<DivEq, string<'/','='>>,
+    token<Tilde, string<'~'>>,
+    token<AmpAmp, string<'&','&'>>,
+    token<Amp, ch<'&'>>,
+    token<AmpEq, string<'&','='>>,
+    token<Question, ch<'?'>>,
+    token<OrOr, string<'|','|'>>,
+    token<Or, ch<'|'>>,
+    token<OrEq, string<'|','='>>,
+    token<Colon, ch<':'>>,
+    token<PlusPlus, string<'+','+'>>,
+    token<Hat, ch<'^'>>,
+    token<HatEq, string<'^','='>>,
+    token<Arrow, string<'-','>'>>,
+    token<MinusMinus, string<'-','-'>>,
+    token<Mod, ch<'%'>>,
+    token<ModEq, string<'%','='>>,
+    token<LeftShift, string<'<','<'>>,
+    token<LeftShiftEq, string<'<','<','='>>,
+    token<RightShift, string<'>','>'>>,
+    token<RightShiftEq, string<'>','>','='>>,
+    token<RRightShift, string<'>','>','>'>>,
+    token<RRightShiftEq, string<'>','>','>','='>>
 >;
 
-using javasmall = alt<
+using javalite = alt<
     // CommentToken,
     //WhiteSpaceToken,
     KeywordToken,
@@ -261,7 +311,7 @@ using javasmall = alt<
     OperatorToken
     >;
 
-using javafull = alt<
+using JavaTokens = alt<
     CommentToken,
     WhiteSpaceToken,
     KeywordToken,
@@ -273,4 +323,4 @@ using javafull = alt<
     >;
 
 
-auto JavaParser::lexer = make_lexer<javafull>();
+auto JavaParser::lexer = make_lexer<JavaTokens>();

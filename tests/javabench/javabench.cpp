@@ -120,11 +120,14 @@ int main(int argc, char**argv)
             }
             else
             {
-                auto p = JavaParser::lexer.tokenize(contents.data(), contents.data() + contents.size());
-                while(p.lex())
+                auto stream = JavaParser::lexer.tokenize(contents.data(), contents.data() + contents.size());
+                while(stream.lex_including_whitespace())
                 {
-                    //if(p.token() == JavaParser::StringLiteral)
-                    //    std::cout << p;
+                    const bool show_errors = false;
+                    if(show_errors && stream.token() <0 && stream.token() != feiparser::Whitespace)
+                    {
+                        std::cout << "Lexer error in " << p << ": " << stream << std::endl;
+                    }
                     ++number_of_tokens;
                 }
             }
