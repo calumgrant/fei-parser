@@ -11,18 +11,32 @@
 
 namespace feiparser
 {
+    template<typename It>
+    struct lex_state
+    {
+        It current, end, matchEnd;
+        int token;
+    };
 
     template<typename Rule, typename It>
-    void lex1(It & current, const It & end, int & token, It & matchEnd);
+    void lex1(lex_state<It> & state);
+
+    template<typename Rule, int Ch>
+    struct transition
+    {
+        typedef typename normalize<Rule>::type S;
+        typedef typename next<S,Ch>::type N;
+        typedef typename normalize<N>::type type;
+    };
 
     template<typename Rule, int Ch, typename It>
-    void lex0(It & current, const It & end, int & token, It & matchEnd)
+    void lex0(lex_state<It> & state)
     {
-        ++current;
+        ++state.current;
         typedef typename normalize<Rule>::type S;
         typedef typename next<S,Ch>::type N;
         typedef typename normalize<N>::type SN;
-        return lex1<SN>(current, end, token, matchEnd);
+        return lex1<SN>(state);
     }
 
     // Move to a new file !!
@@ -37,14 +51,14 @@ namespace feiparser
     };
 
     template<typename Rule, typename It>
-    void lex1(It & current, const It & end, int & token, It & matchEnd)
+    void lex1(lex_state<It> & state)
     {
         using S = typename normalize<Rule>::type;
         
         if(accepts<S>::value)
         {
-            token = accepts<S>::token;
-            matchEnd = current;
+            state.token = accepts<S>::token;
+            state.matchEnd = state.current;
         }
 
 #if VERBOSE_LEXER
@@ -53,14 +67,14 @@ namespace feiparser
         std::cout << Rule() << std::endl;
 #endif
 
-        if(rejects<S>::value || current == end)
+        if(rejects<S>::value || state.current == state.end)
         {
             return;
         }
 
-        switch((unsigned char)*current)
+        switch((unsigned char)*state.current)
         {
-#define FP_CASE(N) case N: return lex0<S, N>(current, end, token, matchEnd);
+#define FP_CASE(N) case N: return lex0<S, N>(state);
 #define FP_CASE_BLOCK(N) FP_CASE(N) FP_CASE(N+1) FP_CASE(N+2) FP_CASE(N+3) FP_CASE(N+4) FP_CASE(N+5) FP_CASE(N+6) FP_CASE(N+7) FP_CASE(N+8) FP_CASE(N+9)
                 
                 FP_CASE_BLOCK(0)
@@ -102,13 +116,19 @@ namespace feiparser
     {
         //if(current == end) return EndOfStream;
 
-        It me = end;
-        int token = NoMatch;
+        lex_state<It> state;
+        state.current = current;
+        state.end = end;
+        state.token = NoMatch;
+        state.matchEnd = end;
+
         using S = typename normalize<Rule>::type;
-        lex1<S>(current, end, token, me);
-        if(token != NoMatch)
-            current = me; // Backtrack to result
-        return token;
+        lex1<S>(state);
+        if(state.token != NoMatch)
+            current = state.matchEnd; // Backtrack to result
+        else
+            current = state.current;
+        return state.token;
     }
 
     template<typename Rule>

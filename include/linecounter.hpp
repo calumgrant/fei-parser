@@ -11,6 +11,8 @@ namespace feiparser
     public:
         location location;
 
+        linecounter() {}
+
         linecounter(It i) : it(i)
         {
             location.row = 1;
