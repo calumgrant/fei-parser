@@ -88,12 +88,4 @@ namespace feiparser
     {
         typedef typename next<notch<Chs...>, C2>::type type;
     };
-
-    template<typename S1, int Ch>
-    struct transition
-    {
-        typedef typename normalize<S1>::type S2;
-        typedef typename next<S2, Ch>::type S3;
-        typedef typename normalize<S3>::type type;
-    };
 }

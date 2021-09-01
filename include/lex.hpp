@@ -29,16 +29,6 @@ namespace feiparser
         typedef typename normalize<N>::type type;
     };
 
-    template<typename Rule, int Ch, typename It>
-    void lex0(lex_state<It> & state)
-    {
-        ++state.current;
-        typedef typename normalize<Rule>::type S;
-        typedef typename next<S,Ch>::type N;
-        typedef typename normalize<N>::type SN;
-        return lex1<SN>(state);
-    }
-
     // Move to a new file !!
     template<typename Rule> struct rejects { static const bool value = false; };
     template<> struct rejects<reject> { static const bool value = true; };
@@ -72,9 +62,11 @@ namespace feiparser
             return;
         }
 
-        switch((unsigned char)*state.current)
+        unsigned char ch = *state.current;
+        ++state.current;
+        switch(ch)
         {
-#define FP_CASE(N) case N: return lex0<S, N>(state);
+#define FP_CASE(N) case N: return lex1<typename transition<Rule,N>::type>(state);
 #define FP_CASE_BLOCK(N) FP_CASE(N) FP_CASE(N+1) FP_CASE(N+2) FP_CASE(N+3) FP_CASE(N+4) FP_CASE(N+5) FP_CASE(N+6) FP_CASE(N+7) FP_CASE(N+8) FP_CASE(N+9)
                 
                 FP_CASE_BLOCK(0)
