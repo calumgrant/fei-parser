@@ -45,7 +45,7 @@ using CommentToken = whitespace<Comment>;
 // 3.8 Identifiers
 
 // Incorrect here as utf8 should be preprocessed
-using JavaLetter = alt<utf8, alpha, ch<'$'>, ch<'_'>>;
+using JavaLetter = alt<utf8, alpha, ch<'$'>, ch<'_'>, UnicodeEscape>;
 using JavaLetterOrDigit = alt<JavaLetter, digit>;
 using IdentifierChars = seq<JavaLetter, star<JavaLetterOrDigit>>;
 using IdentifierToken = token<Identifier, IdentifierChars>;
@@ -207,6 +207,7 @@ using EscapeSequence = alt<
     string<'\\', '\"'>,
     string<'\\', '\''>,
     string<'\\', '\\'>,
+    string<'\\', 's'>,
     OctalEscape
     >;
 
@@ -227,10 +228,10 @@ using StringCharacter = alt<
 using StringBlockTerminator = string<'\"','\"','\"'>;
 
 using TextBlockCh = 
-    seq<seq<optional<ch<'\"'>>, optional<ch<'\"'>>>, notch<'\"'>>;
+    seq<optional<ch<'\"'>>, optional<ch<'\"'>>, notch<'\"'>>;
 
 // Not in the standard, but a proposal needed to parse the JDK
-using TextBlock = seq<StringBlockTerminator, star<TextBlockCh>, StringBlockTerminator>;
+using TextBlock = seq<StringBlockTerminator, star<TextBlockCh>, optional<string<'\\','\"'>> ,StringBlockTerminator>;
 
 using StringLiteral = alt<
     seq<ch<'\"'>, star<StringCharacter>, ch<'\"'>>,

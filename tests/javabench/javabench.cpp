@@ -135,6 +135,10 @@ int main(int argc, char**argv)
                 }
             }
         }
+        if(number_of_lexer_errors>0)
+        {
+            std::cout << "Found " << number_of_lexer_errors << " lexer errors\n";
+        }
         std::cout << "Total number of tokens = " << number_of_tokens << std::endl;
     }
     else if(mode == "parse")

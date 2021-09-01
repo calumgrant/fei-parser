@@ -18,9 +18,6 @@ namespace feiparser
         int token;
     };
 
-    template<typename Rule, typename It>
-    void lex1(lex_state<It> & state);
-
     template<typename Rule, int Ch>
     struct transition
     {
