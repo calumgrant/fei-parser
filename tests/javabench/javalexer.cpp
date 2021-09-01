@@ -310,16 +310,7 @@ using OperatorToken = alt<
     token<RRightShiftEq, string<'>','>','>','='>>
 >;
 
-using javalite = alt<
-    // CommentToken,
-    //WhiteSpaceToken,
-    KeywordToken,
-    //WhiteSpaceToken,
-    //IdentifierToken,
-    //LiteralToken,
-    SeparatorToken,
-    OperatorToken
-    >;
+#if NDEBUG
 
 using JavaTokens = alt<
     CommentToken,
@@ -332,5 +323,21 @@ using JavaTokens = alt<
     OperatorToken
     >;
 
+#else
+
+// This is just to speed up compilation during development
+
+using JavaTokens = alt<
+    // CommentToken,
+    //WhiteSpaceToken,
+    KeywordToken,
+    //WhiteSpaceToken,
+    //IdentifierToken,
+    //LiteralToken,
+    SeparatorToken,
+    OperatorToken
+    >;
+
+#endif
 
 auto JavaParser::lexer = make_lexer<JavaTokens>();

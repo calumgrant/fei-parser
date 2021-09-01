@@ -4,6 +4,8 @@
 
 namespace feiparser
 {    
+
+
     class tree
     {
     public:
@@ -14,9 +16,11 @@ namespace feiparser
 
         bool empty() const { return data.empty(); }
 
-        node & shift(int tokenId, int offset, int row, int col, int length);
+        node & shift(int tokenId, location l, int length);
 
         node & reduce(int nodeId, int count);
+
+        void syntax_error(location l);
 
     protected:
         std::vector<char> data;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "location.hpp"
 #include <iterator>
 
 namespace feiparser
@@ -8,21 +9,22 @@ namespace feiparser
     class linecounter
     {
     public:
-        int row=1;
-        int col=1;
-        int offset=0;
+        location location;
 
         linecounter(It i) : it(i)
         {
+            location.row = 1;
+            location.col = 1;
+            location.offset = 1;
         }
 
         linecounter & operator++()
         {
             if(*it++ == '\n')
-                col=1, row++;
+                location.col=1, location.row++;
             else
-                col++;
-            ++offset;
+                location.col++;
+            ++location.offset;
             return *this;
         }
 

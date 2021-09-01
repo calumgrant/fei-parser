@@ -16,7 +16,7 @@ add_executable(lexertests tests/testLexer.cpp
     include/rules.hpp include/tree.hpp include/unicode.hpp
     )
 
-add_executable(parsertests tests/testParser.cpp )
+add_executable(parsertests tests/testParser.cpp)
 
 add_executable(javabench tests/javabench/javabench.cpp tests/javabench/javalexer.cpp tests/javabench/java.hpp)
 

@@ -128,7 +128,7 @@ int main(int argc, char**argv)
                     if(show_errors && stream.token() <0 && stream.token() != feiparser::Whitespace)
                     {
                         ++number_of_lexer_errors;
-                        std::cout << "Lexer error in " << p << ":" << stream.begin().row << ": " << stream << std::endl;
+                        std::cout << "Lexer error in " << p << ":" << stream.begin().location.row << ": " << stream << std::endl;
                     }
                     if(stream.token()>=0)
                         ++number_of_tokens;

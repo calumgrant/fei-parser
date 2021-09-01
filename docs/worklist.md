@@ -22,7 +22,62 @@ struct action
     }
 };
 
+- Locations: Do we want to calculate the location from the offset?
 
+
+
+
+```
+
+# Parser functions
+
+```
+template<typename It>
+class parse_state
+{
+    tree t;
+    tokens
+};
+
+template<typename State, int Lookahead>
+void parse2(token_iterator<It> & tokens, tree & output)
+{
+    // How to shift:
+    output.shift(Lookahead, tokens.location());
+    using N = next<State, Lookahead>::type;
+    tokens.lex();
+    return parse<N>(tokens, output);)
+
+    // How to reduce:
+    output.reduce(NodeId, count);
+    // Lookup the "next" state on the stack somehow...
+
+
+
+
+
+    Option 2: The call stack contains the parse tree (could overflow :-(
+
+}
+
+template<typename State>
+void parse(token_iterator<It> & tokens, tree & output)
+{
+    auto token = tokens.token();
+    switch(token)
+    {
+        case 12:
+            return parse2<State, 12>(tokens, output);
+        case 13:
+            tree.shift(13, ...);
+            return parse2<State, 13>(tokens, output);
+        case 30:
+            return reduce<State, 30>(tokens, output);
+        default:
+            tree.parse_error(token.begin());
+            // parse error
+    }
+}
 ```
 
 - Lexer actions

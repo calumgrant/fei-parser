@@ -61,22 +61,22 @@ namespace feiparser
 
         lexer(LexerFn fn) : fn(fn) {}
 
-        bool regex_match(It start, It end)
+        bool regex_match(It start, It end) const
         {
             return fn(start, end)!=NoMatch && start==end;
         }
 
         template<int N>
-        bool regex_match(const char (&str)[N])
+        bool regex_match(const char (&str)[N]) const
         {
             return regex_match(str, str+N-1);
         }
 
-        std::pair<It,It> regex_search(It start, It end)
+        std::pair<It,It> regex_search(It start, It end) const
         {
         }
 
-        token_stream<It> tokenize(It a, It b)
+        token_stream<It> tokenize(It a, It b) const
         {
             return token_stream<It>(fn, a, b);
         }

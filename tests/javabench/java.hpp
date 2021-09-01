@@ -112,7 +112,13 @@ namespace JavaParser
         RightShift,
         RightShiftEq,
         RRightShift,
-        RRightShiftEq
+        RRightShiftEq,
+        LastToken
+    };
+
+    enum ParseNodes
+    {
+        CompilationUnit = LastToken
     };
 
     extern feiparser::char_lexer lexer;
