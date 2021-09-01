@@ -16,50 +16,41 @@ namespace feiparser
         token_stream<It> tokens;
     };
 
-
-    template<typename It>
-    class parser
-    {
-    public:
-        typedef void (*ParseFn)(parse_state<It>&);
-
-        parser(const lexer<It> & lexer, ParseFn fn) : lexer(lexer), fn(fn) {}
-
-        tree parse(It start, It end) const
-        {
-            parse_state<It> state(lexer.tokenize(start, end));
-            fn(state);
-            return std::move(state.tree);
-        }
-
-    private:
-        lexer<It> lexer;
-        ParseFn fn;
-    };
-
-    template<typename Language, typename It = const char*>
-    class parser2
-    {
-        // ??
-    };
-
-    typedef parser<const char*> char_parser;
-
-
     template<typename Rule, typename It>
     void parsefn(parse_state<It> &)
     {
 
     }
 
-    template<typename Rule, int position>
+    template<typename Rule, int Position, int Lookahead>
     struct rule_position {};
 
-    template<typename Rule, typename It>
-    auto make_parser(const lexer<It> & lex)
+    template<typename State>
+    struct shift
     {
-        //typedef typeset<rule_position<rule<0, Rule, token<EndOfStream>>> InitialState;
-        using InitialState = Rule;
-        return parser<It>(lex, &parsefn<InitialState>);
+
+    };
+
+    template<typename State, int Ch>
+    struct lalr_transition
+    {
+        /*
+            This is the core of the algorithm.
+            The action is either: shift, reduce, accept, or error.
+
+        */
+
+    };
+
+    template<typename Rule, typename It>
+    tree parse(const token_stream<It> &tokens)
+    {
+        parse_state<It> state;
+        state.tokens = tokens;
+
+        // Do the parsing
+
+
+        return std::move(state.tree);
     }
 }

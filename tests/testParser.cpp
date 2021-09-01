@@ -23,5 +23,5 @@ namespace Grammar1
 int main()
 {
     auto lexer = feiparser::make_lexer<Grammar1::Tokens>();
-    auto parser = feiparser::make_parser<Grammar1::Expr>(lexer);
+    // auto parser = feiparser::make_parser<Grammar1::Expr>();
 }
