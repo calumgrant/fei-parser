@@ -43,6 +43,7 @@ namespace feiparser
     template<int Id, typename... Rules>
     struct token
     {
+        static const int id = Id;
         using rules = token<Id, Rules...>;
     };
 
