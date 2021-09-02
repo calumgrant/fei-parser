@@ -4,24 +4,21 @@
 namespace Grammar1
 {
     using namespace feiparser;
-    enum Nodes { Int, Add, Plus, Minus };
+    enum Nodes { IntNode, AddNode, PlusNode, MinusNode };
 
-    class Expr : public 
-        alt<
-            rule<Plus, Expr, token<Add>, Expr>,
-            token<Int>
+    using Int = token<IntNode, plus<digit>>;
+    using Add = token<AddNode, ch<'+'>>
+
+    class Expr : public symbol<
+            rule<PlusNode, Expr, Add, Expr>,
+            Int
             >
-    {
-    };
+        {};
 
-    using Tokens = alt<
-        token<Int, plus<digit>>,
-        token<Add, ch<'+'>>
-        >;
+    using Tokens = alt<Int, Add>;
 }
 
 int main()
 {
-    auto lexer = feiparser::make_lexer<Grammar1::Tokens>();
-    // auto parser = feiparser::make_parser<Grammar1::Expr>();
+    auto parser = feiparser::make_parser<Grammar1::Tokens, Grammar1::Expr>();
 }

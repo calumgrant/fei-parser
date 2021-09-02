@@ -40,16 +40,23 @@ namespace feiparser
 
     struct reject {};
 
-    template<int Value, typename... Rules>
+    template<int Id, typename... Rules>
     struct token
     {
-        using rules = token<Value, Rules...>;
+        using rules = token<Id, Rules...>;
     };
 
-    template<int Rule, typename... Rules>
+    template<int Id, typename... Rules>
     struct rule
     {
-        using rules = rule<Rule, Rules...>;
+        using rules = rule<Id, Rules...>;
+    };
+
+    template<typename... Rules>
+    struct symbol
+    {
+        // TODO: Validate the rules
+        typedef alt<Rules...> rules;
     };
 
     struct empty {};

@@ -9,4 +9,5 @@
 #include "typeset.hpp"
 #include "closure.hpp"
 
+#include "lrparser.hpp"
 #include "make_parser.hpp"

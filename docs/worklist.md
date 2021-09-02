@@ -1,4 +1,8 @@
 
+- Different token or node types specify what to store
+
+
+
 - Remember to reserve space in vectors, e.g. for the parse tree
 
 
