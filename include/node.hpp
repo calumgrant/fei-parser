@@ -1,5 +1,7 @@
 #pragma once
 
+#include "location.hpp"
+
 namespace feiparser
 {
     /*

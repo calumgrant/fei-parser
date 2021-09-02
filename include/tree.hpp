@@ -3,9 +3,7 @@
 #include "node.hpp"
 
 namespace feiparser
-{    
-
-
+{   
     class tree
     {
     public:

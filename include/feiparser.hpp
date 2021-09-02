@@ -6,4 +6,7 @@
 #include "lex.hpp"
 #include "charclasses.hpp"
 
+#include "typeset.hpp"
+#include "closure.hpp"
+
 #include "make_parser.hpp"

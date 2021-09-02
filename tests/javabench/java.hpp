@@ -122,5 +122,5 @@ namespace JavaParser
     };
 
     extern feiparser::char_lexer lexer;
-    // extern feiparser::char_parser parser;
+    extern feiparser::char_parser parser;
 }

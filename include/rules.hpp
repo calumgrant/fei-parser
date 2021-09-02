@@ -21,7 +21,10 @@ namespace feiparser
     struct seq {};
 
     template<typename... Rules>
-    struct alt {};
+    struct alt
+    {
+        using rules = alt<Rules...>;
+    };
 
     template<typename Rule>
     struct optional {};
@@ -38,10 +41,16 @@ namespace feiparser
     struct reject {};
 
     template<int Value, typename... Rules>
-    struct token {};
+    struct token
+    {
+        using rules = token<Value, Rules...>;
+    };
 
     template<int Rule, typename... Rules>
-    struct rule {};
+    struct rule
+    {
+        using rules = rule<Rule, Rules...>;
+    };
 
     struct empty {};
 
