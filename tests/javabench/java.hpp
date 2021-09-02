@@ -116,7 +116,7 @@ namespace JavaParser
         LastToken
     };
 
-    enum ParseNodes
+    enum Nodes
     {
         CompilationUnit = LastToken
     };

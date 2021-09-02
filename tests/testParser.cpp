@@ -1,9 +1,10 @@
 
 #include <feiparser.hpp>
+    
+using namespace feiparser;
 
 namespace Grammar1
 {
-    using namespace feiparser;
     enum Nodes { IntNode, AddNode, PlusNode, MinusNode };
 
     using Int = token<IntNode, plus<digit>>;
@@ -52,6 +53,34 @@ namespace Grammar1
     static_assert(potentially_empty_symbol<E9>::value, "");
 }
 
+namespace FirstTests
+{
+    using None = typeset<>;
+    using None = first<symbol<>>::type;
+    using z = typeset<token<0>>;
+
+    using z = first<symbol<token<0>>>::type;
+    using z = first<symbol<token<0>, token<0>>>::type;
+    using z2 = typeset<token<1>, token<0>>;
+    using z2 = first<symbol<token<0>, token<1>>>::type;
+
+    class Empty1 : public rule<0> {};
+
+    class S : public symbol<
+        rule<0>, 
+        rule<1, token<0>>,
+        rule<2, Empty1, Empty1, token<1>>,
+        rule<2, Empty1, S, token<2>>,
+        rule<3, token<0>, token<9>>
+        > {};
+
+    using firstS = first<S>::type;
+
+    static_assert(typeset_contains<token<0>, firstS>::value, "");
+    static_assert(typeset_contains<token<1>, firstS>::value, "");
+    static_assert(typeset_contains<token<2>, firstS>::value, "");
+    static_assert(!typeset_contains<token<9>, firstS>::value, "");
+};
 
 int main()
 {

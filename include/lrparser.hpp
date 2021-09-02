@@ -61,7 +61,7 @@ namespace feiparser
     struct first
     {
         // Base case is to look at the "rules" member of a user-defined type.
-        using type = typename first<typename Symbol::rules>::type;
+        using type = typename first<typename Symbol::rules, typename typeset_insert<Symbol, Visited>::type>::type;
     };
 
     template<typename Symbol, typename Visited>
@@ -93,7 +93,7 @@ namespace feiparser
     template<int Id, typename...Def, typename Visited>
     struct first<token<Id, Def...>, Visited, false>
     {
-        using type = typeset<token<Id>>;        
+        using type = typeset<token<Id>>;
     };
 
     template<int Id, typename Symbol, typename...Symbols, typename Visited>
