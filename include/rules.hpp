@@ -56,7 +56,7 @@ namespace feiparser
     struct symbol
     {
         // TODO: Validate the rules
-        typedef alt<Rules...> rules;
+        typedef symbol<Rules...> rules;
     };
 
     struct empty {};

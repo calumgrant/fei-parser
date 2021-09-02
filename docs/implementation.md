@@ -84,8 +84,8 @@ States are encoded as a `typeset<>` consisting of a list of rules and positions.
 Non-terminal symbols contain a "rules" member, where each rule is of the form:
 
 - `token<Id>`
-- alt<Rules...>
-- rule<Id, Rules...>
+- symbol<Rules...>
+- rule<Id, Symbols...>
 
 ## Compiling the parser
 
