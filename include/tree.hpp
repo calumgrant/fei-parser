@@ -20,7 +20,13 @@ namespace feiparser
 
         void syntax_error(location l);
 
+        void SyntaxError(const location & l)
+        {
+            errorLocation = l;
+        }
+
     protected:
+        location errorLocation;
         std::vector<char> data;
     };
 }

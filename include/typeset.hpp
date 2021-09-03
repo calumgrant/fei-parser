@@ -4,7 +4,7 @@
 namespace feiparser
 {
     template<typename...Members>
-    struct typeset;
+    struct typeset {};
 
     template<typename Set, typename Item>
     struct typeset_insert;

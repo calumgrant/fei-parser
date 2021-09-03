@@ -12,9 +12,15 @@ namespace feiparser
 
         parser(ParseFn fn) : fn(fn) {}
 
-        tree parse(It a, It b)
+        tree parse(It a, It b) const
         {
+            return fn(a,b);
+        }
 
+        template<int N>
+        tree parse(const char(&str)[N] ) const
+        {
+            return parse(str, str+N-1);
         }
 
     private:

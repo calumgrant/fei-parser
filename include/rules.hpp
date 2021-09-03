@@ -62,6 +62,7 @@ namespace feiparser
 
     struct empty {};
 
+    // Unused
     template<int Ch>
     struct utf8ch {};
 
@@ -76,4 +77,7 @@ namespace feiparser
 
     template<int...Chs>
     struct notch {};
+
+    template<typename Rule, int Position, int Lookahead>
+    struct rule_position {};
 }

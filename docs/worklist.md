@@ -1,7 +1,15 @@
 
 - Different token or node types specify what to store
 
+- Parser implementation plan
 
+1. Implement closure
+2. Implement shifts<> to get all tokens that can be shifted in a state
+3. Implement 
+
+- Optimize code for `rule<X, token<X, ...>>` to avoid the unnecessary reduce
+
+- Tests for Java Text blocks
 
 - Remember to reserve space in vectors, e.g. for the parse tree
 

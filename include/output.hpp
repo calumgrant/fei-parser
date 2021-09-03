@@ -2,6 +2,7 @@
 
 #include "rules.hpp"
 #include "lex.hpp"
+#include "typeset.hpp"
 
 #include <iostream>
 
@@ -77,6 +78,13 @@ namespace feiparser
         return os << "token<" << Token << "," << Rule() << ">";
     }
 
+    template<int Token>
+    std::ostream & operator<<(std::ostream & os, token<Token>)
+    {
+        return os << "token<" << Token << ">";
+    }
+
+
     template<typename It>
     std::ostream & operator<<(std::ostream & os, const token_stream<It> & ts)
     {
@@ -85,5 +93,81 @@ namespace feiparser
             os << i;
         os << "]=" << ts.token();
         return os;
+    }
+
+    inline void output_typeset(std::ostream & os, const typeset<> & ts) {}
+
+    template<typename Item>
+    void output_typeset(std::ostream & os, const typeset<Item> &)
+    {
+        os << Item();
+    }
+
+    template<typename Item1, typename Item2, typename...Items>
+    void output_typeset(std::ostream & os, const typeset<Item1, Item2, Items...> & ts)
+    {
+        os << Item1() << ", ";
+        output_typeset(os, typeset<Item2, Items...>());
+    }
+
+    template<typename...Rules>
+    std::ostream & operator<<(std::ostream & os, const typeset<Rules...> & ts)
+    {
+        os << "{";
+        output_typeset(os, ts);
+        return os << "}";
+    }
+
+    template<int Position, typename...Symbols>
+    struct write_rule
+    {
+        static void write(std::ostream & os)
+        {
+
+        }
+    };
+
+    template<typename...Rules>
+    std::ostream & operator<<(std::ostream & os, symbol<Rules...>)
+    {
+        return os << "?";
+    }
+
+    template<int Position, typename S, typename... Ss>
+    struct write_rule<Position, S, Ss...>
+    {
+        static void write(std::ostream & os)
+        {
+            if(Position == 0) os << " .";
+            os << " " << typename S::rules();
+            write_rule<Position-1, Ss...>::write(os);
+        }
+    };
+
+    template<int Position>
+    struct write_rule<Position>
+    {
+        static_assert(Position<=0, "Invalid position in rule-position");
+        static void write(std::ostream & os)
+        {
+            if(Position == 0) os << " .";
+        }
+    };
+
+
+    template<int Id, typename...Symbols, int Position, int Lookahead>
+    std::ostream & operator<<(std::ostream & os, const rule_position<rule<Id, Symbols...>, Position, Lookahead> &)
+    {
+        os << "rule<" << Id << "> ->";
+        write_rule<Position, Symbols...>::write(os);
+        return os << " { " << Lookahead << " }";
+    }
+
+    template<int Id, typename...Symbols, int Position, int Lookahead>
+    std::ostream & operator<<(std::ostream & os, const rule_position<token<Id, Symbols...>, Position, Lookahead> &)
+    {
+        os << "rule<" << Id << "> ->";
+        write_rule<Position, token<Id>>::write(os);
+        return os << " { " << Lookahead << " }";
     }
 }

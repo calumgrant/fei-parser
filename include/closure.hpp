@@ -1,17 +1,19 @@
 #pragma once
 
 #include "typeset.hpp"
-#include "lrparser.hpp"
 
 namespace feiparser
 {
     template<typename Set>
-    struct closure;
+    struct closure
+    {
+        using type = Set;
+    };
 
     template<>
     struct closure<typeset<>>
     {
-        typedef typeset<> type;
+        using type = typeset<>;
     };
 
     template<typename RulePosition, typename Closure, bool AlreadyContains = typeset_contains<RulePosition, Closure>::value>

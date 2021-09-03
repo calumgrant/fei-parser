@@ -2,6 +2,9 @@
 
 #include <typeinfo>
 
+#include "rules.hpp"
+#include "closure.hpp"
+
 namespace feiparser
 {
 
@@ -106,11 +109,14 @@ namespace feiparser
     };
 
 
+
+
+
     // Should really be hidden/moved from here
     template<typename It>
     struct parse_state
     {
-        typedef void(*NextFn)(const std::type_info&, parse_state&);
+        typedef void(*NextFn)(parse_state&, const std::type_info&);
         std::vector<NextFn> stack;
         tree parse_tree;
         token_stream<It> tokens;
@@ -118,36 +124,78 @@ namespace feiparser
         parse_state(const token_stream<It> & t) : tokens(t) {}
     };
 
-    template<typename Rule, typename It>
-    void parsefn(parse_state<It> &)
+
+    template<typename It>
+    void parse_success(parse_state<It> &state, const std::type_info&)
     {
 
     }
 
-    template<typename Rule, int Position, int Lookahead>
-    struct rule_position {};
 
+    // Compute the list of tokens that this state is able to process
+    // Anything else is a syntax error
     template<typename State>
-    struct shift
+    struct build_token_list
     {
-
+        // TODO
+        typedef typeset<token<0>, token<1>> type;
     };
 
-    template<typename State, int Ch>
-    struct lalr_transition
+    template<typename State, int Token, typename It>
+    struct process_token
     {
-        /*
-            This is the core of the algorithm.
-            The action is either: shift, reduce, accept, or error.
-
-        */
-
+        static void process(parse_state<It> & state)
+        {
+            
+        }
     };
 
-    template<typename It>
-    void parse_success(const std::type_info&, parse_state<It> &state)
-    {
+    template<typename Closure, typename Tokens, typename It>
+    struct process_token_list;
 
+    template<typename State, typename It>
+    struct process_token_list<State, typeset<>, It>
+    {
+        static void process(parse_state<It> & state)
+        {
+            state.parse_tree.SyntaxError(state.tokens.begin().location);
+        }
+    };
+
+
+
+    template<typename State, int Id, typename...Tokens, typename It>
+    struct process_token_list<State, typeset<token<Id>, Tokens...>, It>
+    {
+        static void process(parse_state<It> & state)
+        {
+            if(state.tokens.token() == Id)
+            {
+                process_token<State, Id, It>::process(state);
+            }
+            else
+            {
+                process_token_list<State, typeset<Tokens...>, It>::process(state);
+            }
+        }
+    };
+
+
+
+    template<typename State, typename It>
+    void parse(parse_state<It> & state)
+    {
+        // Process one token from the input stream.
+        using Closure = typename closure<State>::type;
+        using Tokens = typename build_token_list<Closure>::type;
+        
+        process_token_list<State, Tokens, It>::process(state);
+    }
+
+    template<typename State, typename It>
+    void reduce(parse_state<It> & state, const std::type_info & type)
+    {
+        // Jump to the next state from this state
     }
 
     template<typename Symbol, typename It>
@@ -159,14 +207,8 @@ namespace feiparser
         using S0 = typeset<rule_position<Symbol, 0, 0>>;
         state.stack.push_back(parse_success);
 
-        // Run the main loop
-        while(!state.stack.empty())
-        {
-            auto p = state.stack.back();
-            state.stack.pop_back();
-//            p();
-        }
-
+        state.tokens.lex();
+        parse<S0>(state);
 
         return std::move(state.parse_tree);
     }
