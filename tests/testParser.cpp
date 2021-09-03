@@ -94,7 +94,7 @@ namespace TestClosure
     using S1 = typeset<rule_position<A, 0, 1>, rule_position<rule<123, A, B>,0,2>, rule_position<rule<123, A, B>,2,2>>;
     using S2 = typeset<rule_position<rule<123, Expr>, 0, 1>>;
 
-    using Gclosure = closure<S0>::type;
+    using Gclosure = closure<S2>::type;
 }
 
 int main()
@@ -104,6 +104,7 @@ int main()
     std::cout << TestClosure::S0() << std::endl;
     std::cout << TestClosure::S1() << std::endl;
     std::cout << TestClosure::S2() << std::endl;
+    std::cout << TestClosure::Gclosure() << std::endl;
 
     parser.parse("1+1");
 }

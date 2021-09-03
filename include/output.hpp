@@ -106,31 +106,25 @@ namespace feiparser
     template<typename Item1, typename Item2, typename...Items>
     void output_typeset(std::ostream & os, const typeset<Item1, Item2, Items...> & ts)
     {
-        os << Item1() << ", ";
+        os << Item1() << ",\n  ";
         output_typeset(os, typeset<Item2, Items...>());
     }
 
     template<typename...Rules>
     std::ostream & operator<<(std::ostream & os, const typeset<Rules...> & ts)
     {
-        os << "{";
+        os << "{\n  ";
         output_typeset(os, ts);
-        return os << "}";
+        return os << "\n}";
     }
 
     template<int Position, typename...Symbols>
-    struct write_rule
-    {
-        static void write(std::ostream & os)
-        {
-
-        }
-    };
+    struct write_rule;
 
     template<typename...Rules>
     std::ostream & operator<<(std::ostream & os, symbol<Rules...>)
     {
-        return os << "?";
+        return os << "S";
     }
 
     template<int Position, typename S, typename... Ss>
@@ -160,7 +154,7 @@ namespace feiparser
     {
         os << "rule<" << Id << "> ->";
         write_rule<Position, Symbols...>::write(os);
-        return os << " { " << Lookahead << " }";
+        return os << " {" << Lookahead << "}";
     }
 
     template<int Id, typename...Symbols, int Position, int Lookahead>
@@ -168,6 +162,6 @@ namespace feiparser
     {
         os << "rule<" << Id << "> ->";
         write_rule<Position, token<Id>>::write(os);
-        return os << " { " << Lookahead << " }";
+        return os << " {" << Lookahead << "}";
     }
 }
