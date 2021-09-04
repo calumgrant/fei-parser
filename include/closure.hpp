@@ -5,6 +5,9 @@
 
 namespace feiparser
 {
+    /*
+        Finds the next symbol in an Item (the symbol to the right of the `.`)
+    */
     template<typename Item>
     struct getnext;
 
@@ -29,6 +32,7 @@ namespace feiparser
         using type_or_lookahead = token<Lookahead>;
     };
 
+
     template<typename Symbol, typename Closure>
     struct expand_next;
 
@@ -38,6 +42,9 @@ namespace feiparser
         using S = typename getnext<Item>::type;
 
         // If S is a symbol, add all members of the symbol
+
+
+        // If S is empty, then we also need to add all members to the next symbol
 
         using type = Closure;
     };
@@ -88,6 +95,10 @@ namespace feiparser
         using type = typename add_to_closure<Item, C1>::type;
     };
 
+    /*
+        Expands a "kernel" (a set of items), into its closure, where each item containing `. X` is expanded into all 
+        rules. For this we need a "follows" set as well.
+    */
     template<typename Kernel>
     struct closure
     {

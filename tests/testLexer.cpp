@@ -515,6 +515,57 @@ void testKeywords()
     //  std::cout << sg;
 }
 
+void testTextBlock()
+{
+    using namespace feiparser;
+
+using UnicodeMarker = plus<ch<'u'>>;
+using HexDigit = alt<chrange<'0','9'>,chrange<'a','f'>,chrange<'A','F'>>;
+using UnicodeEscape = seq<ch<'\\'>, UnicodeMarker, HexDigit, HexDigit, HexDigit, HexDigit>;
+
+using ZeroToThree = chrange<'0', '3'>;
+using OctalDigit = chrange<'0','7'>;
+
+using OctalEscape = alt<
+    seq<ch<'\\'>, OctalDigit>,
+    seq<ch<'\\'>, OctalDigit, OctalDigit>,
+    seq<ch<'\\'>, ZeroToThree, OctalDigit, OctalDigit>
+    >;
+
+using EscapeSequence = alt<
+    UnicodeEscape, // Standards violation as this should be done by the preprocessor
+    string<'\\', 'b'>,
+    string<'\\', 't'>,
+    string<'\\', 'n'>,
+    string<'\\', 'f'>,
+    string<'\\', 'r'>,
+    string<'\\', '\"'>,
+    string<'\\', '\''>,
+    string<'\\', '\\'>,
+    string<'\\', 's'>,
+    OctalEscape
+    >;
+
+    using StringCharacter = alt<
+        notch<'\r', '\n', '\"', '\\'>,
+        EscapeSequence
+        >;
+
+    using StringBlockTerminator = string<'\"','\"','\"'>;
+
+    using TextBlockCh = 
+        seq<optional<ch<'\"'>>, optional<ch<'\"'>>, notch<'\"'>>;
+
+    // Not in the standard, but a proposal needed to parse the JDK
+    using TextBlock = seq<StringBlockTerminator, star<TextBlockCh>, optional<string<'\\','\"'>> ,StringBlockTerminator>;
+
+    using StringLiteral = alt<
+        seq<ch<'\"'>, star<StringCharacter>, ch<'\"'>>,
+        TextBlock>;
+
+    check_matches<StringLiteral>("\"\"");
+}
+
 int main()
 {
     testAny();
@@ -529,4 +580,5 @@ int main()
     testLexer();
     testComment();
     testKeywords();
+    testTextBlock();
 }

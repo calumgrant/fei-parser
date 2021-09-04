@@ -87,4 +87,32 @@ namespace feiparser
     {
         static const bool value = typeset_contains<Item1, typeset<Members...>>::value;
     };
+
+    template<
+        typename Ts, 
+        typename Init,
+        template<typename Item, typename Accumulator> typename Aggregate
+        >
+    struct typeset_aggregate;
+
+    template<
+        typename Init,
+        template<typename Item, typename Accumulator> typename Aggregate
+        >
+    struct typeset_aggregate<typeset<>, Init, Aggregate>
+    {
+        using type = Init;
+    };
+
+    template<
+        typename Item1,
+        typename ...Items,
+        typename Init, template<typename Item, typename Accumulator> typename Aggregate
+        >
+    struct typeset_aggregate<typeset<Item1, Items...>, Init, Aggregate>
+    {
+        using T0 = typename typeset_aggregate<typeset<Items...>, Init, Aggregate>::type;
+        using type = typename Aggregate<Item1, T0>::type;
+    };
+
 }
