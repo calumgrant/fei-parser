@@ -83,6 +83,27 @@ namespace FirstTests
     static_assert(!typeset_contains<token<9>, firstS>::value, "");
 };
 
+namespace TestFollow
+{
+    using G0 = rule_position<rule<1, token<0>, token<1>>, 0, 2>;
+    using G1 = rule_position<rule<1, token<0>, token<1>>, 1, 2>;
+
+    using F0 = follow<G0>::type;
+    using F1 = follow<G1>::type;
+
+    static_assert(typeset_equals<F0, typeset<token<1>>>::value, "");
+    static_assert(typeset_equals<F1, typeset<token<2>>>::value, "");
+
+    using maybe0 = symbol< rule<1>, token<0> >;
+    using maybe1 = symbol< rule<2>, token<1> >;
+    using R3 = rule<3, maybe0, maybe1>;
+    using S3a = rule_position<R3, 0, 2>;
+    using S3b = rule_position<R3, 1, 2>;
+
+    static_assert(typeset_equals<follow<S3a>::type, typeset<token<1>, token<2>>>::value, "");
+    static_assert(typeset_equals<follow<S3b>::type, typeset<token<2>>>::value, "");
+}
+
 namespace TestClosure
 {
     using A = token<0>;

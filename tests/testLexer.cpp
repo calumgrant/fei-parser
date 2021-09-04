@@ -564,6 +564,11 @@ using EscapeSequence = alt<
         TextBlock>;
 
     check_matches<StringLiteral>("\"\"");
+    check_matches<StringLiteral>("\"\\\"\"");
+    check_matches<StringLiteral>("\"\"\"\"\"\"");
+    check_matches<StringLiteral>("\"\"\"\n\"\"\"");
+    check_matches<StringLiteral>("\"\"\"  \\\"\"\"\"");
+    check_matches<StringLiteral>("\"\"\"  \\\" \"\"\"");
 }
 
 int main()

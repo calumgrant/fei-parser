@@ -115,4 +115,26 @@ namespace feiparser
         using type = typename Aggregate<Item1, T0>::type;
     };
 
+    template<typename Ts1, typename Ts2>
+    struct typeset_subset;
+
+    template<typename Ts2>
+    struct typeset_subset<typeset<>, Ts2>
+    {
+        static const bool value = true;
+    };
+
+    template<typename Item, typename...Items, typename Ts2>
+    struct typeset_subset<typeset<Item, Items...>, Ts2>
+    {
+        static const bool value = typeset_contains<Item, Ts2>::value &&
+            typeset_subset<typeset<Items...>, Ts2>::value;
+    };
+
+    template<typename Ts1, typename Ts2>
+    struct typeset_equals
+    {
+        static const bool value = typeset_subset<Ts1, Ts2>::value && typeset_subset<Ts2, Ts1>::value;
+    };
+
 }

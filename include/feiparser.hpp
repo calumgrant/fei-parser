@@ -8,6 +8,7 @@
 
 #include "typeset.hpp"
 #include "closure.hpp"
+#include "follow.hpp"
 
 #include "lrparser.hpp"
 #include "make_parser.hpp"
