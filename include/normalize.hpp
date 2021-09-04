@@ -291,7 +291,7 @@ namespace feiparser
     template<>
     struct make_nonempty<empty>
     {
-        typedef empty type;
+        typedef feiparser::empty type;
         static const bool empty = true;
     };
 
@@ -327,7 +327,7 @@ namespace feiparser
         typedef reject type;
     };
 
-    template<char...Chs>
+    template<int...Chs>
     struct normalize<notch<Chs...>>
     {
         typedef notch<Chs...> type;

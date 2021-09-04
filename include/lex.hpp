@@ -124,7 +124,7 @@ namespace feiparser
     struct is_valid_lexer
     {
         static const bool value = false;
-        static_assert(value, "Lexer is invalid here");
+        // static_assert(value, "Lexer is invalid here");
     };
 
     template<int Ch, typename Rule>

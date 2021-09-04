@@ -65,7 +65,7 @@ namespace feiparser
         static const int token = Match;
     };
 
-    template<char...Chs>
+    template<int...Chs>
     struct accepts<notch<Chs...>>
     {
         static const bool value = false;

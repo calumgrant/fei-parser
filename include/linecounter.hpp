@@ -9,7 +9,7 @@ namespace feiparser
     class linecounter
     {
     public:
-        location location;
+        feiparser::location location;
 
         linecounter() {}
 

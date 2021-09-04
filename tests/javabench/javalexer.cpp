@@ -341,4 +341,4 @@ using JavaTokens = alt<
 
 #endif
 
-auto JavaParser::lexer = make_lexer<JavaTokens>();
+feiparser::char_lexer JavaParser::lexer = make_lexer<JavaTokens>();
