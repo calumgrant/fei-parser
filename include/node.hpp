@@ -4,6 +4,62 @@
 
 namespace feiparser
 {
+    struct node_data;
+    class children;
+
+    class node
+    {
+    public:
+        // Constructs an empty node;
+        node();
+        node(const node_data * p);
+
+        std::string str() const;
+        const char * c_str() const;
+        feiparser::location location() const;
+
+        int length() const;
+
+        int id() const;
+        node first() const;
+        node next() const;
+
+        typedef std::uint16_t size_type;
+
+        struct iterator
+        {
+            typedef node value_type;
+
+            node operator*() const;
+            node operator->() const;
+            iterator & operator++();
+        };
+
+        // Iteration
+        iterator begin() const;
+        iterator end() const;
+
+        node operator[](size_type i) const;
+
+        operator bool() const { return p; }
+
+        children get(int id);
+
+        // Container of nodes of a given type
+
+
+        // Gets the first node with a given id, or returns the empty node
+        node first(int id) const;
+    private:
+        const node_data * p;
+    };
+
+    class children
+    {
+        int id;
+        node a, b;
+    };
+
     /*
         A node in the parse tree.
 
@@ -16,7 +72,7 @@ namespace feiparser
         3. Memory locality: adjacent nodes are stored adjacently in memory.
         4. Memory safety: The vector cleans up the contents at the end.
      */ 
-    class node
+    class node2
     {
     public:
 
@@ -30,7 +86,7 @@ namespace feiparser
         class iterator
         {
         public:
-            iterator(const node *n) : current(n) {}
+            iterator(const node2 *n) : current(n) {}
 
             iterator & operator++()
             {
@@ -40,10 +96,10 @@ namespace feiparser
 
             bool operator!=(iterator other) const { return current != other.current; }
 
-            const node & operator*() const { return *current; }
+            const node2 & operator*() const { return *current; }
 
         private:
-            const node * current;
+            const node2 * current;
         };
 
         iterator begin() const
@@ -56,17 +112,17 @@ namespace feiparser
             return &previous();
         }
 
-        const node & previous() const
+        const node2 & previous() const
         {
             return *(this - sizeInNodes);
         }
 
-        const node & first() const
+        const node2 & first() const
         {
             return *(this-1);
         }
 
-        const node & operator[](int child) const
+        const node2 & operator[](int child) const
         {
             for(const auto & i : *this)
             {

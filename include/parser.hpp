@@ -23,6 +23,8 @@ namespace feiparser
             return parse(str, str+N-1);
         }
 
+        tree parseFile(const char * filename) const;
+
     private:
         ParseFn fn;
     };

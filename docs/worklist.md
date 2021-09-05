@@ -1,11 +1,48 @@
 
+
+
+- Parser implementation
+  - closure
+
+
+- Code reorg
+  - Create a library with all the parsers
+  - Rename to cellar again.
+  - Move header files
+  - Put private stuff into namespaces
+
+- Parse file
+
 - Different token or node types specify what to store
+- Ability to construct the parse tree based on policy or action
 
-- Parser implementation plan
+- json parser
+- xml parser
 
-1. Implement closure
-2. Implement shifts<> to get all tokens that can be shifted in a state
-3. Implement 
+How does the API look???
+
+tree = parseXMLFile("...");
+
+auto doc = xmlparser.parseFile("foo.xml");
+auto rootelement = doc.root();
+
+auto node = root.first<Element>();
+
+for(auto i : node.get<Element>()))
+
+for(auto attrib : node.get<Attribute>())
+{
+    auto k = attrib.first<Key>();
+    if(k)
+    k.c_str();
+}
+
+
+
+parser::parseFile
+
+
+
 
 - Optimize code for `rule<X, token<X, ...>>` to avoid the unnecessary reduce
 

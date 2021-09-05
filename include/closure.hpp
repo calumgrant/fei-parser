@@ -2,6 +2,7 @@
 
 #include "typeset.hpp"
 #include "potentially_empty_symbol.hpp"
+#include "follow.hpp"
 
 namespace feiparser
 {
@@ -36,21 +37,50 @@ namespace feiparser
     template<typename Symbol, typename Closure>
     struct expand_next;
 
-    template<typename Item, typename Closure>
+    template<typename Item, typename Follows, typename Closure>
     struct expand_item
     {
-        using S = typename getnext<Item>::type;
+        using type = Closure;
+    };
 
-        // If S is a symbol, add all members of the symbol
+    template<typename Item, typename...Items, typename Follows, typename Closure>
+    struct expand_item<symbol<Item, Items...>, Follows, Closure>
+    {
+        using type = Closure;
+    };
 
+    template<int Id, typename...Rule, typename...Items, typename Follows, typename Closure>
+    struct expand_item<symbol<token<Id, Rule...>, Items...>, Follows, Closure>
+    {
+        using type = typename expand_item<symbol<Items...>, Follows, Closure>::type;
+    };
 
-        // If S is empty, then we also need to add all members to the next symbol
+    template<typename Rule, typename Follows, typename Closure>
+    struct add_items;
 
+    template<typename Rule, typename Closure>
+    struct add_items<Rule, typeset<>, Closure>
+    {
         using type = Closure;
     };
 
     template<typename Item, typename Closure, bool Recursive = typeset_contains<Item, Closure>::value>
     struct add_to_closure;
+
+    template<typename Rule, int Lookahead, typename...Follows, typename Closure>
+    struct add_items<Rule, typeset<token<Lookahead>, Follows...>, Closure>
+    {
+        using Item = rule_position<Rule, 0, Lookahead>;
+        using type = typename add_to_closure<Item, Closure>::type;
+    };
+
+    template<int Id, typename...Rule, typename...Items, typename Follows, typename Closure>
+    struct expand_item<symbol<rule<Id, Rule...>, Items...>, Follows, Closure>
+    {
+        // using T0 = rule_position
+        using C0 = typename add_items<rule<Id, Rule...>, Follows, Closure>::type;
+        using type = typename expand_item<symbol<Items...>, Follows, C0>::type;
+    };
 
     template<typename Item, typename Closure>
     struct add_to_closure<Item, Closure, true>
@@ -58,23 +88,61 @@ namespace feiparser
         using type = Closure;
     };
 
+    template<typename Symbol>
+    struct is_terminal;
+
+    template<int Id, typename...X>
+    struct is_terminal<token<Id, X...>>
+    {
+        static const bool value = false;
+    };
+
+    template<typename...X>
+    struct is_terminal<symbol<X...>>
+    {
+        static const bool value = true;
+    };
+
+    template<typename Item>
+    struct skip_symbol;
+
+    template<typename Rule, int Position, int Lookahead>
+    struct skip_symbol<rule_position<Rule, Position, Lookahead>>
+    {
+        using type = rule_position<Rule, Position+1, Lookahead>;
+    };
+
+    /*
+        Adds an item (i.e. a rule_position) to a closure, giving the new closure in the
+        `type` member.
+
+        If the item contains `. x` (the next symbol is a terminal), then the item
+        does not need to be expanded, and is simply added to the closure.
+
+        If the item contains `. X` (the next symbol is a non-terminal), 
+        then we need to expand the symbol, using the lookahead of the following symbol.
+
+        All newly added items also need to be expanded.
+    */
     template<typename Item, typename Closure>
     struct add_to_closure<Item, Closure, false>
     {
         // Insert Item into Closure
-        using C = typename typeset_insert<Item, Closure>::type;
+        using C1 = typename typeset_insert<Item, Closure>::type;
 
-        // What is the next symbol in Item?
-        // It could be:
-        // a token (ignore)
-        // a non-empty symbol or class
-        // an empty symbol or class
+        using Follows = typename follow<Item>::type;
 
-        using NextSymbol = typename getnext<Item>::type;
+        using NextSymbol= typename getnext<Item>::type;
+        static const bool needToExpand = !is_terminal<typename NextSymbol::rule>::value;
 
-        static const bool empty = potentially_empty_symbol<NextSymbol>::value;
+        using C2 = typename type_if<
+            potentially_empty_symbol<Item>::value,
+            typename add_to_closure<typename skip_symbol<Item>::type, C1>::type,
+            C1>::type;
 
-        using type = typename expand_item<Item, Closure>::type;
+        using C3 = typename expand_item<Item, Follows, C2>::type;
+
+        using type = typename type_if<needToExpand, C3, C2>::type;
     };
 
 
