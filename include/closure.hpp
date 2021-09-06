@@ -91,7 +91,7 @@ namespace feiparser
 
     template<int Id, typename...Rule, typename...Items, typename Follows, typename Closure>
     struct expand_item<symbol<rule<Id, Rule...>, Items...>, Follows, Closure>
-    {        
+    {
         // using T0 = rule_position
         using C0 = typename add_items<rule<Id, Rule...>, Follows, Closure>::type;
         using type = typename expand_item<symbol<Items...>, Follows, C0>::type;
@@ -190,14 +190,14 @@ namespace feiparser
 
         using Follows = typename follow<Item>::type;
 
-        using NextSymbol= typename getnext<Item>::type;
+        using NextSymbol= typename getnext<Item>::type::rules;
 
         using C2 = typename type_if<
             potentially_empty_symbol<NextSymbol>::value,
             typename add_to_closure<typename skip_symbol<Item>::type, C1>::type,
             C1>::type;
 
-        using type = typename expand_item<Item, Follows, C2>::type;
+        using type = typename expand_item<NextSymbol, Follows, C2>::type;
     };
 
 
