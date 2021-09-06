@@ -118,6 +118,25 @@ namespace TestClosure
     using Gclosure = closure<S2>::type;
 }
 
+namespace Grammar2
+{
+    using a = token<0>;
+    using b = token<1>;
+
+    class E : public symbol<rule<10, a, b>, rule<11, a, E, b>> {};
+
+    using S0 = typeset<rule_position<rule<12, E, token<EndOfStream>>, 0, EndOfStream>>;
+
+    using C0 = closure<S0>::type;
+
+    using A1_0 = action<S0, 0>::type;
+    using A1_1 = action<S0, 1>::type;
+
+    using simpletest = typeset<rule_position<rule<10, a, b>, 0, -4>>;
+    using Sa = action<simpletest, 0>::type;
+    using Sb = action<simpletest, 1>::type;
+}
+
 int main()
 {
     auto parser = feiparser::make_parser<Grammar1::Tokens, Grammar1::Expr>();
@@ -128,4 +147,8 @@ int main()
     std::cout << TestClosure::Gclosure() << std::endl;
 
     parser.parse("1+1");
+
+    std::cout << "S0: " << Grammar2::C0() << std::endl;
+    std::cout << "action(S0, 0): " << Grammar2::A1_0() << std::endl;
+    std::cout << Grammar2::Sa() << Grammar2::Sb() << std::endl;
 }

@@ -4,7 +4,8 @@
 
 #include "rules.hpp"
 #include "closure.hpp"
-#include "first.hpp"
+#include "action.hpp"
+#include "goto.hpp"
 
 namespace feiparser
 {
@@ -89,7 +90,7 @@ namespace feiparser
     }
 
     template<typename State, typename It>
-    void reduce(parse_state<It> & state, const std::type_info & type)
+    void reduceFn(parse_state<It> & state, const std::type_info & type)
     {
         // Jump to the next state from this state
     }

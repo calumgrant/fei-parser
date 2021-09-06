@@ -1,8 +1,6 @@
 #pragma once
 
-#include "rules.hpp"
-#include "lex.hpp"
-#include "typeset.hpp"
+#include "feiparser.hpp"
 
 #include <iostream>
 
@@ -163,5 +161,11 @@ namespace feiparser
         os << "rule<" << Id << "> ->";
         write_rule<Position, token<Id>>::write(os);
         return os << " {" << Lookahead << "}";
+    }
+
+    template<int Id>
+    std::ostream & operator<<(std::ostream & os, shift<Id>)
+    {
+        return os << "s" << Id;
     }
 }

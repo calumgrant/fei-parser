@@ -122,3 +122,4 @@ Parsing terminates when
 
 
 
+Welcome to the wacky world of C++ template metaprogramming! What has made this project particularly challenging, is that LALR parser construction isn't terribly well explained anywhere, and that C++ template metaprogramming isn't terribly easy, particularly if you are trying to implement algorithms. 

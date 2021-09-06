@@ -15,6 +15,39 @@
 
 - Different token or node types specify what to store
 - Ability to construct the parse tree based on policy or action
+- Possibly, the tree could have a virtual method during construction
+
+```
+struct default_node_traits
+{
+    static const bool store_string = true;
+    static const bool store_length = true;
+    static const bool store_location = true;
+    static const bool store_end_location = false;
+    static const bool hidden_token = true;
+    static const bool hidden_node = 
+
+    struct extra_data
+    {
+        extra_data(node &) {}
+    };
+};
+
+template<int Id>
+struct token_traits : public default_token_traits {};
+
+struct hidden_node : public default_token_traits
+{
+    static const bool store_string = false;
+    static const bool store_length = false;
+    static const bool store_location = false;
+    static const bool store_end_location = false;
+    static const bool hidden = true;
+};
+
+template<>
+struct token_traits<EndCurly> : public hidden_node {};
+```
 
 - json parser
 - xml parser
