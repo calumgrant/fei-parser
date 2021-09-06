@@ -1,3 +1,8 @@
+/*
+    lexer.hpp
+    Classes needed to tokenize a stream/chunk of text.
+*/
+
 #pragma once
 #include <utility>
 #include "impl/linecounter.hpp"

@@ -16,6 +16,8 @@
 - Ability to construct the parse tree based on policy or action
 - Possibly, the tree could have a virtual method during construction
 
+- mark and whitelist conflicts
+
 ```
 struct default_node_traits
 {

@@ -153,6 +153,35 @@ namespace Grammar2
     using C5 = closure<S5>::type;
 }
 
+namespace Conflicts1
+{
+    using a = token<0>;
+    using b = token<1>;
+
+    using Expr = symbol<rule<1, a>, rule<2, a>>;
+
+    using S0 = initial_state<Expr>::type;
+}
+
+template<typename State, int Token>
+void outputAction()
+{
+    std::cout << "Action on " << Token << " = " << typename action<State, Token>::type() << " -> " << typename shift_action<State,Token>::type() << std::endl;
+}
+
+template<typename State>
+void outputState()
+{
+    using C = typename closure<State>::type;
+    std::cout << "State kernel: " << State();
+    std::cout << ", closure: " << C();
+
+    // Show the transitions
+    outputAction<State, 0>();
+    outputAction<State, 1>();
+    outputAction<State, EndOfStream>();
+}
+
 int main()
 {
     auto parser = cellar::make_parser<Grammar1::Tokens, Grammar1::Expr>();
@@ -171,4 +200,11 @@ int main()
     std::cout << "C3: " << Grammar2::C3() << std::endl;
     std::cout << "C4: " << Grammar2::C4() << std::endl;
     std::cout << "C5: " << Grammar2::C5() << std::endl;
+    outputState<Grammar2::S0>();
+    outputState<Grammar2::S1>();
+    outputState<Grammar2::S3>();
+    outputState<Grammar2::S4>();
+
+    // Let's try a conflict
+    outputState<Conflicts1::S0>();
 }

@@ -101,14 +101,19 @@ namespace cellar
         // Jump to the next state from this state
     }
 
+    template<typename S>
+    struct initial_state
+    {
+        using type = typeset<rule_position<rule<0, S, token<EndOfStream>>, 0, EndOfStream>>;
+    };
+
     template<typename Symbol, typename It>
     tree parse(const token_stream<It> &tokens)
     {
         parse_state<It> state(tokens);
 
         // Do the parsing
-        using Rule0 = rule<0, Symbol, token<EndOfStream>>;
-        using State0 = typeset<rule_position<Rule0, 0, EndOfStream>>;
+        using State0 = typename initial_state<Symbol>::type;
         state.stack.push_back(parse_success);
 
         state.tokens.lex();

@@ -31,16 +31,21 @@ namespace cellar
     template<typename Rule, int Position, int Lookahead, int Token, typename OriginalRule>
     struct item_action2;
 
-    template<int Id, typename... Symbol, typename...Symbols, int Position, int Lookahead, int Token, typename OriginalRule>
-    struct item_action2<rule<Id, symbol<Symbol...>, Symbols...>, Position, Lookahead, Token, OriginalRule>
+    template<int Id, typename Symbol, typename...Symbols, int Position, int Lookahead, int Token, typename OriginalRule>
+    struct item_action2<rule<Id, Symbol, Symbols...>, Position, Lookahead, Token, OriginalRule>
     {
         using type = typename item_action2<rule<Id, Symbols...>, Position-1, Lookahead, Token, OriginalRule>::type;
+    };
+
+    template<int Id, int Lookahead, int Token, typename OriginalRule>
+    struct item_action2<rule<Id>, 0, Lookahead, Token, OriginalRule>
+    {
+        using type = typeset<>;
     };
 
     template<int Id, typename...Def, typename...Symbols, int Lookahead, int Token, typename OriginalRule>
     struct item_action2<rule<Id, token<Token, Def...>, Symbols...>, 0, Lookahead, Token, OriginalRule>
     {
-        using error = typename OriginalRule::debugerror;
         using type = typeset<shift<Token>>;
     };
 
@@ -103,6 +108,13 @@ namespace cellar
         static const bool value = true;
     };
 
+    template<int Id, int Token>
+    struct shifts<rule<Id>, 0, Token>
+    {
+        static const bool value = false;
+    };
+
+
     template<int Id, typename Symbol, typename...Symbols, int Position, int Token>
     struct shifts<rule<Id, Symbol, Symbols...>, Position, Token>
     {
@@ -134,4 +146,28 @@ namespace cellar
         using Closure = typename closure<State>::type;
         using type = typename shift_action2<Closure, Token>::type;
     };
+
+    template<int Id>
+    struct mark_shift_reduce_conflict
+    {
+        static const bool marked = false; 
+    };
+
+    struct marked_conflict
+    {
+        static const bool marked = true;
+    };
+
+    template<typename Item1, typename Item2>
+    struct report_reduce_reduce_conflict
+    {
+        // static_assert(false, "Reduce/reduce conflict detected");
+    };
+
+    template<typename Item1, typename Item2, bool Marked>
+    struct report_shift_reduce_conflict
+    {
+        static_assert(!Marked, "Shift/reduce conflict detected  - use mark_conflict<> to whitelist");
+    };
+
 }

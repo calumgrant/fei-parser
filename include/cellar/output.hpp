@@ -119,6 +119,7 @@ namespace cellar
     template<int Position, typename...Symbols>
     struct write_rule;
 
+
     template<typename...Rules>
     std::ostream & operator<<(std::ostream & os, symbol<Rules...>)
     {
@@ -146,7 +147,6 @@ namespace cellar
         }
     };
 
-
     template<int Id, typename...Symbols, int Position, int Lookahead>
     std::ostream & operator<<(std::ostream & os, const rule_position<rule<Id, Symbols...>, Position, Lookahead> &)
     {
@@ -154,6 +154,35 @@ namespace cellar
         write_rule<Position, Symbols...>::write(os);
         return os << ", " << Lookahead;
     }
+
+    template<typename... Symbols>
+    struct write_rule2;
+
+    template<typename Symbol, typename... Symbols>
+    struct write_rule2<Symbol, Symbols...>
+    {
+        static void write(std::ostream & os)
+        {
+            os << " " << Symbol();
+            write_rule2<Symbols...>::write(os);
+        }
+    };
+
+    template<>
+    struct write_rule2<>
+    {
+        static void write(std::ostream & os) {}
+    };
+
+
+    template<int Id, typename...Symbols>
+    std::ostream & operator<<(std::ostream & os, rule<Id, Symbols...>)
+    {
+        os << "rule<" << Id << "> ->";
+        write_rule2<Symbols...>::write(os);
+        return os;
+    }
+
 
     template<int Id, typename...Symbols, int Position, int Lookahead>
     std::ostream & operator<<(std::ostream & os, const rule_position<token<Id, Symbols...>, Position, Lookahead> &)
@@ -167,5 +196,10 @@ namespace cellar
     std::ostream & operator<<(std::ostream & os, shift<Id>)
     {
         return os << "s" << Id;
+    }
+    template<typename T>
+    std::ostream & operator<<(std::ostream & os, reduce<T>)
+    {
+        return os << "r[" << T() << "]";
     }
 }
