@@ -152,7 +152,7 @@ namespace feiparser
     {
         os << "rule<" << Id << "> ->";
         write_rule<Position, Symbols...>::write(os);
-        return os << " {" << Lookahead << "}";
+        return os << ", " << Lookahead;
     }
 
     template<int Id, typename...Symbols, int Position, int Lookahead>
@@ -160,7 +160,7 @@ namespace feiparser
     {
         os << "rule<" << Id << "> ->";
         write_rule<Position, token<Id>>::write(os);
-        return os << " {" << Lookahead << "}";
+        return os << ", " << Lookahead;
     }
 
     template<int Id>

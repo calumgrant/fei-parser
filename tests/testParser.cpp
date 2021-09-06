@@ -129,16 +129,28 @@ namespace Grammar2
 
     using C0 = closure<S0>::type;
 
-    using A1_0 = action<S0, 0>::type;
-    using A1_1 = action<S0, 1>::type;
+    using A0a = action<S0, 0>::type;
+    using A0b = action<S0, 1>::type;
+    using Error = typeset<>;
 
     using simpletest = typeset<rule_position<rule<10, a, b>, 0, -4>>;
     using Sa = action<simpletest, 0>::type;
-    using Sb = action<simpletest, 1>::type;
+    using Error = action<simpletest, 1>::type;
 
-    using A2a = shift_action<S0, 0>::type;
-    using A2b = shift_action<S0, 1>::type;
-    using C2 = closure<A2a>::type;
+    using S1 = shift_action<S0, 0>::type;
+    using Error = shift_action<S0, 1>::type;
+    using C1 = closure<S1>::type;
+
+    using S3 = shift_action<S1, 0>::type;
+    using C3 = closure<S3>::type;
+
+    using S4 = shift_action<S3, 1>::type;
+    using C4 = closure<S4>::type;
+
+    using S5 = shift_action<S1, 1>::type;
+    using S3 = shift_action<S3, 0>::type;
+
+    using C5 = closure<S5>::type;
 }
 
 int main()
@@ -152,8 +164,11 @@ int main()
 
     parser.parse("1+1");
 
-    std::cout << "S0: " << Grammar2::C0() << std::endl;
-    std::cout << "action(S0, 0): " << Grammar2::A1_0() << std::endl;
-    std::cout << Grammar2::Sa() << Grammar2::Sb() << std::endl;
-    std::cout << Grammar2::A2a() << Grammar2::A2b() << Grammar2::C2() << std::endl;
+    std::cout << "C0: " << Grammar2::C0() << std::endl;
+    std::cout << "action(S0, 0): " << Grammar2::A0a() << std::endl;
+    std::cout << Grammar2::Sa() << std::endl;
+    std::cout << "C1: " << Grammar2::C1() << std::endl;
+    std::cout << "C3: " << Grammar2::C3() << std::endl;
+    std::cout << "C4: " << Grammar2::C4() << std::endl;
+    std::cout << "C5: " << Grammar2::C5() << std::endl;
 }
