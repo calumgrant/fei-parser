@@ -141,6 +141,8 @@ namespace Grammar2
     using Error = shift_action<S0, 1>::type;
     using C1 = closure<S1>::type;
 
+    using S2 = goto_<S0, E>::type;
+
     using S3 = shift_action<S1, 0>::type;
     using C3 = closure<S3>::type;
 
@@ -151,6 +153,12 @@ namespace Grammar2
     using S3 = shift_action<S3, 0>::type;
 
     using C5 = closure<S5>::type;
+    using S6 = goto_<S1, E>::type;
+    using S7 = goto_<S3, E>::type;
+    using S8 = shift_action<S6, 1>::type;
+    using S9 = shift_action<S7, 1>::type;
+
+    using Empty = goto_<S2, E>::type;  // Just check
 }
 
 namespace Conflicts1
@@ -161,6 +169,7 @@ namespace Conflicts1
     using Expr = symbol<rule<1, a>, rule<2, a>>;
 
     using S0 = initial_state<Expr>::type;
+    using S1 = shift_action<S0, 0>::type;
 }
 
 template<typename State, int Token>
@@ -180,6 +189,12 @@ void outputState()
     outputAction<State, 0>();
     outputAction<State, 1>();
     outputAction<State, EndOfStream>();
+}
+
+template<typename State, typename Symbol>
+void outputGoto()
+{
+    std::cout << "GOTO " << typename goto_<State, Symbol>::type() << std::endl;
 }
 
 int main()
@@ -204,7 +219,9 @@ int main()
     outputState<Grammar2::S1>();
     outputState<Grammar2::S3>();
     outputState<Grammar2::S4>();
+    outputGoto<Grammar2::S0, Grammar2::E>();
 
     // Let's try a conflict
     outputState<Conflicts1::S0>();
+    outputState<Conflicts1::S1>();
 }
