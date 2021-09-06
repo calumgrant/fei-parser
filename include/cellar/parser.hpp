@@ -2,7 +2,7 @@
 
 #include "impl/tree.hpp"
 
-namespace feiparser
+namespace cellar
 {
     template<typename It>
     class parser

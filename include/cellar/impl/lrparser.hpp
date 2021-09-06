@@ -7,7 +7,7 @@
 #include "action.hpp"
 #include "goto.hpp"
 
-namespace feiparser
+namespace cellar
 {
     template<typename Symbol>
     struct tokens

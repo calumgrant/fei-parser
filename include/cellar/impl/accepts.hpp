@@ -1,7 +1,7 @@
 #pragma once
 #include "rules.hpp"
 
-namespace feiparser
+namespace cellar
 {
 
     template<typename Rule>

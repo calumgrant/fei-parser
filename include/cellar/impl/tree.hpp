@@ -2,7 +2,7 @@
 #include <vector>
 #include "node.hpp"
 
-namespace feiparser
+namespace cellar
 {   
     class tree
     {

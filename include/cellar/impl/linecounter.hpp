@@ -3,13 +3,13 @@
 #include "location.hpp"
 #include <iterator>
 
-namespace feiparser
+namespace cellar
 {
     template<typename It>
     class linecounter
     {
     public:
-        feiparser::location location;
+        cellar::location location;
 
         linecounter() {}
 

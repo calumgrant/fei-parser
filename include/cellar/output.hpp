@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-namespace feiparser
+namespace cellar
 {
     template<int Ch>
     std::ostream & operator<<(std::ostream & os, ch<Ch>)

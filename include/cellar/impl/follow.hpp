@@ -3,7 +3,7 @@
 #include "rules.hpp"
 #include "first.hpp"
 
-namespace feiparser
+namespace cellar
 {
     /*
         Constructs the FOLLOW set of a rule, giving the set of possible tokens that could

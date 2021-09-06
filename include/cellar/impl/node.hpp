@@ -2,7 +2,7 @@
 
 #include "location.hpp"
 
-namespace feiparser
+namespace cellar
 {
     struct node_data;
     class children;
@@ -16,7 +16,7 @@ namespace feiparser
 
         std::string str() const;
         const char * c_str() const;
-        feiparser::location location() const;
+        cellar::location location() const;
 
         int length() const;
 

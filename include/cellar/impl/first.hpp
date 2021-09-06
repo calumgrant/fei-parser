@@ -1,6 +1,6 @@
 #pragma once
 
-namespace feiparser
+namespace cellar
 {
    /*
         Constructs a typeset of the "first" terminal/token symbol in a symbol.

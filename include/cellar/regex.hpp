@@ -3,7 +3,7 @@
 #include <utility>
 #include "impl/lex.hpp"
 
-namespace feiparser
+namespace cellar
 {
     template<typename Rule, typename It>
     bool regex_match(It first, It last)

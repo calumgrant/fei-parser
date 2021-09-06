@@ -2,7 +2,7 @@
 #include <utility>
 #include "impl/linecounter.hpp"
 
-namespace feiparser
+namespace cellar
 {
     static const int Match = -1;
     static const int NoMatch = -2;

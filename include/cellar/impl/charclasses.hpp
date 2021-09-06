@@ -2,7 +2,7 @@
 
 #include "rules.hpp"
 
-namespace feiparser
+namespace cellar
 {
     using utf8_continuation = chrange<128, 191>;
     using utf8_2 = seq<chrange<192, 223>, utf8_continuation>;

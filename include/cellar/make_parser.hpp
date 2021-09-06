@@ -3,7 +3,7 @@
 #include "impl/lrparser.hpp"
 #include "impl/typeset.hpp"
 
-namespace feiparser
+namespace cellar
 {
     
 }

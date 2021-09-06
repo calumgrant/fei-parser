@@ -1,6 +1,6 @@
 #include <cellar/cellar.hpp>
 
-using namespace feiparser;
+using namespace cellar;
 
 template<int X> struct Int {};
 

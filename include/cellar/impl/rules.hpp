@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace feiparser
+namespace cellar
 {
     template<int Ch>
     struct ch {};

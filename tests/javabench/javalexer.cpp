@@ -15,7 +15,7 @@
 #include "java.hpp"
 #include <cellar/cellar.hpp>
 
-using namespace feiparser;
+using namespace cellar;
 using namespace JavaParser;
 
 // 3.1 Unicode
@@ -341,4 +341,4 @@ using JavaTokens = alt<
 
 #endif
 
-feiparser::char_lexer JavaParser::lexer = make_lexer<JavaTokens>();
+cellar::char_lexer JavaParser::lexer = make_lexer<JavaTokens>();

@@ -10,11 +10,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include_directories(include)
 
-add_executable(lexertests tests/testLexer.cpp 
-    include/accepts.hpp include/charclasses.hpp include/feiparser.hpp include/lex.hpp include/lexer.hpp
-    include/next.hpp include/node.hpp include/normalize.hpp include/output.hpp include/regex.hpp
-    include/rules.hpp include/tree.hpp include/unicode.hpp
-    )
+add_executable(lexertests tests/testLexer.cpp)
 
 add_executable(parsertests tests/testParser.cpp)
 add_executable(typesetTests tests/testTypeset.cpp)

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace feiparser
+namespace cellar
 {
     /*
         Determines whether a grammar symbol can be empty.

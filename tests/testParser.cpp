@@ -2,7 +2,7 @@
 #include <cellar/cellar.hpp>
 #include <cellar/output.hpp>
     
-using namespace feiparser;
+using namespace cellar;
 
 namespace Grammar1
 {
@@ -155,7 +155,7 @@ namespace Grammar2
 
 int main()
 {
-    auto parser = feiparser::make_parser<Grammar1::Tokens, Grammar1::Expr>();
+    auto parser = cellar::make_parser<Grammar1::Tokens, Grammar1::Expr>();
 
     std::cout << TestClosure::S0() << std::endl;
     std::cout << TestClosure::S1() << std::endl;

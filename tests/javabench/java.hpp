@@ -121,6 +121,6 @@ namespace JavaParser
         CompilationUnit = LastToken
     };
 
-    extern feiparser::char_lexer lexer;
-    extern feiparser::char_parser parser;
+    extern cellar::char_lexer lexer;
+    extern cellar::char_parser parser;
 }

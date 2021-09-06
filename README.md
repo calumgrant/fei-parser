@@ -74,7 +74,7 @@ The
 ```
 #include <feiparser.hpp>
 
-using namespace feiparser;
+using namespace cellar;
 
 enum class Tokens
 {

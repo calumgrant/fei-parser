@@ -4,7 +4,7 @@
 #include "potentially_empty_symbol.hpp"
 #include "follow.hpp"
 
-namespace feiparser
+namespace cellar
 {
     /*
         Finds the next symbol in an Item (the symbol to the right of the `.`)

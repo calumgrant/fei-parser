@@ -1,7 +1,7 @@
 #pragma once
 #include "normalize.hpp"
 
-namespace feiparser
+namespace cellar
 {
   template<typename Rule, int Ch>
     struct next;

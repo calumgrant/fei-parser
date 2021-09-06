@@ -10,9 +10,6 @@
 
 #include "java.hpp"
 
-class BenchmarkSuite
-{
-};
 
 class JavaFileList
 {
@@ -125,7 +122,7 @@ int main(int argc, char**argv)
                 while(stream.lex_including_whitespace())
                 {
                     const bool show_errors = true;
-                    if(show_errors && stream.token() <0 && stream.token() != feiparser::Whitespace)
+                    if(show_errors && stream.token() <0 && stream.token() != cellar::Whitespace)
                     {
                         ++number_of_lexer_errors;
                         std::cout << "Lexer error in " << p << ":" << stream.begin().location.row << ": " << stream << std::endl;

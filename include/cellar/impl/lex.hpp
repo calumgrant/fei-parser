@@ -8,7 +8,7 @@
 #endif
 
 
-namespace feiparser
+namespace cellar
 {
     template<typename It>
     struct lex_state

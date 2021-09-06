@@ -11,7 +11,7 @@
 
 // !! Rename this to normalize
 
-namespace feiparser
+namespace cellar
 {
     // Rewrites lexer rules to a canonical form.
     template<typename Rule>
@@ -291,7 +291,7 @@ namespace feiparser
     template<>
     struct make_nonempty<empty>
     {
-        typedef feiparser::empty type;
+        typedef cellar::empty type;
         static const bool empty = true;
     };
 

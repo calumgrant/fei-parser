@@ -1,6 +1,6 @@
 
 
-namespace feiparser
+namespace cellar
 {
     /*
         Computes the action of a token `Token` in state `State`.

@@ -12,7 +12,7 @@
 
 struct foo {};
 
-namespace fp = feiparser;
+namespace fp = cellar;
 
 void testAny()
 {
@@ -348,7 +348,7 @@ void testNotCh()
 
 void testX()
 {
-    using namespace feiparser;
+    using namespace cellar;
     using IntegerTypeSuffix = chalt<'l','L'>;
     using NonZeroDigit = chrange<'1','9'>;
     using Digit = alt<ch<'0'>, NonZeroDigit>;
@@ -367,7 +367,7 @@ void testX()
 
 void testComment()
 {
-    using namespace feiparser;
+    using namespace cellar;
     using NotStar = notch<'*'>;
     using NotSlash = notch<'/'>;
     using NotStarNotSlash = notch<'*','/'>;
@@ -451,7 +451,7 @@ void testKeywords()
         While
     };
 
-    using namespace feiparser;
+    using namespace cellar;
 
     using KeywordToken = alt<
     /*
@@ -517,7 +517,7 @@ void testKeywords()
 
 void testTextBlock()
 {
-    using namespace feiparser;
+    using namespace cellar;
 
 using UnicodeMarker = plus<ch<'u'>>;
 using HexDigit = alt<chrange<'0','9'>,chrange<'a','f'>,chrange<'A','F'>>;

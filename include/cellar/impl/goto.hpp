@@ -1,4 +1,4 @@
-namespace feiparser
+namespace cellar
 {
     /*
         Computes the goto of symbol `Symbol` in state `State`.
