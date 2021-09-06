@@ -135,6 +135,10 @@ namespace Grammar2
     using simpletest = typeset<rule_position<rule<10, a, b>, 0, -4>>;
     using Sa = action<simpletest, 0>::type;
     using Sb = action<simpletest, 1>::type;
+
+    using A2a = shift_action<S0, 0>::type;
+    using A2b = shift_action<S0, 1>::type;
+    using C2 = closure<A2a>::type;
 }
 
 int main()
@@ -151,4 +155,5 @@ int main()
     std::cout << "S0: " << Grammar2::C0() << std::endl;
     std::cout << "action(S0, 0): " << Grammar2::A1_0() << std::endl;
     std::cout << Grammar2::Sa() << Grammar2::Sb() << std::endl;
+    std::cout << Grammar2::A2a() << Grammar2::A2b() << Grammar2::C2() << std::endl;
 }

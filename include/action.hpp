@@ -87,4 +87,51 @@ namespace feiparser
         using type = typename action2<Closure, Token>::type;
     };
 
+
+    template<typename Rule, int Position, int Token>
+    struct shifts;
+
+    template<int Id, typename Other, typename...Symbols, int Token>
+    struct shifts<rule<Id, Other, Symbols...>, 0, Token>
+    {
+        static const bool value = false;
+    };
+
+    template<int Id, int Token, typename...Def, typename...Symbols>
+    struct shifts<rule<Id, token<Token, Def...>, Symbols...>, 0, Token>
+    {
+        static const bool value = true;
+    };
+
+    template<int Id, typename Symbol, typename...Symbols, int Position, int Token>
+    struct shifts<rule<Id, Symbol, Symbols...>, Position, Token>
+    {
+        static const bool value = shifts<rule<Id, Symbols...>, Position-1, Token>::value;
+    };
+
+
+    template<typename State, int Token>
+    struct shift_action2;
+
+    template<int Token>
+    struct shift_action2<typeset<>, Token>
+    {
+        using type = typeset<>;
+    };
+
+    template<typename Rule, int Position, int Lookahead, typename...Items, int Token>
+    struct shift_action2<typeset<rule_position<Rule, Position, Lookahead>, Items...>, Token>
+    {
+        using T1 = rule_position<Rule, Position+1, Lookahead>;
+        using T2 = typename shift_action2<typeset<Items...>, Token>::type;
+        static const bool shiftsToken = shifts<Rule, Position, Token>::value;
+        using type = typename type_if<shiftsToken, typename typeset_insert<T1, T2>::type, T2>::type;
+    };
+
+    template<typename State, int Token>
+    struct shift_action
+    {
+        using Closure = typename closure<State>::type;
+        using type = typename shift_action2<Closure, Token>::type;
+    };
 }
