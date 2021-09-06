@@ -9,6 +9,12 @@
 
 namespace feiparser
 {
+    template<typename Symbol>
+    struct tokens
+    {
+
+    };
+
     // Should really be hidden/moved from here
     template<typename It>
     struct parse_state

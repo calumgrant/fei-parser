@@ -1,5 +1,5 @@
-#include "lexer.hpp"
-#include "parser.hpp"
+#include <cellar/lexer.hpp>
+#include <cellar/parser.hpp>
 
 namespace JavaParser
 {

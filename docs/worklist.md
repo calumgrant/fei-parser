@@ -1,9 +1,8 @@
 
 
-
 - Parser implementation
-  - closure
-
+  - Check 
+  - Code to output a table
 
 - Code reorg
   - Create a library with all the parsers

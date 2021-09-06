@@ -1,5 +1,4 @@
 #pragma once
-#include "lexer.hpp"
 #include "accepts.hpp"
 #include "next.hpp"
 

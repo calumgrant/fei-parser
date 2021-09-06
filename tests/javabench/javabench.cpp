@@ -6,7 +6,7 @@
 #include <vector>
 #include <fstream>
 
-#include "output.hpp"
+#include <cellar/output.hpp>
 
 #include "java.hpp"
 

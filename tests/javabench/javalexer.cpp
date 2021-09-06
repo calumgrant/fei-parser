@@ -13,7 +13,7 @@
  */
 
 #include "java.hpp"
-#include "feiparser.hpp"
+#include <cellar/cellar.hpp>
 
 using namespace feiparser;
 using namespace JavaParser;

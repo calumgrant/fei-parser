@@ -1,6 +1,6 @@
 #pragma once
 #include <utility>
-#include "linecounter.hpp"
+#include "impl/linecounter.hpp"
 
 namespace feiparser
 {

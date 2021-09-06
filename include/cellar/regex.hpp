@@ -1,7 +1,7 @@
 #pragma once
 
 #include <utility>
-#include "lex.hpp"
+#include "impl/lex.hpp"
 
 namespace feiparser
 {
