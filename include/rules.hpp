@@ -60,7 +60,10 @@ namespace feiparser
         typedef symbol<Rules...> rules;
     };
 
-    struct empty {};
+    struct empty
+    {
+        using rules = empty;
+    };
 
     // Unused
     template<int Ch>

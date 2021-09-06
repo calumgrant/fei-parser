@@ -26,6 +26,12 @@ namespace feiparser
         using type_or_lookahead = type;
     };
 
+    template<int Id, int Position, int Lookahead>
+    struct getnext<rule_position<rule<Id>, Position, Lookahead>>
+    {
+        using type = empty;
+    };
+
     template<int Id, int Lookahead>
     struct getnext<rule_position<rule<Id>, 0, Lookahead>>
     {
@@ -64,7 +70,10 @@ namespace feiparser
         using type = Closure;
     };
 
-    template<typename Item, typename Closure, bool Recursive = typeset_contains<Item, Closure>::value>
+    template<typename Item>
+    struct item;
+
+    template<typename Item, typename Closure, bool NeedToExpand = !typeset_contains<Item, Closure>::value && item<Item>::reads_symbol>
     struct add_to_closure;
 
     template<typename Rule, int Lookahead, typename...Follows, typename Closure>
@@ -74,33 +83,48 @@ namespace feiparser
         using type = typename add_to_closure<Item, Closure>::type;
     };
 
+    template<typename T>
+    struct Debug
+    {
+        using Break = typename T::fail;
+    };
+
     template<int Id, typename...Rule, typename...Items, typename Follows, typename Closure>
     struct expand_item<symbol<rule<Id, Rule...>, Items...>, Follows, Closure>
-    {
+    {        
         // using T0 = rule_position
         using C0 = typename add_items<rule<Id, Rule...>, Follows, Closure>::type;
         using type = typename expand_item<symbol<Items...>, Follows, C0>::type;
     };
 
     template<typename Item, typename Closure>
-    struct add_to_closure<Item, Closure, true>
+    struct add_to_closure<Item, Closure, false>
     {
-        using type = Closure;
+        using type = typename typeset_insert<Item, Closure>::type;
     };
 
     template<typename Symbol>
-    struct is_terminal;
+    struct is_symbol
+    {
+        static const bool value = is_symbol<typename Symbol::rules>::value;
+    };
 
     template<int Id, typename...X>
-    struct is_terminal<token<Id, X...>>
+    struct is_symbol<token<Id, X...>>
     {
         static const bool value = false;
     };
 
     template<typename...X>
-    struct is_terminal<symbol<X...>>
+    struct is_symbol<symbol<X...>>
     {
         static const bool value = true;
+    };
+
+    template<>
+    struct is_symbol<empty>
+    {
+        static const bool value = false;
     };
 
     template<typename Item>
@@ -111,6 +135,40 @@ namespace feiparser
     {
         using type = rule_position<Rule, Position+1, Lookahead>;
     };
+    
+    template<typename Item>
+    struct item;
+
+    template<int Id, typename Symbol, typename... Symbols, int Position, int Lookahead>
+    struct item<rule_position<rule<Id, Symbol, Symbols...>, Position, Lookahead>>
+    {
+        using rule_type = rule<Id, Symbol, Symbols...>;
+        static const int lookahead = Lookahead;
+        static const int position = Position;
+
+        static const bool reads_symbol = item<rule_position<rule<Id, Symbols...>, Position-1, Lookahead>>::reads_symbol;
+    };
+
+    template<int Id, int Lookahead, typename Symbol, typename... Symbols>
+    struct item<rule_position<rule<Id, Symbol, Symbols...>, 0, Lookahead>>
+    {
+        using rule_type = rule<Id, Symbol, Symbols...>;
+        static const int lookahead = Lookahead;
+        static const int position = 0;
+
+        static const bool reads_symbol = is_symbol<Symbol>::value;
+    };
+
+    template<int Id, int Lookahead>
+    struct item<rule_position<rule<Id>, 0, Lookahead>>
+    {
+        using rule_type = rule<Id>;
+        static const int lookahead = Lookahead;
+        static const int position = 0;
+
+        static const bool reads_symbol = false;
+    };
+
 
     /*
         Adds an item (i.e. a rule_position) to a closure, giving the new closure in the
@@ -125,7 +183,7 @@ namespace feiparser
         All newly added items also need to be expanded.
     */
     template<typename Item, typename Closure>
-    struct add_to_closure<Item, Closure, false>
+    struct add_to_closure<Item, Closure, true>
     {
         // Insert Item into Closure
         using C1 = typename typeset_insert<Item, Closure>::type;
@@ -133,16 +191,13 @@ namespace feiparser
         using Follows = typename follow<Item>::type;
 
         using NextSymbol= typename getnext<Item>::type;
-        static const bool needToExpand = !is_terminal<typename NextSymbol::rule>::value;
 
         using C2 = typename type_if<
-            potentially_empty_symbol<Item>::value,
+            potentially_empty_symbol<NextSymbol>::value,
             typename add_to_closure<typename skip_symbol<Item>::type, C1>::type,
             C1>::type;
 
-        using C3 = typename expand_item<Item, Follows, C2>::type;
-
-        using type = typename type_if<needToExpand, C3, C2>::type;
+        using type = typename expand_item<Item, Follows, C2>::type;
     };
 
 
@@ -158,8 +213,7 @@ namespace feiparser
     template<typename Item, typename...Items, typename Closure>
     struct build_closure<typeset<Item, Items...>, Closure>
     {
-        using C0 = typename typeset_insert<Item, Closure>::type;
-        using C1 = typename build_closure<typeset<Items...>, C0>::type;
+        using C1 = typename build_closure<typeset<Items...>, Closure>::type;
         using type = typename add_to_closure<Item, C1>::type;
     };
 

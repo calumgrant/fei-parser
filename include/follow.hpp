@@ -38,4 +38,10 @@ namespace feiparser
             typename typeset_insert<token<Lookahead>, T>::type,
             T>::type;
     };
+
+    template<int Id, int Position, int Lookahead>
+    struct follow<rule_position<rule<Id>, Position, Lookahead>>
+    {
+        using type = typeset<>;
+    };
 }

@@ -100,11 +100,12 @@ namespace feiparser
         parse_state<It> state(tokens);
 
         // Do the parsing
-        using S0 = typeset<rule_position<Symbol, 0, 0>>;
+        using Rule0 = rule<0, Symbol, token<EndOfStream>>;
+        using State0 = typeset<rule_position<Rule0, 0, EndOfStream>>;
         state.stack.push_back(parse_success);
 
         state.tokens.lex();
-        parse<S0>(state);
+        parse<State0>(state);
 
         return std::move(state.parse_tree);
     }
