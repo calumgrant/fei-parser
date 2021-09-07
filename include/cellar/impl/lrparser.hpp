@@ -36,14 +36,51 @@ namespace cellar
 
     }
 
+    template<typename Item>
+    struct get_next_token;
+
+    template<int Id, int Lookahead>
+    struct get_next_token<rule_position<rule<Id>, 0, Lookahead>>
+    {
+        using type = typeset<token<Lookahead>>;
+    };
+
+    template<int Id, int Token, typename...Def, typename...Items, int Lookahead>
+    struct get_next_token<rule_position<rule<Id, token<Token, Def...>, Items...>, 0, Lookahead>>
+    {
+        using type = typeset<token<Token>>;
+    };
+
+    template<int Id, typename Item, typename...Items, int Lookahead>
+    struct get_next_token<rule_position<rule<Id, Item, Items...>, 0, Lookahead>>
+    {
+        using type = typeset<>;
+    };
+
+    template<int Id, typename Item, typename...Items, int Position, int Lookahead>
+    struct get_next_token<rule_position<rule<Id, Item, Items...>, Position, Lookahead>>
+    {
+        using type = typename get_next_token<rule_position<rule<Id, Items...>, Position-1, Lookahead>>::type;
+    };
+
 
     // Compute the list of tokens that this state is able to process
     // Anything else is a syntax error
     template<typename State>
-    struct build_token_list
+    struct build_next_token_list;
+
+    template<>
+    struct build_next_token_list<typeset<>>
     {
-        // TODO
-        typedef typeset<token<0>, token<1>> type;
+        using type = typeset<>;
+    };
+
+    template<typename Item, typename... Items>
+    struct build_next_token_list<typeset<Item, Items...>>
+    {
+        using T0 = typename build_next_token_list<typeset<Items...>>::type;
+        using T1 = typename get_next_token<Item>::type;
+        using type = typename typeset_union<T0, T1>::type;
     };
 
     template<typename State, typename It>
@@ -98,7 +135,7 @@ namespace cellar
     {
         // Process one token from the input stream.
         using Closure = typename closure<State>::type;
-        using Tokens = typename build_token_list<Closure>::type;
+        using Tokens = typename build_next_token_list<Closure>::type;
 
         std::cout << "Parsing token in state " << Closure() << std::endl;
         std::cout << "Tokens = " << Tokens() << std::endl;

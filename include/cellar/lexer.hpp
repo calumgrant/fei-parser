@@ -30,9 +30,13 @@ namespace cellar
             {
                 tok_start = tok_end;
                 token_value = fn(tok_end, stream_end);
-                if(tok_start == tok_end) return false;
+                if(tok_start == tok_end)
+                {
+                    token_value = EndOfStream;
+                    return false;
+                }
             }
-            while(token_value<=0);
+            while(token_value<0);
             return true;
         }
 

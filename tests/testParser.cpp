@@ -284,6 +284,7 @@ public:
     Parse1()
     {
         AddTest(&Parse1::TestParse);
+        AddTest(&Parse1::TestTokenize);
     }
 
     enum Nodes { IntNode, AddNode, PlusNode, MinusNode };
@@ -298,6 +299,20 @@ public:
         {};
 
     using Tokens = alt<Int, Add>;
+    
+    void TestTokenize()
+    {
+        auto l = make_lexer<Tokens>();
+        auto tokens = l.tokenize("1+1");
+        CHECK(tokens.lex());
+        EQUALS(IntNode, tokens.token());
+        CHECK(tokens.lex());
+        EQUALS(AddNode, tokens.token());
+        CHECK(tokens.lex());
+        EQUALS(IntNode, tokens.token());
+        CHECK(!tokens.lex());
+        EQUALS(EndOfStream, tokens.token());
+    }
 
     void TestParse()
     {
