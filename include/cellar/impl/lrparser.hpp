@@ -104,8 +104,9 @@ namespace cellar
     void reduce_fn(parse_state<It> & ps, const std::type_info &rule)
     {
         // Find all the gotos for a given state.
-        using Gotos = typename build_goto_list<State>::type;
-        std::cout << "Reduced to function " << Gotos() << State() << std::endl;
+        using C = typename closure<State>::type;
+        using Gotos = typename build_goto_list<C>::type;
+        std::cout << "Reduced to state " << C() << " with gotos = " << Gotos() << std::endl;
         process_goto<State, Gotos, It>::process(ps, rule);
     }
 
@@ -137,14 +138,25 @@ namespace cellar
     {
         static void process(parse_state<It> & state)
         {
+            std::cout << "Shifting token " << Token << std::endl;
             state.tokens.lex();
             using S2 = typename shift_action<State, Token>::type;
             state.stack.push_back(&reduce_fn<State, It>);
-            
-            // TODO: Compute the "goto" and push it onto the stack
             return parse<S2>(state);
         }
     };
+
+    template<typename State, typename It>
+    struct process_token<State, EndOfStream, It, true>
+    {
+        static void process(parse_state<It> & state)
+        {
+            // Parse success
+            state.parse_tree.success = true;
+        }
+    };
+
+
 
     /*
         The reduce case
@@ -159,11 +171,11 @@ namespace cellar
             using Rule = typename Reduce::rule;
             
             std::cout << "Action = " << Reduce() << std::endl;
-            for(int i=0; i<Rule::length; ++i)
+            for(int i=1; i<Rule::length; ++i)
                 state.stack.pop_back();
+            // state.stack.pop_back();
             auto fn = state.stack.back();
-            state.stack.pop_back();
-            fn(state, typeid(Reduce));
+            fn(state, typeid(typename Reduce::symbol));
         }
     };
 
@@ -204,7 +216,7 @@ namespace cellar
         using Tokens = typename build_next_token_list<Closure>::type;
 
         std::cout << "Parsing token in state " << Closure() << std::endl;
-        std::cout << "Tokens = " << Tokens() << std::endl;
+        std::cout << "Possible tokens = " << Tokens() << std::endl;
 
         process_token_list<State, Tokens, It>::process(state);
     }
@@ -224,7 +236,7 @@ namespace cellar
 
         // Do the parsing
         using State0 = typename initial_state<Symbol>::type;
-        state.stack.push_back(parse_success);
+        // state.stack.push_back(parse_success);
 
         state.tokens.lex();
         parse<State0>(state);

@@ -16,10 +16,10 @@ namespace cellar
     template<int Token, typename Rule>
     struct shift {};
 
-    template<int Lookahead, typename Rule>
+    template<int Lookahead, typename Symbol, typename Rule>
     struct reduce
     {
-        //using symbol = Symbol;
+        using symbol = Symbol;
         using rule = Rule;
     };
 
@@ -37,50 +37,50 @@ namespace cellar
         using reduce_actions = typeset<>;
     };
 
-    template<typename Rule, int Position, int Lookahead, int Token, typename OriginalRule>
+    template<typename S, typename Rule, int Position, int Lookahead, int Token, typename OriginalRule>
     struct item_action2;
 
-    template<int Id, typename Symbol, typename...Symbols, int Position, int Lookahead, int Token, typename OriginalRule>
-    struct item_action2<rule<Id, Symbol, Symbols...>, Position, Lookahead, Token, OriginalRule>
+    template<typename S, int Id, typename Symbol, typename...Symbols, int Position, int Lookahead, int Token, typename OriginalRule>
+    struct item_action2<S, rule<Id, Symbol, Symbols...>, Position, Lookahead, Token, OriginalRule>
     {
-        using T = item_action2<rule<Id, Symbols...>, Position-1, Lookahead, Token, OriginalRule>;
+        using T = item_action2<S, rule<Id, Symbols...>, Position-1, Lookahead, Token, OriginalRule>;
         using shift_actions = typename T::shift_actions;
         using reduce_actions = typename T::reduce_actions;
     };
 
-    template<int Id, int Lookahead, int Token, typename OriginalRule>
-    struct item_action2<rule<Id>, 0, Lookahead, Token, OriginalRule>
+    template<typename S, int Id, int Lookahead, int Token, typename OriginalRule>
+    struct item_action2<S, rule<Id>, 0, Lookahead, Token, OriginalRule>
     {
         using shift_actions = typeset<>;
         using reduce_actions = typeset<>;
     };
 
-    template<int Id, typename...Def, typename...Symbols, int Lookahead, int Token, typename OriginalRule>
-    struct item_action2<rule<Id, token<Token, Def...>, Symbols...>, 0, Lookahead, Token, OriginalRule>
+    template<typename S, int Id, typename...Def, typename...Symbols, int Lookahead, int Token, typename OriginalRule>
+    struct item_action2<S, rule<Id, token<Token, Def...>, Symbols...>, 0, Lookahead, Token, OriginalRule>
     {
         using shift_actions = typeset<shift<Token, OriginalRule>>;
         using reduce_actions = typeset<>;
     };
 
-    template<int Id, typename...Symbols, int Lookahead, int Token, typename OriginalRule>
-    struct item_action2<rule<Id, token<Token>, Symbols...>, 0, Lookahead, Token, OriginalRule>
+    template<typename S, int Id, typename...Symbols, int Lookahead, int Token, typename OriginalRule>
+    struct item_action2<S, rule<Id, token<Token>, Symbols...>, 0, Lookahead, Token, OriginalRule>
     {
         using shift_actions = typeset<shift<Token, OriginalRule>>;
         using reduce_actions = typeset<>;
     };
 
-    template<int Id, typename Symbol, typename...Symbols, int Lookahead, int Token, typename OriginalRule>
-    struct item_action2<rule<Id, Symbol, Symbols...>, 0, Lookahead, Token, OriginalRule>
+    template<typename S, int Id, typename Symbol, typename...Symbols, int Lookahead, int Token, typename OriginalRule>
+    struct item_action2<S, rule<Id, Symbol, Symbols...>, 0, Lookahead, Token, OriginalRule>
     {
         using shift_actions = typeset<>;
         using reduce_actions = typeset<>;
     };
 
-    template<int Id, int Lookahead, typename OriginalRule>
-    struct item_action2<rule<Id>, 0, Lookahead, Lookahead, OriginalRule>
+    template<typename S, int Id, int Lookahead, typename OriginalRule>
+    struct item_action2<S, rule<Id>, 0, Lookahead, Lookahead, OriginalRule>
     {
         using shift_actions = typeset<>;
-        using reduce_actions = typeset<reduce<Lookahead, OriginalRule>>;
+        using reduce_actions = typeset<reduce<Lookahead, S, OriginalRule>>;
     };
 
     template<typename Item, int Token>
@@ -89,7 +89,7 @@ namespace cellar
     template<typename S, typename Rule, int Position, int Lookahead, int Token>
     struct item_action<rule_position<S, Rule, Position, Lookahead>, Token>
     {
-        using T = item_action2<Rule, Position, Lookahead, Token, Rule>;
+        using T = item_action2<S, Rule, Position, Lookahead, Token, Rule>;
         using shift_actions = typename T::shift_actions;
         using reduce_actions = typename T::reduce_actions;
     };

@@ -39,8 +39,8 @@ namespace cellar
         return Id;
     }
 
-    template<int Id, int Token, typename... Symbols>
-    constexpr int ruleid(reduce<Token, rule<Id, Symbols...>>)
+    template<int Id, typename S, int Token, typename... Symbols>
+    constexpr int ruleid(reduce<Token, S, rule<Id, Symbols...>>)
     {
         return Id;
     }
@@ -76,16 +76,16 @@ namespace cellar
         using type = Action;
     };
 
-    template<int Id1, typename Rule1, int Id2, typename Rule2>
-    struct resolve_actions<reduce<Id1, Rule1>, reduce<Id2, Rule2>>
+    template<int Id1, typename S1, typename Rule1, int Id2, typename S2, typename Rule2>
+    struct resolve_actions<reduce<Id1, S1, Rule1>, reduce<Id2, S2, Rule2>>
     {
-        using type = typename reduce_reduce_conflict<reduce<Id1, Rule1>, reduce<Id2, Rule2>>::resolution;
+        using type = typename reduce_reduce_conflict<reduce<Id1, S1, Rule1>, reduce<Id2, S2, Rule2>>::resolution;
     };
 
-    template<int Id1, typename Rule1, int Id2, typename Rule2>
-    struct resolve_actions<reduce<Id1, Rule1>, shift<Id2, Rule2>>
+    template<int Id1, typename S1, typename Rule1, int Id2, typename Rule2>
+    struct resolve_actions<reduce<Id1, S1, Rule1>, shift<Id2, Rule2>>
     {
-        using type = typename shift_reduce_conflict<shift<Id2, Rule2>, reduce<Id1, Rule1>>::resolution;
+        using type = typename shift_reduce_conflict<shift<Id2, Rule2>, reduce<Id1, S1, Rule1>>::resolution;
     };
 
     template<int Id1, typename Rule1, int Id2, typename Rule2>
@@ -128,8 +128,8 @@ namespace cellar
         static const bool value = false;
     };
 
-    template<int Token, typename Rule>
-    struct is_reduce2<reduce<Token, Rule>>
+    template<int Token, typename S, typename Rule>
+    struct is_reduce2<reduce<Token, S, Rule>>
     {
         static const bool value = true;
     };

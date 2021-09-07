@@ -212,8 +212,8 @@ namespace cellar
         return os << "s" << Token << "[" << Rule() << "]";
     }
 
-    template<int Token, typename Rule>
-    std::ostream & operator<<(std::ostream & os, reduce<Token, Rule>)
+    template<int Token, typename S, typename Rule>
+    std::ostream & operator<<(std::ostream & os, reduce<Token, S, Rule>)
     {
         return os << "r" << Token << "[" << Rule() << "]";
     }
