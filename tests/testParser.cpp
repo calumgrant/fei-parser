@@ -206,7 +206,7 @@ namespace TokensInGrammar
 
     class Expr : public symbol<
             rule<PlusNode, Expr, Add, Expr>,
-            rule<IntNode, Int>
+            Int
             >
         {};
 

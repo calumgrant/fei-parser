@@ -85,6 +85,9 @@ namespace cellar
     template<int Token>
     std::ostream & operator<<(std::ostream & os, token<Token>)
     {
+        if(Token == EndOfStream)
+            return os << "$";
+        
         return os << "token<" << Token << ">";
     }
 
@@ -158,7 +161,12 @@ namespace cellar
     {
         os << "rule<" << Id << "> ->";
         write_rule<Position, Symbols...>::write(os);
-        return os << ", " << Lookahead;
+        os << ", ";
+        if(Lookahead == EndOfStream)
+            os << "$";
+        else os << Lookahead;
+        
+        return os;
     }
 
     template<typename... Symbols>
