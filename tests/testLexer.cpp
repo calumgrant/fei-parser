@@ -1,6 +1,7 @@
 
 #include <cellar/output.hpp>
 #include <cellar/cellar.hpp>
+#include <simpletest.hpp>
 
 #include <cassert>
 #include <cstring>

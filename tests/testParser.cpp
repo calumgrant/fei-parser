@@ -1,6 +1,7 @@
 
 #include <cellar/cellar.hpp>
 #include <cellar/output.hpp>
+#include <simpletest.hpp>
     
 using namespace cellar;
 
@@ -104,63 +105,6 @@ namespace TestFollow
     static_assert(typeset_equals<follow<S3b>::type, typeset<token<2>>>::value, "");
 }
 
-namespace TestClosure
-{
-    using A = token<0>;
-    using B = token<1>;
-
-    class Expr : public symbol<rule<10,A>, rule<11, Expr, A>> {};
-
-    using S0 = typeset<rule_position<A, 0, 1>, rule_position<rule<123, A, B>,0,2>>;
-    using S1 = typeset<rule_position<A, 0, 1>, rule_position<rule<123, A, B>,0,2>, rule_position<rule<123, A, B>,2,2>>;
-    using S2 = typeset<rule_position<rule<123, Expr>, 0, 1>>;
-
-    using Gclosure = closure<S2>::type;
-}
-
-namespace Grammar2
-{
-    using a = token<0>;
-    using b = token<1>;
-
-    class E : public symbol<rule<10, a, b>, rule<11, a, E, b>> {};
-
-    using S0 = typeset<rule_position<rule<12, E, token<EndOfStream>>, 0, EndOfStream>>;
-
-    using C0 = closure<S0>::type;
-
-    using A0a = action<S0, 0>::type;
-    using A0b = action<S0, 1>::type;
-    using Error = typeset<>;
-
-    using simpletest = typeset<rule_position<rule<10, a, b>, 0, -4>>;
-    using Sa = action<simpletest, 0>::type;
-    using Error = action<simpletest, 1>::type;
-
-    using S1 = shift_action<S0, 0>::type;
-    using Error = shift_action<S0, 1>::type;
-    using C1 = closure<S1>::type;
-
-    using S2 = goto_<S0, E>::type;
-
-    using S3 = shift_action<S1, 0>::type;
-    using C3 = closure<S3>::type;
-
-    using S4 = shift_action<S3, 1>::type;
-    using C4 = closure<S4>::type;
-
-    using S5 = shift_action<S1, 1>::type;
-    using S3 = shift_action<S3, 0>::type;
-
-    using C5 = closure<S5>::type;
-    using S6 = goto_<S1, E>::type;
-    using S7 = goto_<S3, E>::type;
-    using S8 = shift_action<S6, 1>::type;
-    using S9 = shift_action<S7, 1>::type;
-
-    using Empty = goto_<S2, E>::type;  // Just checking it's still empty
-}
-
 namespace Conflicts1
 {
     using a = token<0>;
@@ -197,7 +141,8 @@ void outputGoto()
     std::cout << "GOTO " << typename goto_<State, Symbol>::type() << std::endl;
 }
 
-namespace TokensInGrammar
+
+class FindTokensInGrammar : public Test::Fixture<FindTokensInGrammar>
 {
     enum Nodes { IntNode, AddNode, PlusNode, MinusNode };
 
@@ -212,44 +157,152 @@ namespace TokensInGrammar
 
     using S0 = initial_state<Expr>::type;
     using C0 = closure<S0>::type;
-}
+public:
+
+    FindTokensInGrammar()
+    {
+        name = "Finding tokens in a grammar - todo";
+        AddTest(&FindTokensInGrammar::f);
+    }
+
+    void f()
+    {     
+        outputState<S0>();
+    }
+} find_tokens;
+
+
+class Closure1 : public Test::Fixture<Closure1>
+{
+    using A = token<0>;
+    using B = token<1>;
+
+    class Expr : public symbol<rule<10,A>, rule<11, Expr, A>> {};
+
+    using S0 = typeset<rule_position<A, 0, 1>, rule_position<rule<123, A, B>,0,2>>;
+    using S1 = typeset<rule_position<A, 0, 1>, rule_position<rule<123, A, B>,0,2>, rule_position<rule<123, A, B>,2,2>>;
+    using S2 = typeset<rule_position<rule<123, Expr>, 0, 1>>;
+
+    using Gclosure = closure<S2>::type;
+
+public:
+    Closure1() { 
+        name = "Closures";
+        AddTest(&Closure1::Output); 
+    }
+
+    void Output()
+    {
+        std::cout << S0() << std::endl;
+        std::cout << S1() << std::endl;
+        std::cout << S2() << std::endl;
+        std::cout << Gclosure() << std::endl;
+    }
+} c1;
+
+class Grammar2 : public Test::Fixture<Grammar2>
+{
+    using a = token<0>;
+    using b = token<1>;
+
+    class E : public symbol<rule<10, a, b>, rule<11, a, E, b>> {};
+
+    using S0 = typeset<rule_position<rule<12, E, token<EndOfStream>>, 0, EndOfStream>>;
+
+    using C0 = closure<S0>::type;
+
+    using A0a = action<S0, 0>::type;
+    using A0b = action<S0, 1>::type;
+    using Error = typeset<>;
+
+    using simpletest = typeset<rule_position<rule<10, a, b>, 0, -4>>;
+    using Sa = action<simpletest, 0>::type;
+    using Error1 = action<simpletest, 1>::type;
+    static_assert(Error() == Error1(), "");
+
+    using S1 = shift_action<S0, 0>::type;
+    using Error2 = shift_action<S0, 1>::type;
+    static_assert(Error() == Error2(), "");
+    using C1 = closure<S1>::type;
+
+    using S2 = goto_<S0, E>::type;
+
+    using S3 = shift_action<S1, 0>::type;
+    using C3 = closure<S3>::type;
+
+    using S4 = shift_action<S3, 1>::type;
+    using C4 = closure<S4>::type;
+
+    using S5 = shift_action<S1, 1>::type;
+    using S3a = shift_action<S3, 0>::type;
+    static_assert(S3() == S3a(), "");
+
+    using C5 = closure<S5>::type;
+    using S6 = goto_<S1, E>::type;
+    using S7 = goto_<S3, E>::type;
+    using S8 = shift_action<S6, 1>::type;
+    using S9 = shift_action<S7, 1>::type;
+
+    using Empty = goto_<S2, E>::type;  // Just checking it's still empty    
+public:
+    Grammar2()
+    {
+        AddTest(&Grammar2::Test);
+    }
+
+    void Test()
+    {
+        std::cout << "C0: " << Grammar2::C0() << std::endl;
+        std::cout << "action(S0, 0): " << Grammar2::A0a() << std::endl;
+        std::cout << Grammar2::Sa() << std::endl;
+        std::cout << "C1: " << Grammar2::C1() << std::endl;
+        std::cout << "C3: " << Grammar2::C3() << std::endl;
+        std::cout << "C4: " << Grammar2::C4() << std::endl;
+        std::cout << "C5: " << Grammar2::C5() << std::endl;
+        outputState<Grammar2::S0>();
+        outputState<Grammar2::S1>();
+        outputState<Grammar2::S3>();
+        outputState<Grammar2::S4>();
+        outputGoto<Grammar2::S0, Grammar2::E>();
+
+    }
+} g2;
+
 
 int main()
 {
-    auto parser = cellar::make_parser<Grammar1::Tokens, Grammar1::Expr>();
-
-    std::cout << TestClosure::S0() << std::endl;
-    std::cout << TestClosure::S1() << std::endl;
-    std::cout << TestClosure::S2() << std::endl;
-    std::cout << TestClosure::Gclosure() << std::endl;
-
-    parser.parse("1+1");
-
-    std::cout << "C0: " << Grammar2::C0() << std::endl;
-    std::cout << "action(S0, 0): " << Grammar2::A0a() << std::endl;
-    std::cout << Grammar2::Sa() << std::endl;
-    std::cout << "C1: " << Grammar2::C1() << std::endl;
-    std::cout << "C3: " << Grammar2::C3() << std::endl;
-    std::cout << "C4: " << Grammar2::C4() << std::endl;
-    std::cout << "C5: " << Grammar2::C5() << std::endl;
-    outputState<Grammar2::S0>();
-    outputState<Grammar2::S1>();
-    outputState<Grammar2::S3>();
-    outputState<Grammar2::S4>();
-    outputGoto<Grammar2::S0, Grammar2::E>();
 
     // Let's try a conflict
     outputState<Conflicts1::S0>();
     outputState<Conflicts1::S1>();
-    
-    outputState<TokensInGrammar::S0>();
 }
 
-template<typename Item> struct leaf {};
-template<typename L, typename R> struct node{};
 
-template<typename I>
-constexpr int tree_size(leaf<I>) { return 1; }
+class Parse1 : public Test::Fixture<Parse1>
+{
+public:
+    Parse1()
+    {
+        AddTest(&Parse1::TestParse);
+    }
 
-template<typename L, typename R>
-constexpr int tree_size(::node<L,R>) { return 1 + tree_size(L()) + tree_size(R()); }
+    enum Nodes { IntNode, AddNode, PlusNode, MinusNode };
+
+    using Int = token<IntNode, plus<digit>>;
+    using Add = token<AddNode, ch<'+'>>;
+
+    class Expr : public symbol<
+            rule<PlusNode, Expr, Add, Expr>,
+            Int
+            >
+        {};
+
+    using Tokens = alt<Int, Add>;
+
+    void TestParse()
+    {
+        auto parser = cellar::make_parser<Tokens, Expr>();
+
+        parser.parse("1+1");
+    }
+} p1;
