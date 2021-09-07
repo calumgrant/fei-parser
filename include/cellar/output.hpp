@@ -64,6 +64,12 @@ namespace cellar
         return os << "star<" << R() << ">";
     }
 
+    template<typename R>
+    std::ostream & operator<<(std::ostream & os, plus<R>)
+    {
+        return os << "plus<" << R() << ">";
+    }
+
     template<int Ch1, int Ch2>
     std::ostream & operator<<(std::ostream & os, chrange<Ch1, Ch2>)
     {

@@ -4,7 +4,33 @@
 namespace cellar
 {
     template<typename...Members>
-    struct typeset {};
+    struct typeset;
+
+    template<typename Item, typename Ts>
+    struct typeset_contains;
+
+    template<typename Item, typename Ts>
+    struct typeset_insert;
+
+    template<typename...Members>
+    struct typeset
+    {
+        constexpr int size() { return sizeof...(Members); }
+
+        constexpr bool empty() { return size()==0; }
+
+        template<typename Item>
+        constexpr bool contains(Item)
+        {
+            return typeset_contains<Item, typeset>::value;
+        }
+
+        template<typename Item>
+        constexpr auto insert(Item)
+        {
+            return typeset_insert<Item, typeset>::type();
+        }
+    };
 
     template<typename Set, typename Item>
     struct typeset_insert;
@@ -137,4 +163,23 @@ namespace cellar
         static const bool value = typeset_subset<Ts1, Ts2>::value && typeset_subset<Ts2, Ts1>::value;
     };
 
+    constexpr typeset<> empty_ts() { return typeset<>(); }
+
+    template<typename... Ts1, typename... Ts2>
+    constexpr bool operator<=(typeset<Ts1...> t1, typeset<Ts2...> t2)
+    {
+        return typeset_subset<typeset<Ts1...>, typeset<Ts2...>>::value;
+    }
+
+    template<typename... Ts1, typename... Ts2>
+    constexpr bool operator==(typeset<Ts1...> t1, typeset<Ts2...> t2)
+    {
+        return t1<=t2 && t2<=t1;
+    }
+
+    template<typename... Ts1, typename... Ts2>
+    constexpr auto operator+(typeset<Ts1...> t1, typeset<Ts2...> t2)
+    {
+        return typeset_union<typeset<Ts1...>, typeset<Ts2...>>::type();
+    }
 }

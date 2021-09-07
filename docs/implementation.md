@@ -1,6 +1,15 @@
-# Implementation of the feiparser
+# Implementation of Cellar
 
-feiparser (fast, easily-integrated parser) is a parser library for C++, that is implemented using C++ templates.
+Cellar is a parser library for C++, that is implemented using C++ templates. The grammar is specified using C++ syntax
+
+The benefit of this approach is that
+
+- The parser is extremely fast. There are no initialization overheads.
+- There are no compromises on the parser algorithm, provided you are happy with LALR.
+- The parser is much more tightly integrated with the rest of your code
+- Building and integration is much simpler with no special build steps or fighting CMAKE macros
+- Avoids all of the frictions commonly associated with integrating parser frameworks
+- Generates a parse tree - no need for actions.
 
 My experience with popular parser frameworks for C++ was that they were quite hard to set up and integrate. I also saw a paper that claimed that ANTLR was the fastest parser, which unfortunately did not chime with my own observations, and made me realise that parsing speed was a thing. I was sure I could do better.
 
@@ -43,6 +52,7 @@ struct next<ch<C2>, C2>
 {
     typedef reject type;
 };
+```
 
 The `next<>` template generates the entire state machine: a graph of states and transitions. This state machine is "deterministic" because there is only one `type` defined for each `next<>` otherwise there would be a compile-time error.
 
@@ -68,7 +78,7 @@ Graph viewer.
 
 ## The parser
 
-Feiparser implements an LALR parser in C++ templates. The computation of the LR "tables" is performed by the C++ compiler. See [] for an overview of LR parsing.
+Cellar implements an LALR parser in C++ templates. The computation of the LR "tables" is performed by the C++ compiler. See [] for an overview of LR parsing.
 
 The parser has a stack of states, and a stack of nodes. The stack of nodes is stored in a `tree`.
 
@@ -121,5 +131,98 @@ Parsing terminates when
 - A syntax error is found.
 
 
+## Aside: Computing with types
+
+The idea of running algorithms in your compiler might seem odd - indeed a Turing-complete type system does not seem like a sensible idea as it's not "decidable". But in practise it's quite handy, and whenever theory and practise differ, theory must give way.
+
+Here is a type that holds an integer:
+
+```
+struct size<int S> {};
+```
+
+Here is a type that adds two sizes:
+
+```
+template<typename S1, typename S2> struct add_sizes;
+
+template<int S1, int S2> struct add_sizes<size<S1>, size<S2>>
+{
+    using type = size<S2+S2>;
+};
+```
+
+Note that you can use `constexpr` functions for this as well, but this only works for const values and not for types.
+
+A "function" in a template could be regarded as a type that transforms a set of types.
+
+By convention, we'll store the result of a type-function in the `type` member. If a type computes a value, then we'll store that in the `value` member.
+
+Type-functions can have multiple outputs. They are true functions as it's not possible (or desirable) for the compiler to have side-effects.
+
+```
+template<typename Size> struct measure_size;
+
+template<int Size> struct measure_size<size<Size>>
+{
+    static const bool length = Size;
+    static const bool is_empty = length==0;
+    static const bool fits_in_the_car = length <= 2;
+};
+```
+
+Types can be used to represent complex structures: lists, sets, trees, and arbitrary data structures. Here is a binary tree:
+
+```
+template<typename Item> struct leaf;
+template<typename Left, typename Right> struct node;
+```
+
+Here is a type-function that counts the number of nodes in a tree:
+
+```
+template<typename Tree> struct count_nodes;
+
+template<typename Item> struct count_nodes<leaf<Item>>
+{
+    static const int value = 1;
+};
+
+template<typename Left, typename Right> struct count_nodes<node<Left, Right>>
+{
+    static const int value = 1 + count_nodes<Left>::value + count_nodes<Right>::value;
+};
+```
+
+You can also do the same thing using `constexpr`, for example
+
+```
+template<typename I>
+constexpr int tree_size(leaf<I>) { return 1; }
+
+template<typename L, typename R>
+constexpr int tree_size(node<L,R>) { return 1 + tree_size(L()) + tree_size(R()); }
+```
+
+C++ templates have all of the necessary machinery to write type-functions, using pattern-matching to select the correct function based on matching the structure of a type.
+
+Since C++ templates are Turing-complete, there is no guarantee of termination. This may seem terrible, but all that happens is that compilation fails because it runs out of memory or exceeds a complexity limit. If your program is correct, compilation will succeed. The debugging experience for C++ template metaprogramming isn't all that great to be fair - you can't set breakpoints in the compiler for example.
+
+## Useful parser classes
+
+`typeset<...>` contains a set of types.
+- `typeset_insert<Item, Set>::type` inserts one item into a typeset, with the resulting set in `type`.
+- `typeset_union<S1,S2>::type` performs a set union of two sets.
+
+`closure<Kernel>::type` computes the LALR "closure" of a state.
+- `build_closure<State, Closure>::type` constructs a closure
+- `add_to_closure<Item, Closure>::type` adds a new item to the closure, expanding it as required. It only expands items that haven't already been added (to avoid infinite recursion).
+- 
+
+`first<Symbol>::type` constructs the FIRST set of tokens that a symbol can match. This needs to 
+
+`follow<Item>::type` constructs the follow-set for an item - the set of all tokens that could follow the next symbol in the item. This needs to take into account potentially empty symbols.
+
+`potentially_empty_symbol<Symbol>::value` computes a true/false value depending on whether `Symbol` can be empty.
 
 Welcome to the wacky world of C++ template metaprogramming! What has made this project particularly challenging, is that LALR parser construction isn't terribly well explained anywhere, and that C++ template metaprogramming isn't terribly easy, particularly if you are trying to implement algorithms. 

@@ -2,6 +2,8 @@
 
 #include <typeinfo>
 
+#include <iostream>  // Deleteme
+
 #include "rules.hpp"
 #include "closure.hpp"
 #include "action.hpp"
@@ -44,12 +46,18 @@ namespace cellar
         typedef typeset<token<0>, token<1>> type;
     };
 
+    template<typename State, typename It>
+    void parse(parse_state<It> & state);
+
+
     template<typename State, int Token, typename It>
     struct process_token
     {
         static void process(parse_state<It> & state)
         {
-            
+            state.tokens.lex();
+            using S2 = typename shift_action<State, Token>::type;
+            return parse<S2>(state);
         }
     };
 
@@ -91,7 +99,10 @@ namespace cellar
         // Process one token from the input stream.
         using Closure = typename closure<State>::type;
         using Tokens = typename build_token_list<Closure>::type;
-        
+
+        std::cout << "Parsing token in state " << Closure() << std::endl;
+        std::cout << "Tokens = " << Tokens() << std::endl;
+
         process_token_list<State, Tokens, It>::process(state);
     }
 

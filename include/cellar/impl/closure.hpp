@@ -92,7 +92,6 @@ namespace cellar
     template<int Id, typename...Rule, typename...Items, typename Follows, typename Closure>
     struct expand_item<symbol<rule<Id, Rule...>, Items...>, Follows, Closure>
     {
-        // using T0 = rule_position
         using C0 = typename add_items<rule<Id, Rule...>, Follows, Closure>::type;
         using type = typename expand_item<symbol<Items...>, Follows, C0>::type;
     };

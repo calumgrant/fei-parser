@@ -158,7 +158,7 @@ namespace Grammar2
     using S8 = shift_action<S6, 1>::type;
     using S9 = shift_action<S7, 1>::type;
 
-    using Empty = goto_<S2, E>::type;  // Just check
+    using Empty = goto_<S2, E>::type;  // Just checking it's still empty
 }
 
 namespace Conflicts1
@@ -197,6 +197,23 @@ void outputGoto()
     std::cout << "GOTO " << typename goto_<State, Symbol>::type() << std::endl;
 }
 
+namespace TokensInGrammar
+{
+    enum Nodes { IntNode, AddNode, PlusNode, MinusNode };
+
+    using Int = token<IntNode, plus<digit>>;
+    using Add = token<AddNode, ch<'+'>>;
+
+    class Expr : public symbol<
+            rule<PlusNode, Expr, Add, Expr>,
+            rule<IntNode, Int>
+            >
+        {};
+
+    using S0 = initial_state<Expr>::type;
+    using C0 = closure<S0>::type;
+}
+
 int main()
 {
     auto parser = cellar::make_parser<Grammar1::Tokens, Grammar1::Expr>();
@@ -224,4 +241,15 @@ int main()
     // Let's try a conflict
     outputState<Conflicts1::S0>();
     outputState<Conflicts1::S1>();
+    
+    outputState<TokensInGrammar::S0>();
 }
+
+template<typename Item> struct leaf {};
+template<typename L, typename R> struct node{};
+
+template<typename I>
+constexpr int tree_size(leaf<I>) { return 1; }
+
+template<typename L, typename R>
+constexpr int tree_size(::node<L,R>) { return 1 + tree_size(L()) + tree_size(R()); }

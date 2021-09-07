@@ -18,6 +18,9 @@
 
 - mark and whitelist conflicts
 
+- How could GLR work?
+  - When there's a conflict, branch the tree. Sounds quite slow!
+
 ```
 struct default_node_traits
 {

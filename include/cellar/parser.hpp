@@ -18,7 +18,7 @@ namespace cellar
         }
 
         template<int N>
-        tree parse(const char(&str)[N] ) const
+        tree parse(const char(&str)[N]) const
         {
             return parse(str, str+N-1);
         }
