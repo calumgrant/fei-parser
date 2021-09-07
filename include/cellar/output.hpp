@@ -211,9 +211,15 @@ namespace cellar
     {
         return os << "s" << Token << "[" << Rule() << "]";
     }
+
     template<int Token, typename Rule>
     std::ostream & operator<<(std::ostream & os, reduce<Token, Rule>)
     {
         return os << "r" << Token << "[" << Rule() << "]";
+    }
+
+    inline std::ostream & operator<<(std::ostream & os, syntax_error)
+    {
+        return os << "<error>";
     }
 }

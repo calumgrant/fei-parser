@@ -107,7 +107,7 @@ namespace cellar
     struct resolve_action_set<Action, typeset<A, As...>>
     {
         using T = typename resolve_action_set<Action, typeset<As...>>::type;
-        using type = typename resolve_actions<Action, T>::type;
+        using type = typename resolve_actions<T, A>::type;
     };
 
     template<typename Action>

@@ -2,13 +2,15 @@
 
 #include <typeinfo>
 
-#include <iostream>  // Deleteme
+#include <iostream>
 
 #include "rules.hpp"
 #include "closure.hpp"
 #include "action.hpp"
 #include "goto.hpp"
 #include "conflicts.hpp"
+
+
 
 namespace cellar
 {
@@ -88,12 +90,11 @@ namespace cellar
     void parse(parse_state<It> & state);
 
     template<typename State, int Token, typename It, 
-        bool Shifts = is_shift<State, Token>::value,
-        bool Reduces = is_reduce<State, Token>::value>
+        bool Shifts = resolve_conflicts<State, Token>::is_shift>
     struct process_token;
 
     template<typename State, int Token, typename It>
-    struct process_token<State, Token, It, true, false>
+    struct process_token<State, Token, It, true>
     {
         static void process(parse_state<It> & state)
         {
@@ -104,10 +105,12 @@ namespace cellar
     };
 
     template<typename State, int Token, typename It>
-    struct process_token<State, Token, It, false, true>
+    struct process_token<State, Token, It, false>
     {
         static void process(parse_state<It> & state)
         {
+            std::cout << "Action = " << typename resolve_conflicts<State, Token>::type() << std::endl;
+            std::cout << "Need to reduce\n";
             // TODO
         }
     };
