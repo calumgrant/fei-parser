@@ -105,7 +105,7 @@ namespace cellar
     {
         // Find all the gotos for a given state.
         using Gotos = typename build_goto_list<State>::type;
-        std::cout << Gotos() << State() << std::endl;
+        std::cout << "Reduced to function " << Gotos() << State() << std::endl;
         process_goto<State, Gotos, It>::process(ps, rule);
     }
 
@@ -158,12 +158,12 @@ namespace cellar
             
             using Rule = typename Reduce::rule;
             
-            std::cout << "Action = " << typename resolve_conflicts<State, Token>::type() << std::endl;
+            std::cout << "Action = " << Reduce() << std::endl;
             for(int i=0; i<Rule::length; ++i)
                 state.stack.pop_back();
             auto fn = state.stack.back();
-            // state.stack.pop_back();
-            fn(state, typeid(Rule));
+            state.stack.pop_back();
+            fn(state, typeid(Reduce));
         }
     };
 
@@ -233,7 +233,8 @@ namespace cellar
     template<typename Lexer, typename Grammar, typename It>
     tree parse(It start, It end)
     {
-        return parse<Grammar>(make_lexer<Lexer,linecounter<It>>().tokenize(start, end));
+        auto tokens = make_lexer<Lexer,linecounter<It>>().tokenize(start, end);
+        return parse<Grammar>(tokens);
     }
 
     template<typename Lexer, typename Grammar, typename It = const char*>

@@ -62,22 +62,36 @@ namespace cellar
     };
 
     template<typename Symbol>
-    struct is_token
+    struct is_symbol2
+    {
+        static const bool value = is_symbol2<typename Symbol::rules>::value;
+    };
+
+    template<int Token, typename...Def>
+    struct is_symbol2<token<Token, Def...>>
     {
         static const bool value = false;
     };
 
-    template<int Token, typename...Def>
-    struct is_token<token<Token, Def...>>
+    template<>
+    struct is_symbol2<empty>
+    {
+        static const bool value = false;
+    };
+
+    template<typename...List>
+    struct is_symbol2<symbol<List...>>
     {
         static const bool value = true;
     };
+
+
 
     template<typename Item>
     struct build_goto_item
     {
         using Symbol = typename getnext<Item>::type;
-        using type = typename type_if<is_token<Symbol>::value, typeset<>, typeset<Symbol>>::type;
+        using type = typename type_if<is_symbol2<Symbol>::value, typeset<Symbol>, typeset<>>::type;
     };
 
     template<typename State>

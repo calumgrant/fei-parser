@@ -19,6 +19,7 @@ namespace cellar
     template<int Lookahead, typename Rule>
     struct reduce
     {
+        //using symbol = Symbol;
         using rule = Rule;
     };
 
