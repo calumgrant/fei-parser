@@ -60,4 +60,47 @@ namespace cellar
         using C = typename closure<State>::type;
         using type = typename impl::goto_<C, Symbol>::type;
     };
+
+    template<typename Symbol>
+    struct is_token
+    {
+        static const bool value = false;
+    };
+
+    template<int Token, typename...Def>
+    struct is_token<token<Token, Def...>>
+    {
+        static const bool value = true;
+    };
+
+    template<typename Item>
+    struct build_goto_item
+    {
+        using Symbol = typename getnext<Item>::type;
+        using type = typename type_if<is_token<Symbol>::value, typeset<>, typeset<Symbol>>::type;
+    };
+
+    template<typename State>
+    struct build_goto_list2;
+
+    template<>
+    struct build_goto_list2<typeset<>>
+    {
+        using type = typeset<>;
+    };
+
+    template<typename Item, typename...Items>
+    struct build_goto_list2<typeset<Item, Items...>>
+    {
+        using T1 = typename build_goto_item<Item>::type;
+        using T2 = typename build_goto_list2<typeset<Items...>>::type;
+        using type = typename typeset_union<T1, T2>::type;
+    };
+
+    template<typename State>
+    struct build_goto_list
+    {
+        using C = typename closure<State>::type;
+        using type = typename build_goto_list2<C>::type;
+    };
 }

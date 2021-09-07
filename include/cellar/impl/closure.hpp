@@ -55,15 +55,6 @@ namespace cellar
         using type = Closure;
     };
 
-    template<int T>
-    struct DebugBreak
-    {
-        static_assert(T, "Template breakpoint");
-    };
-
-#define debug_template using breakpoint = DebugBreak<false>
-
-
     template<int Id, typename...Rule, typename...Items, typename Follows, typename Closure>
     struct expand_item<symbol<token<Id, Rule...>, Items...>, Follows, Closure>
     {

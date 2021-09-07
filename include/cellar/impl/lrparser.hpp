@@ -10,8 +10,6 @@
 #include "goto.hpp"
 #include "conflicts.hpp"
 
-
-
 namespace cellar
 {
     template<typename Symbol>
@@ -32,6 +30,8 @@ namespace cellar
         parse_state(const token_stream<It> & t) : tokens(t) {}
     };
 
+    template<typename State, typename It>
+    void parse(parse_state<It> & state);
 
     template<typename It>
     void parse_success(parse_state<It> &state, const std::type_info&)
@@ -66,6 +66,48 @@ namespace cellar
         using type = typename get_next_token<rule_position<rule<Id, Items...>, Position-1, Lookahead>>::type;
     };
 
+    template<typename State, typename Symbols, typename Iterator>
+    struct process_goto;
+
+    template<typename State, typename It>
+    struct process_goto<State, typeset<>, It>
+    {
+        static void process(parse_state<It> & state, const std::type_info & type)
+        {
+            assert(!"Something has gone terribly wrong - unhandled symbol being reduced");
+        }
+    };
+
+    template<typename State, typename Symbol, typename... Symbols, typename It>
+    struct process_goto<State, typeset<Symbol, Symbols...>, It>
+    {
+        static void process(parse_state<It> & state, const std::type_info & type)
+        {
+            if(typeid(Symbol) == type)
+            {
+                // Shift this token
+                using NextState = typename goto_<State, Symbol>::type;
+                parse<NextState>(state);
+            }
+            else
+            {
+                process_goto<State, typeset<Symbols...>, It>::process(state, type);
+            }
+        }
+    };
+
+    /*
+        This function has been called when a rule has been reduced.
+        The reduced rule is stored in the "rule" parameter.
+     */
+    template<typename State, typename It>
+    void reduce_fn(parse_state<It> & ps, const std::type_info &rule)
+    {
+        // Find all the gotos for a given state.
+        using Gotos = typename build_goto_list<State>::type;
+        std::cout << Gotos() << State() << std::endl;
+        process_goto<State, Gotos, It>::process(ps, rule);
+    }
 
     // Compute the list of tokens that this state is able to process
     // Anything else is a syntax error
@@ -86,9 +128,6 @@ namespace cellar
         using type = typename typeset_union<T0, T1>::type;
     };
 
-    template<typename State, typename It>
-    void parse(parse_state<It> & state);
-
     template<typename State, int Token, typename It, 
         bool Shifts = resolve_conflicts<State, Token>::is_shift>
     struct process_token;
@@ -100,18 +139,31 @@ namespace cellar
         {
             state.tokens.lex();
             using S2 = typename shift_action<State, Token>::type;
+            state.stack.push_back(&reduce_fn<State, It>);
+            
+            // TODO: Compute the "goto" and push it onto the stack
             return parse<S2>(state);
         }
     };
 
+    /*
+        The reduce case
+     */
     template<typename State, int Token, typename It>
     struct process_token<State, Token, It, false>
     {
         static void process(parse_state<It> & state)
         {
+            using Reduce = typename resolve_conflicts<State, Token>::type;
+            
+            using Rule = typename Reduce::rule;
+            
             std::cout << "Action = " << typename resolve_conflicts<State, Token>::type() << std::endl;
-            std::cout << "Need to reduce\n";
-            // TODO
+            for(int i=1; i<Rule::length; ++i)
+                state.stack.pop_back();
+            auto fn = state.stack.back();
+            state.stack.pop_back();
+            fn(state, typeid(Rule));
         }
     };
 

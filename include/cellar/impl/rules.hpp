@@ -51,6 +51,7 @@ namespace cellar
     struct rule
     {
         using rules = rule<Id, Rules...>;
+        static const int length = sizeof...(Rules);
     };
 
     template<typename... Rules>

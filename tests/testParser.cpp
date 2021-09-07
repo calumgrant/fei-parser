@@ -133,23 +133,38 @@ void outputActions(typeset<token<Token>, T...>)
     outputActions<State>(typeset<T...>());
 }
 
+template<typename State, typename Symbol>
+void outputGoto()
+{
+    std::cout << "GOTO " << Symbol() << " -> " << typename goto_<State, Symbol>::type() << std::endl;
+}
+
+template<typename State>
+void outputGotos(typeset<>)
+{
+}
+
+template<typename State, typename Sym, typename...Syms>
+void outputGotos(typeset<Sym, Syms...>)
+{
+    outputGoto<State, Sym>();
+}
+
 template<typename State>
 void outputState()
 {
     using C = typename closure<State>::type;
     std::cout << "State kernel: " << State();
-    std::cout << ", closure: " << C();
+    std::cout << "Closure: " << C() << std::endl;;
 
     // Show the transitions
     using Tokens = typename build_next_token_list<C>::type;
     outputActions<State>(Tokens());
+
+    using Gotos = typename build_goto_list<C>::type;
+    outputGotos<State>(Gotos());
 }
 
-template<typename State, typename Symbol>
-void outputGoto()
-{
-    std::cout << "GOTO " << typename goto_<State, Symbol>::type() << std::endl;
-}
 
 
 class FindTokensInGrammar : public Test::Fixture<FindTokensInGrammar>
@@ -302,7 +317,7 @@ public:
     using Add = token<AddNode, ch<'+'>>;
 
     class Expr : public symbol<
-            rule<PlusNode, Expr, Add, Expr>,
+            rule<PlusNode, Expr, Add, Int>,
             Int
             >
         {};
@@ -327,6 +342,7 @@ public:
     {
         auto parser = cellar::make_parser<Tokens, Expr>();
 
+        parser.parse("12");
         parser.parse("1+1");
     }
 } p1;
