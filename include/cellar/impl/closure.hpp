@@ -12,28 +12,28 @@ namespace cellar
     template<typename Item>
     struct getnext;
 
-    template<int Id, int Lookahead, typename Symbol, typename...Symbols>
-    struct getnext<rule_position<rule<Id, Symbol, Symbols...>, 0, Lookahead>>
+    template<typename S, int Id, int Lookahead, typename Symbol, typename...Symbols>
+    struct getnext<rule_position<S, rule<Id, Symbol, Symbols...>, 0, Lookahead>>
     {
         using type = Symbol;
         using type_or_lookahead = type;
     };
 
-    template<int Id, int Position, int Lookahead, typename Symbol, typename...Symbols>
-    struct getnext<rule_position<rule<Id, Symbol, Symbols...>, Position, Lookahead>>
+    template<typename S, int Id, int Position, int Lookahead, typename Symbol, typename...Symbols>
+    struct getnext<rule_position<S, rule<Id, Symbol, Symbols...>, Position, Lookahead>>
     {
-        using type = typename getnext<rule_position<rule<Id, Symbols...>, Position-1, Lookahead>>::type;
+        using type = typename getnext<rule_position<S, rule<Id, Symbols...>, Position-1, Lookahead>>::type;
         using type_or_lookahead = type;
     };
 
-    template<int Id, int Position, int Lookahead>
-    struct getnext<rule_position<rule<Id>, Position, Lookahead>>
+    template<typename S, int Id, int Position, int Lookahead>
+    struct getnext<rule_position<S, rule<Id>, Position, Lookahead>>
     {
         using type = empty;
     };
 
-    template<int Id, int Lookahead>
-    struct getnext<rule_position<rule<Id>, 0, Lookahead>>
+    template<typename S, int Id, int Lookahead>
+    struct getnext<rule_position<S, rule<Id>, 0, Lookahead>>
     {
         using type = empty;
         using type_or_lookahead = token<Lookahead>;
@@ -43,30 +43,30 @@ namespace cellar
     template<typename Symbol, typename Closure>
     struct expand_next;
 
-    template<typename Item, typename Follows, typename Closure>
+    template<typename S, typename Item, typename Follows, typename Closure>
     struct expand_item
     {
         using type = Closure;
     };
 
-    template<typename Item, typename...Items, typename Follows, typename Closure>
-    struct expand_item<symbol<Item, Items...>, Follows, Closure>
+    template<typename S, typename Item, typename...Items, typename Follows, typename Closure>
+    struct expand_item<S, symbol<Item, Items...>, Follows, Closure>
     {
         using type = Closure;
     };
 
-    template<int Id, typename...Rule, typename...Items, typename Follows, typename Closure>
-    struct expand_item<symbol<token<Id, Rule...>, Items...>, Follows, Closure>
+    template<typename S, int Id, typename...Rule, typename...Items, typename Follows, typename Closure>
+    struct expand_item<S, symbol<token<Id, Rule...>, Items...>, Follows, Closure>
     {
         using T = rule<Id, token<Id, Rule...>>;
-        using type = typename expand_item<symbol<T, Items...>, Follows, Closure>::type;
+        using type = typename expand_item<S, symbol<T, Items...>, Follows, Closure>::type;
     };
 
-    template<typename Rule, typename Follows, typename Closure>
+    template<typename Symbol, typename Rule, typename Follows, typename Closure>
     struct add_items;
 
-    template<typename Rule, typename Closure>
-    struct add_items<Rule, typeset<>, Closure>
+    template<typename S, typename Rule, typename Closure>
+    struct add_items<S, Rule, typeset<>, Closure>
     {
         using type = Closure;
     };
@@ -77,10 +77,10 @@ namespace cellar
     template<typename Item, typename Closure, bool NeedToExpand = !typeset_contains<Item, Closure>::value && item<Item>::reads_symbol>
     struct add_to_closure;
 
-    template<typename Rule, int Lookahead, typename...Follows, typename Closure>
-    struct add_items<Rule, typeset<token<Lookahead>, Follows...>, Closure>
+    template<typename S, typename Rule, int Lookahead, typename...Follows, typename Closure>
+    struct add_items<S, Rule, typeset<token<Lookahead>, Follows...>, Closure>
     {
-        using Item = rule_position<Rule, 0, Lookahead>;
+        using Item = rule_position<S, Rule, 0, Lookahead>;
         using type = typename add_to_closure<Item, Closure>::type;
     };
 
@@ -90,11 +90,11 @@ namespace cellar
         using Break = typename T::fail;
     };
 
-    template<int Id, typename...Rule, typename...Items, typename Follows, typename Closure>
-    struct expand_item<symbol<rule<Id, Rule...>, Items...>, Follows, Closure>
+    template<typename S, int Id, typename...Rule, typename...Items, typename Follows, typename Closure>
+    struct expand_item<S, symbol<rule<Id, Rule...>, Items...>, Follows, Closure>
     {
-        using C0 = typename add_items<rule<Id, Rule...>, Follows, Closure>::type;
-        using type = typename expand_item<symbol<Items...>, Follows, C0>::type;
+        using C0 = typename add_items<S, rule<Id, Rule...>, Follows, Closure>::type;
+        using type = typename expand_item<S, symbol<Items...>, Follows, C0>::type;
     };
 
     template<typename Item, typename Closure>
@@ -130,27 +130,27 @@ namespace cellar
     template<typename Item>
     struct skip_symbol;
 
-    template<typename Rule, int Position, int Lookahead>
-    struct skip_symbol<rule_position<Rule, Position, Lookahead>>
+    template<typename S, typename Rule, int Position, int Lookahead>
+    struct skip_symbol<rule_position<S, Rule, Position, Lookahead>>
     {
-        using type = rule_position<Rule, Position+1, Lookahead>;
+        using type = rule_position<S, Rule, Position+1, Lookahead>;
     };
     
     template<typename Item>
     struct item;
 
-    template<int Id, typename Symbol, typename... Symbols, int Position, int Lookahead>
-    struct item<rule_position<rule<Id, Symbol, Symbols...>, Position, Lookahead>>
+    template<typename S, int Id, typename Symbol, typename... Symbols, int Position, int Lookahead>
+    struct item<rule_position<S, rule<Id, Symbol, Symbols...>, Position, Lookahead>>
     {
         using rule_type = rule<Id, Symbol, Symbols...>;
         static const int lookahead = Lookahead;
         static const int position = Position;
 
-        static const bool reads_symbol = item<rule_position<rule<Id, Symbols...>, Position-1, Lookahead>>::reads_symbol;
+        static const bool reads_symbol = item<rule_position<S, rule<Id, Symbols...>, Position-1, Lookahead>>::reads_symbol;
     };
 
-    template<int Id, int Lookahead, typename Symbol, typename... Symbols>
-    struct item<rule_position<rule<Id, Symbol, Symbols...>, 0, Lookahead>>
+    template<typename S, int Id, int Lookahead, typename Symbol, typename... Symbols>
+    struct item<rule_position<S, rule<Id, Symbol, Symbols...>, 0, Lookahead>>
     {
         using rule_type = rule<Id, Symbol, Symbols...>;
         static const int lookahead = Lookahead;
@@ -159,8 +159,8 @@ namespace cellar
         static const bool reads_symbol = is_symbol<Symbol>::value;
     };
 
-    template<int Id, int Lookahead>
-    struct item<rule_position<rule<Id>, 0, Lookahead>>
+    template<typename S, int Id, int Lookahead>
+    struct item<rule_position<S, rule<Id>, 0, Lookahead>>
     {
         using rule_type = rule<Id>;
         static const int lookahead = Lookahead;
@@ -190,14 +190,14 @@ namespace cellar
 
         using Follows = typename follow<Item>::type;
 
-        using NextSymbol= typename getnext<Item>::type::rules;
+        using NextSymbol= typename getnext<Item>::type;
 
         using C2 = typename type_if<
             potentially_empty_symbol<NextSymbol>::value,
             typename add_to_closure<typename skip_symbol<Item>::type, C1>::type,
             C1>::type;
 
-        using type = typename expand_item<NextSymbol, Follows, C2>::type;
+        using type = typename expand_item<NextSymbol, typename NextSymbol::rules, Follows, C2>::type;
     };
 
 

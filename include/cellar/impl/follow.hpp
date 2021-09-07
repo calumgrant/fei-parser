@@ -15,22 +15,22 @@ namespace cellar
     template<typename Item>
     struct follow;
 
-    template<int Id, typename Symbol, int Lookahead>
-    struct follow<rule_position<rule<Id, Symbol>, 0, Lookahead>>
+    template<typename S, int Id, typename Symbol, int Lookahead>
+    struct follow<rule_position<S, rule<Id, Symbol>, 0, Lookahead>>
     {
         using type = typeset<token<Lookahead>>;
     };
 
-    template<int Id, typename S1, typename... Symbols, int Position, int Lookahead>
-    struct follow<rule_position<rule<Id, S1, Symbols...>, Position, Lookahead>>
+    template<typename S, int Id, typename S1, typename... Symbols, int Position, int Lookahead>
+    struct follow<rule_position<S, rule<Id, S1, Symbols...>, Position, Lookahead>>
     {
-        using type = typename follow<rule_position<rule<Id, Symbols...>, Position-1, Lookahead>>::type;
+        using type = typename follow<rule_position<S, rule<Id, Symbols...>, Position-1, Lookahead>>::type;
     };
 
-    template<int Id, typename S1, typename... Symbols, int Lookahead>
-    struct follow<rule_position<rule<Id, S1, Symbols...>, 0, Lookahead>>
+    template<typename S, int Id, typename S1, typename... Symbols, int Lookahead>
+    struct follow<rule_position<S, rule<Id, S1, Symbols...>, 0, Lookahead>>
     {
-        using Next = typename follow<rule_position<rule<Id, Symbols...>, 0, Lookahead>>::type;
+        using Next = typename follow<rule_position<S, rule<Id, Symbols...>, 0, Lookahead>>::type;
 
         using T = typename first<rule<Id, Symbols...>>::type;
         using type = typename type_if<
@@ -39,8 +39,8 @@ namespace cellar
             T>::type;
     };
 
-    template<int Id, int Position, int Lookahead>
-    struct follow<rule_position<rule<Id>, Position, Lookahead>>
+    template<typename S, int Id, int Position, int Lookahead>
+    struct follow<rule_position<S, rule<Id>, Position, Lookahead>>
     {
         using type = typeset<>;
     };

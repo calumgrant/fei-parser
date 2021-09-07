@@ -86,8 +86,9 @@ namespace FirstTests
 
 namespace TestFollow
 {
-    using G0 = rule_position<rule<1, token<0>, token<1>>, 0, 2>;
-    using G1 = rule_position<rule<1, token<0>, token<1>>, 1, 2>;
+    struct S {};
+    using G0 = rule_position<S, rule<1, token<0>, token<1>>, 0, 2>;
+    using G1 = rule_position<S, rule<1, token<0>, token<1>>, 1, 2>;
 
     using F0 = follow<G0>::type;
     using F1 = follow<G1>::type;
@@ -98,8 +99,8 @@ namespace TestFollow
     using maybe0 = symbol< rule<1>, token<0> >;
     using maybe1 = symbol< rule<2>, token<1> >;
     using R3 = rule<3, maybe0, maybe1>;
-    using S3a = rule_position<R3, 0, 2>;
-    using S3b = rule_position<R3, 1, 2>;
+    using S3a = rule_position<S, R3, 0, 2>;
+    using S3b = rule_position<S, R3, 1, 2>;
 
     static_assert(typeset_equals<follow<S3a>::type, typeset<token<1>, token<2>>>::value, "");
     static_assert(typeset_equals<follow<S3b>::type, typeset<token<2>>>::value, "");
@@ -203,10 +204,12 @@ class Closure1 : public Test::Fixture<Closure1>
     using B = token<1>;
 
     class Expr : public symbol<rule<10,A>, rule<11, Expr, A>> {};
+    
+    struct S;
 
-    using S0 = typeset<rule_position<A, 0, 1>, rule_position<rule<123, A, B>,0,2>>;
-    using S1 = typeset<rule_position<A, 0, 1>, rule_position<rule<123, A, B>,0,2>, rule_position<rule<123, A, B>,2,2>>;
-    using S2 = typeset<rule_position<rule<123, Expr>, 0, 1>>;
+    using S0 = typeset<rule_position<S, A, 0, 1>, rule_position<S, rule<123, A, B>,0,2>>;
+    using S1 = typeset<rule_position<S, A, 0, 1>, rule_position<S, rule<123, A, B>,0,2>, rule_position<S, rule<123, A, B>,2,2>>;
+    using S2 = typeset<rule_position<S, rule<123, Expr>, 0, 1>>;
 
     using Gclosure = closure<S2>::type;
 
@@ -231,8 +234,10 @@ class Grammar2 : public Test::Fixture<Grammar2>
     using b = token<1>;
 
     class E : public symbol<rule<10, a, b>, rule<11, a, E, b>> {};
+    
+    struct S;
 
-    using S0 = typeset<rule_position<rule<12, E, token<EndOfStream>>, 0, EndOfStream>>;
+    using S0 = typeset<rule_position<S, rule<12, E, token<EndOfStream>>, 0, EndOfStream>>;
 
     using C0 = closure<S0>::type;
 
@@ -240,7 +245,7 @@ class Grammar2 : public Test::Fixture<Grammar2>
     using A0b = action<S0, 1>::shift_actions;
     using Error = typeset<>;
 
-    using simpletest = typeset<rule_position<rule<10, a, b>, 0, -4>>;
+    using simpletest = typeset<rule_position<S, rule<10, a, b>, 0, -4>>;
     using Sa = action<simpletest, 0>::actions;
     using Error1 = action<simpletest, 1>::actions;
     static_assert(Error() == Error1(), "");

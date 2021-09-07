@@ -42,28 +42,28 @@ namespace cellar
     template<typename Item>
     struct get_next_token;
 
-    template<int Id, int Lookahead>
-    struct get_next_token<rule_position<rule<Id>, 0, Lookahead>>
+    template<typename S, int Id, int Lookahead>
+    struct get_next_token<rule_position<S, rule<Id>, 0, Lookahead>>
     {
         using type = typeset<token<Lookahead>>;
     };
 
-    template<int Id, int Token, typename...Def, typename...Items, int Lookahead>
-    struct get_next_token<rule_position<rule<Id, token<Token, Def...>, Items...>, 0, Lookahead>>
+    template<typename S, int Id, int Token, typename...Def, typename...Items, int Lookahead>
+    struct get_next_token<rule_position<S, rule<Id, token<Token, Def...>, Items...>, 0, Lookahead>>
     {
         using type = typeset<token<Token>>;
     };
 
-    template<int Id, typename Item, typename...Items, int Lookahead>
-    struct get_next_token<rule_position<rule<Id, Item, Items...>, 0, Lookahead>>
+    template<typename S, int Id, typename Item, typename...Items, int Lookahead>
+    struct get_next_token<rule_position<S, rule<Id, Item, Items...>, 0, Lookahead>>
     {
         using type = typeset<>;
     };
 
-    template<int Id, typename Item, typename...Items, int Position, int Lookahead>
-    struct get_next_token<rule_position<rule<Id, Item, Items...>, Position, Lookahead>>
+    template<typename S, int Id, typename Item, typename...Items, int Position, int Lookahead>
+    struct get_next_token<rule_position<S, rule<Id, Item, Items...>, Position, Lookahead>>
     {
-        using type = typename get_next_token<rule_position<rule<Id, Items...>, Position-1, Lookahead>>::type;
+        using type = typename get_next_token<rule_position<S, rule<Id, Items...>, Position-1, Lookahead>>::type;
     };
 
     template<typename State, typename Symbols, typename Iterator>
@@ -209,10 +209,12 @@ namespace cellar
         process_token_list<State, Tokens, It>::process(state);
     }
 
+    struct WholeProgram {};
+
     template<typename S>
     struct initial_state
     {
-        using type = typeset<rule_position<rule<0, S, token<EndOfStream>>, 0, EndOfStream>>;
+        using type = typeset<rule_position<WholeProgram, rule<0, S, token<EndOfStream>>, 0, EndOfStream>>;
     };
 
     template<typename Symbol, typename It>

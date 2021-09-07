@@ -40,10 +40,10 @@ namespace cellar
             using type = typeset<>;
         };
 
-        template<typename Rule, int Position, int Lookahead, typename...Items, typename Symbol>
-        struct goto_<typeset<rule_position<Rule, Position, Lookahead>, Items...>, Symbol>
+        template<typename S, typename Rule, int Position, int Lookahead, typename...Items, typename Symbol>
+        struct goto_<typeset<rule_position<S, Rule, Position, Lookahead>, Items...>, Symbol>
         {
-            using T1 = rule_position<Rule, Position+1, Lookahead>;
+            using T1 = rule_position<S, Rule, Position+1, Lookahead>;
             using T2 = typename goto_<typeset<Items...>, Symbol>::type;
             static const bool shiftsSymbol = shifts_symbol<Rule, Position, Symbol>::value;
             using type = typename type_if<shiftsSymbol, typename typeset_insert<T1, T2>::type, T2>::type;

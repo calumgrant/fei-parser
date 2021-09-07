@@ -17,8 +17,8 @@ using E12 = typename typeset_union<E1, E12>::type;
 
 using R1 = rule<100>;
 using R2 = rule<101, token<1>, token<2>>;
-
-using C1 = typeset<rule_position<R2, 0, 0>>;
+struct S;
+using C1 = typeset<rule_position<S, R2, 0, 0>>;
 using C2 = typename closure<C1>::type;
 
 int main()

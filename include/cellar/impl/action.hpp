@@ -86,8 +86,8 @@ namespace cellar
     template<typename Item, int Token>
     struct item_action;
 
-    template<typename Rule, int Position, int Lookahead, int Token>
-    struct item_action<rule_position<Rule, Position, Lookahead>, Token>
+    template<typename S, typename Rule, int Position, int Lookahead, int Token>
+    struct item_action<rule_position<S, Rule, Position, Lookahead>, Token>
     {
         using T = item_action2<Rule, Position, Lookahead, Token, Rule>;
         using shift_actions = typename T::shift_actions;
@@ -157,10 +157,10 @@ namespace cellar
         using type = typeset<>;
     };
 
-    template<typename Rule, int Position, int Lookahead, typename...Items, int Token>
-    struct shift_action2<typeset<rule_position<Rule, Position, Lookahead>, Items...>, Token>
+    template<typename S, typename Rule, int Position, int Lookahead, typename...Items, int Token>
+    struct shift_action2<typeset<rule_position<S, Rule, Position, Lookahead>, Items...>, Token>
     {
-        using T1 = rule_position<Rule, Position+1, Lookahead>;
+        using T1 = rule_position<S, Rule, Position+1, Lookahead>;
         using T2 = typename shift_action2<typeset<Items...>, Token>::type;
         static const bool shiftsToken = shifts<Rule, Position, Token>::value;
         using type = typename type_if<shiftsToken, typename typeset_insert<T1, T2>::type, T2>::type;

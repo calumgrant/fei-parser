@@ -82,6 +82,6 @@ namespace cellar
     template<int...Chs>
     struct notch {};
 
-    template<typename Rule, int Position, int Lookahead>
+    template<typename Symbol, typename Rule, int Position, int Lookahead>
     struct rule_position {};
 }
