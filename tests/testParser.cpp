@@ -119,7 +119,18 @@ namespace Conflicts1
 template<typename State, int Token>
 void outputAction()
 {
-    std::cout << "Action on " << Token << " = " << typename action<State, Token>::type() << " -> " << typename shift_action<State,Token>::type() << std::endl;
+    std::cout << "Action on " << Token << " = " << typename action<State, Token>::actions() << " -> " << typename shift_action<State,Token>::type() << std::endl;
+}
+
+template<typename State>
+void outputActions(typeset<>) {}
+
+
+template<typename State, int Token, typename... T>
+void outputActions(typeset<token<Token>, T...>)
+{
+    outputAction<State, Token>();
+    outputActions<State>(typeset<T...>());
 }
 
 template<typename State>
@@ -130,9 +141,8 @@ void outputState()
     std::cout << ", closure: " << C();
 
     // Show the transitions
-    outputAction<State, 0>();
-    outputAction<State, 1>();
-    outputAction<State, EndOfStream>();
+    using Tokens = typename build_next_token_list<C>::type;
+    outputActions<State>(Tokens());
 }
 
 template<typename State, typename Symbol>
@@ -211,13 +221,13 @@ class Grammar2 : public Test::Fixture<Grammar2>
 
     using C0 = closure<S0>::type;
 
-    using A0a = action<S0, 0>::type;
-    using A0b = action<S0, 1>::type;
+    using A0a = action<S0, 0>::shift_actions;
+    using A0b = action<S0, 1>::shift_actions;
     using Error = typeset<>;
 
     using simpletest = typeset<rule_position<rule<10, a, b>, 0, -4>>;
-    using Sa = action<simpletest, 0>::type;
-    using Error1 = action<simpletest, 1>::type;
+    using Sa = action<simpletest, 0>::actions;
+    using Error1 = action<simpletest, 1>::actions;
     static_assert(Error() == Error1(), "");
 
     using S1 = shift_action<S0, 0>::type;
@@ -264,7 +274,6 @@ public:
         outputState<Grammar2::S3>();
         outputState<Grammar2::S4>();
         outputGoto<Grammar2::S0, Grammar2::E>();
-
     }
 } g2;
 

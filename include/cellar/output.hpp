@@ -206,14 +206,14 @@ namespace cellar
         return os << ", " << Lookahead;
     }
 
-    template<int Id>
-    std::ostream & operator<<(std::ostream & os, shift<Id>)
+    template<int Token, typename Rule>
+    std::ostream & operator<<(std::ostream & os, shift<Token, Rule>)
     {
-        return os << "s" << Id;
+        return os << "s" << Token << "[" << Rule() << "]";
     }
-    template<typename T>
-    std::ostream & operator<<(std::ostream & os, reduce<T>)
+    template<int Token, typename Rule>
+    std::ostream & operator<<(std::ostream & os, reduce<Token, Rule>)
     {
-        return os << "r[" << T() << "]";
+        return os << "r" << Token << "[" << Rule() << "]";
     }
 }

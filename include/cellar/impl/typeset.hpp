@@ -165,6 +165,11 @@ namespace cellar
 
     constexpr typeset<> empty_ts() { return typeset<>(); }
 
+    constexpr bool is_empty(typeset<>) { return true; }
+
+    template<typename Item, typename...Items>
+    constexpr bool is_empty(typeset<Item, Items...>) { return false; }
+
     template<typename... Ts1, typename... Ts2>
     constexpr bool operator<=(typeset<Ts1...> t1, typeset<Ts2...> t2)
     {

@@ -1,8 +1,8 @@
 # Implementation of Cellar
 
-Cellar is a parser library for C++, that is implemented using C++ templates. The grammar is specified using C++ syntax
+Cellar is an LALR parser library for C++, implemented using C++ templates. This approach means that the grammar is specified in C++ source code, meaning no external tools and no additional build steps. This in turn means that the parser is much easier to integrate.
 
-The benefit of this approach is that
+The benefit of this approach is that:
 
 - The parser is extremely fast. There are no initialization overheads.
 - There are no compromises on the parser algorithm, provided you are happy with LALR.
@@ -219,10 +219,14 @@ Since C++ templates are Turing-complete, there is no guarantee of termination. T
 - `add_to_closure<Item, Closure>::type` adds a new item to the closure, expanding it as required. It only expands items that haven't already been added (to avoid infinite recursion).
 - 
 
+`action<State, Token>::shift_actions, reduce_actions` computes the set of possible shift/reduce actions
+
+`resolve_conflicts<State, Token>` Resolves conflicts, if any, in an action.
+
 `first<Symbol>::type` constructs the FIRST set of tokens that a symbol can match. This needs to 
 
 `follow<Item>::type` constructs the follow-set for an item - the set of all tokens that could follow the next symbol in the item. This needs to take into account potentially empty symbols.
 
 `potentially_empty_symbol<Symbol>::value` computes a true/false value depending on whether `Symbol` can be empty.
 
-Welcome to the wacky world of C++ template metaprogramming! What has made this project particularly challenging, is that LALR parser construction isn't terribly well explained anywhere, and that C++ template metaprogramming isn't terribly easy, particularly if you are trying to implement algorithms. 
+`resolve_action<Action1, Action2>::type` where there are two potential actions, pick the best action.

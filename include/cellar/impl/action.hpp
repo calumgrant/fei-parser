@@ -13,11 +13,15 @@ namespace cellar
         - `error`
     */    
 
-    template<int Token>
+    template<int Token, typename Rule>
     struct shift {};
 
-    template<typename Rule>
+    template<int Lookahead, typename Rule>
     struct reduce {};
+
+    struct accept {};
+
+    struct syntax_error {};
 
     template<typename State, int Token>
     struct action2;
@@ -25,7 +29,8 @@ namespace cellar
     template<int Token>
     struct action2<typeset<>, Token>
     {
-        using type = typeset<>;
+        using shift_actions = typeset<>;
+        using reduce_actions = typeset<>;
     };
 
     template<typename Rule, int Position, int Lookahead, int Token, typename OriginalRule>
@@ -34,37 +39,44 @@ namespace cellar
     template<int Id, typename Symbol, typename...Symbols, int Position, int Lookahead, int Token, typename OriginalRule>
     struct item_action2<rule<Id, Symbol, Symbols...>, Position, Lookahead, Token, OriginalRule>
     {
-        using type = typename item_action2<rule<Id, Symbols...>, Position-1, Lookahead, Token, OriginalRule>::type;
+        using T = item_action2<rule<Id, Symbols...>, Position-1, Lookahead, Token, OriginalRule>;
+        using shift_actions = typename T::shift_actions;
+        using reduce_actions = typename T::reduce_actions;
     };
 
     template<int Id, int Lookahead, int Token, typename OriginalRule>
     struct item_action2<rule<Id>, 0, Lookahead, Token, OriginalRule>
     {
-        using type = typeset<>;
+        using shift_actions = typeset<>;
+        using reduce_actions = typeset<>;
     };
 
     template<int Id, typename...Def, typename...Symbols, int Lookahead, int Token, typename OriginalRule>
     struct item_action2<rule<Id, token<Token, Def...>, Symbols...>, 0, Lookahead, Token, OriginalRule>
     {
-        using type = typeset<shift<Token>>;
+        using shift_actions = typeset<shift<Token, OriginalRule>>;
+        using reduce_actions = typeset<>;
     };
 
     template<int Id, typename...Symbols, int Lookahead, int Token, typename OriginalRule>
     struct item_action2<rule<Id, token<Token>, Symbols...>, 0, Lookahead, Token, OriginalRule>
     {
-        using type = typeset<shift<Token>>;
+        using shift_actions = typeset<shift<Token, OriginalRule>>;
+        using reduce_actions = typeset<>;
     };
 
     template<int Id, typename Symbol, typename...Symbols, int Lookahead, int Token, typename OriginalRule>
     struct item_action2<rule<Id, Symbol, Symbols...>, 0, Lookahead, Token, OriginalRule>
     {
-        using type = typeset<>;
+        using shift_actions = typeset<>;
+        using reduce_actions = typeset<>;
     };
 
     template<int Id, int Lookahead, typename OriginalRule>
     struct item_action2<rule<Id>, 0, Lookahead, Lookahead, OriginalRule>
     {
-        using type = typeset<reduce<OriginalRule>>;
+        using shift_actions = typeset<>;
+        using reduce_actions = typeset<reduce<Lookahead, OriginalRule>>;
     };
 
     template<typename Item, int Token>
@@ -73,26 +85,36 @@ namespace cellar
     template<typename Rule, int Position, int Lookahead, int Token>
     struct item_action<rule_position<Rule, Position, Lookahead>, Token>
     {
-        using type = typename item_action2<Rule, Position, Lookahead, Token, Rule>::type;
+        using T = item_action2<Rule, Position, Lookahead, Token, Rule>;
+        using shift_actions = typename T::shift_actions;
+        using reduce_actions = typename T::reduce_actions;
     };
 
     template<typename Item, typename...Items, int Token>
     struct action2<typeset<Item, Items...>, Token>
     {
-        using tail = typename action2<typeset<Items...>, Token>::type;
+        using tail = action2<typeset<Items...>, Token>;
 
-        using i = typename item_action<Item, Token>::type;
-        using type = typename typeset_union<i, tail>::type;
+        using i = item_action<Item, Token>;
+
+        using shift_actions = typename typeset_union<typename i::shift_actions, typename tail::shift_actions>::type;
+        using reduce_actions = typename typeset_union<typename i::reduce_actions, typename tail::reduce_actions>::type;
     };
 
     template<typename State, int Token>
     struct action
     {
         using Closure = typename closure<State>::type;
-        using type = typename action2<Closure, Token>::type;
+        using T = action2<Closure, Token>;
+        using shift_actions = typename T::shift_actions;
+        using reduce_actions = typename T::reduce_actions;
+        using actions = typename typeset_union<shift_actions, reduce_actions>::type;
+
+        static const bool shifts = !is_empty(shift_actions());
+        static const bool reduces = !is_empty(reduce_actions());
     };
 
-
+    // Redundant??
     template<typename Rule, int Position, int Token>
     struct shifts;
 
@@ -140,6 +162,9 @@ namespace cellar
         using type = typename type_if<shiftsToken, typename typeset_insert<T1, T2>::type, T2>::type;
     };
 
+    /*
+        Computes the new state following a shift
+    */
     template<typename State, int Token>
     struct shift_action
     {
@@ -147,27 +172,25 @@ namespace cellar
         using type = typename shift_action2<Closure, Token>::type;
     };
 
-    template<int Id>
-    struct mark_shift_reduce_conflict
+    template<typename State, int Token, typename Action = typename shift_action<State, Token>::type>
+    struct is_shift
     {
-        static const bool marked = false; 
+        static const bool value = typeset_equals<Action, typeset<>>::value;
     };
 
-    struct marked_conflict
+    /*
+        Computes the rule to reduce
+    */
+    template<typename State, int Token>
+    struct reduce_action
     {
-        static const bool marked = true;
+        using type = typename action<State, Token>::reduce_actions;
     };
 
-    template<typename Item1, typename Item2>
-    struct report_reduce_reduce_conflict
+    template<typename State, int Token, typename Action = typename reduce_action<State, Token>::type>
+    struct is_reduce
     {
-        // static_assert(false, "Reduce/reduce conflict detected");
-    };
-
-    template<typename Item1, typename Item2, bool Marked>
-    struct report_shift_reduce_conflict
-    {
-        static_assert(!Marked, "Shift/reduce conflict detected  - use mark_conflict<> to whitelist");
+        static const bool value = typeset_equals<Action, typeset<>>::value;
     };
 
 }

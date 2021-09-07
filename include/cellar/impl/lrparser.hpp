@@ -8,6 +8,7 @@
 #include "closure.hpp"
 #include "action.hpp"
 #include "goto.hpp"
+#include "conflicts.hpp"
 
 namespace cellar
 {
@@ -86,15 +87,28 @@ namespace cellar
     template<typename State, typename It>
     void parse(parse_state<It> & state);
 
+    template<typename State, int Token, typename It, 
+        bool Shifts = is_shift<State, Token>::value,
+        bool Reduces = is_reduce<State, Token>::value>
+    struct process_token;
 
     template<typename State, int Token, typename It>
-    struct process_token
+    struct process_token<State, Token, It, true, false>
     {
         static void process(parse_state<It> & state)
         {
             state.tokens.lex();
             using S2 = typename shift_action<State, Token>::type;
             return parse<S2>(state);
+        }
+    };
+
+    template<typename State, int Token, typename It>
+    struct process_token<State, Token, It, false, true>
+    {
+        static void process(parse_state<It> & state)
+        {
+            // TODO
         }
     };
 
@@ -106,11 +120,10 @@ namespace cellar
     {
         static void process(parse_state<It> & state)
         {
+            // TODO: Report list of possible tokens
             state.parse_tree.SyntaxError(state.tokens.begin().location);
         }
     };
-
-
 
     template<typename State, int Id, typename...Tokens, typename It>
     struct process_token_list<State, typeset<token<Id>, Tokens...>, It>
