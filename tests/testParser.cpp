@@ -342,7 +342,9 @@ public:
     {
         auto parser = cellar::make_parser<Tokens, Expr>();
 
-        parser.parse("12");
-        parser.parse("1+1");
+        auto t1 = parser.parse("12");
+        CHECK(t1.success);
+        t1 = parser.parse("1+1");
+        CHECK(t1.success);
     }
 } p1;

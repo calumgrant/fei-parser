@@ -36,7 +36,7 @@ namespace cellar
     template<typename It>
     void parse_success(parse_state<It> &state, const std::type_info&)
     {
-
+        state.parse_tree.success = true;
     }
 
     template<typename Item>
@@ -159,10 +159,10 @@ namespace cellar
             using Rule = typename Reduce::rule;
             
             std::cout << "Action = " << typename resolve_conflicts<State, Token>::type() << std::endl;
-            for(int i=1; i<Rule::length; ++i)
+            for(int i=0; i<Rule::length; ++i)
                 state.stack.pop_back();
             auto fn = state.stack.back();
-            state.stack.pop_back();
+            // state.stack.pop_back();
             fn(state, typeid(Rule));
         }
     };
@@ -196,8 +196,6 @@ namespace cellar
         }
     };
 
-
-
     template<typename State, typename It>
     void parse(parse_state<It> & state)
     {
@@ -209,12 +207,6 @@ namespace cellar
         std::cout << "Tokens = " << Tokens() << std::endl;
 
         process_token_list<State, Tokens, It>::process(state);
-    }
-
-    template<typename State, typename It>
-    void reduceFn(parse_state<It> & state, const std::type_info & type)
-    {
-        // Jump to the next state from this state
     }
 
     template<typename S>

@@ -25,6 +25,8 @@ namespace cellar
             errorLocation = l;
         }
 
+        bool success = false;
+
     protected:
         location errorLocation;
         std::vector<char> data;
