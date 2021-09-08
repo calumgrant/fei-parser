@@ -1,4 +1,42 @@
 
+# Plan for the next week
+
+- Auto-generate the token list from the grammar as an option
+
+- Create an expression parser with precedence
+  - Create an evaluator for said expression parser
+  - Create a toy language as a demo
+
+- Test empty rules
+
+- XML parser
+  - Nodes should be easily navigable without visitors
+
+- Ability to tweak the tree
+  - Hide tokens that aren't interesting?
+  - Mark some nodes as hidden - perhaps by ID = Hidden
+  - Optimizations, for example reducing hidden nodes with size 1
+
+When performing a reduction (`writable_tree::reduce`), it walks the children as before. Each time it finds a hidden node (by looking at its id), it resizes it to zero children, sets its children to 0, and adds its count to the length of the parent, minus one. The `node::next()` function skips hidden nodes, so hidden nodes do not contribute to its length.
+
+Nodes can be set (via their id) to `Hidden` which removes the node but exposes its children in the parent, or `Remove` which removes the node entirely (including its children).
+
+- class `writable_tree`
+
+- Improve node class
+  - Filter on subnodes
+  - Iterate in forward sequence
+  - Visitor (including recursive)
+
+- Java parser
+
+- Tidy up the code a bit
+
+
+# Other stuff to do
+
+- Better utf16 handling
+  - What happens if characters overflow??
 
 - Code reorg
   - Create a library with all the parsers
@@ -12,10 +50,6 @@
 - Ability to construct the parse tree based on policy or action
 - Possibly, the tree could have a virtual method during construction
 
-- mark and whitelist conflicts
-
-- How could GLR work?
-  - When there's a conflict, branch the tree. Sounds quite slow!
 
 ```
 struct default_node_traits
@@ -70,19 +104,13 @@ for(auto attrib : node.get<Attribute>())
     k.c_str();
 }
 
-
-
 parser::parseFile
-
-
-
 
 - Optimize code for `rule<X, token<X, ...>>` to avoid the unnecessary reduce
 
 - Tests for Java Text blocks
 
 - Remember to reserve space in vectors, e.g. for the parse tree
-
 
 - Have a seperate actions class - that can be compiled in as a "policy" object
    - This would allow the user to use a supplied grammar without breaking it.
@@ -93,77 +121,7 @@ parser::parseFile
 - Reporting syntax errors
 - Error recovery
 
-```
-template<typename Rule>
-struct action
-{
-    typedef double result_type;
-    result_type fn(nodes...)
-    {
-
-    }
-};
-
-- Locations: Do we want to calculate the location from the offset?
-
-
-
-
-```
-
-# Parser functions
-
-```
-template<typename It>
-class parse_state
-{
-    tree t;
-    tokens
-};
-
-template<typename State, int Lookahead>
-void parse2(token_iterator<It> & tokens, tree & output)
-{
-    // How to shift:
-    output.shift(Lookahead, tokens.location());
-    using N = next<State, Lookahead>::type;
-    tokens.lex();
-    return parse<N>(tokens, output);)
-
-    // How to reduce:
-    output.reduce(NodeId, count);
-    // Lookup the "next" state on the stack somehow...
-
-
-
-
-
-    Option 2: The call stack contains the parse tree (could overflow :-(
-
-}
-
-template<typename State>
-void parse(token_iterator<It> & tokens, tree & output)
-{
-    auto token = tokens.token();
-    switch(token)
-    {
-        case 12:
-            return parse2<State, 12>(tokens, output);
-        case 13:
-            tree.shift(13, ...);
-            return parse2<State, 13>(tokens, output);
-        case 30:
-            return reduce<State, 30>(tokens, output);
-        default:
-            tree.parse_error(token.begin());
-            // parse error
-    }
-}
-```
-
 - Lexer actions
 - Lexer states
 
-- Java lexer
-- Java be
+- Operator precedence and associativity

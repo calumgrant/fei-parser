@@ -16,6 +16,25 @@ namespace cellar
         int id;
     };
 
+    /*
+        A reference to a node in the parse tree.
+        This is a lightweight object, so there is no need to create a reference to it.
+        (Prefer `node` to `const node&` for example.)
+
+        `node` does not store any data itself, but simply points into the `tree`.
+
+        A node is only valid for the duration of the underlying `tree` object,
+        provided that the underlying object is not modified or destroyed. Use of a node
+        on a destroyed tree is undefined, and will probably crash.
+
+        `node` are const, and can be used in a thread-safe manner. `node` is nothrow,
+        except for `str()` which could fail with `bad_alloc`.
+
+        There are a few methods which can have undefined behaviour if abused, so beware.
+
+        For efficiency, parse trees are stored in a compact form on a stack of chars,
+        (see `tree::data`) so the code is not so readable.
+    */
     class node
     {
     public:
@@ -50,6 +69,31 @@ namespace cellar
         operator bool() const { return p; }
 
         // children get(int id);
+
+        template<typename Fn>
+        void visit(Fn fn) const
+        {
+            for(auto i : *this)
+            {
+                if(i.id() == Hidden)
+                    i.visit(fn);
+                else
+                    fn(i);
+            }
+        }
+
+        // TODO: Visit a type
+
+        template<typename Fn>
+        void visitRecursive(Fn fn) const
+        {
+            if(id() != Hidden)
+                fn(*this);
+            for(auto i : *this)
+            {
+                i.visitRecursive(fn);
+            }
+        }
 
         // Container of nodes of a given type
         

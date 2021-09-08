@@ -7,7 +7,8 @@ namespace cellar
     class tree
     {
     public:
-        writable_node root()
+        // Remove these methods into writable_tree ??
+        writable_node writableRoot()
         {
             return writable_node((node_data*)&data[data.size() - sizeof(node)]);
         }
@@ -17,14 +18,13 @@ namespace cellar
             return node((const node_data*)&data[data.size() - sizeof(node)]);
         }
 
-
         bool empty() const { return data.empty(); }
 
         writable_node shift(int tokenId, location l, int length)
         {
             std::uint32_t size = sizeof(node_data) + sizeof(location) + length + 1;
             data.resize(data.size() + size);
-            auto r = root();
+            auto r = writableRoot();
             r.setData({size, std::uint16_t(tokenId), 0});
             r.setLocation(l);
             return r;
@@ -34,7 +34,7 @@ namespace cellar
         {
             std::uint32_t size = sizeof(node_data);
             data.resize(data.size() + size);
-            auto r = root();
+            auto r = writableRoot();
             node child = node((node_data*)(data.data() + data.size() - size - sizeof(node)));
             for(int i=0; i<count; ++i)
             {
@@ -53,6 +53,12 @@ namespace cellar
         }
 
         bool success = false;
+
+        void clear()
+        {
+            data.resize(0);  // Note: keep unreserved size
+            success = false;
+        }
 
     protected:
         location errorLocation;

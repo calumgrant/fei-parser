@@ -8,13 +8,20 @@ namespace cellar
     class parser
     {
     public:
-        typedef tree (*ParseFn)(It, It);
+        typedef void (*ParseFn)(It, It, tree&);
 
         parser(ParseFn fn) : fn(fn) {}
 
         tree parse(It a, It b) const
         {
-            return fn(a,b);
+            tree t;
+            parse(a,b,t);
+            return t;
+        }
+
+        void parse(It a, It b, tree & t) const
+        {
+            fn(a,b,t);
         }
 
         template<int N>

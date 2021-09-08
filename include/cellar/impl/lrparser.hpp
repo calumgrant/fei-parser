@@ -266,23 +266,25 @@ namespace cellar
     };
 
     template<typename Symbol, typename It>
-    tree parse(const token_stream<It> &tokens)
+    void parse(const token_stream<It> &tokens, tree&t)
     {
         parse_state<It> state(tokens);
+        state.parse_tree = std::move(t);
+        t.clear();
 
         using State0 = typename initial_state<Symbol>::type;
 
         state.tokens.lex();
         parse<State0>(state);
 
-        return std::move(state.parse_tree);
+        t = std::move(state.parse_tree);
     }
 
     template<typename Lexer, typename Grammar, typename It>
-    tree parse(It start, It end)
+    void parse(It start, It end, tree&t)
     {
         auto tokens = make_lexer<Lexer,linecounter<It>>().tokenize(start, end);
-        return parse<Grammar>(tokens);
+        parse<Grammar>(tokens, t);
     }
 
     template<typename Lexer, typename Grammar, typename It = const char*>
@@ -290,5 +292,4 @@ namespace cellar
     {
         return parser<It>(parse<Lexer, Grammar>);
     }
-
 }

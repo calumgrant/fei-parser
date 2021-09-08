@@ -391,6 +391,11 @@ public:
         CHECK(t1.success);
         t1 = parser.parse("1 + 2 + 3 + 4");
         std::cout << t1;
+
+        int count=0;
+        t1.root().visitRecursive([&](node n) { ++count; });
+        EQUALS(11, count);
+
         auto r = t1.root();
         CHECK(t1.success);
         t1 = parser.parse("+");
