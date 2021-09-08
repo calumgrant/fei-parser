@@ -20,7 +20,7 @@ namespace cellar
 
         bool empty() const { return data.empty(); }
 
-        node shift(int tokenId, location l, int length)
+        writable_node shift(int tokenId, location l, int length)
         {
             std::uint32_t size = sizeof(node_data) + sizeof(location) + length + 1;
             data.resize(data.size() + size);
@@ -30,7 +30,7 @@ namespace cellar
             return r;
         }
 
-        node reduce(int nodeId, int count)
+        writable_node reduce(int nodeId, int count)
         {
             std::uint32_t size = sizeof(node_data);
             data.resize(data.size() + size);

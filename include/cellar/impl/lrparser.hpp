@@ -165,7 +165,11 @@ namespace cellar
             std::cout << "Shifting token " << Token << std::endl;
 #endif
             auto node = state.parse_tree.shift(Token, state.tokens.begin().location, state.tokens.size());
-            // TODO: Write the string into the node
+
+            // Write the token into the parse tree
+            auto p = node.c_str();
+            for(auto ch : state.tokens)
+                *p++ = ch;
 
             state.tokens.lex();
             using S2 = typename shift_action<State, Token>::type;
