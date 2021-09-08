@@ -385,9 +385,6 @@ public:
 
         auto t1 = parser.parse("12");
         CHECK(t1.success);
-        
-        std::cout << std::endl;
-        
         t1 = parser.parse("1+1");
         CHECK(t1.success);
         t1 = parser.parse("1+1+1+1");
@@ -396,4 +393,42 @@ public:
         CHECK(!t1.success);
     }
 } p2;
+
+class Parse3 : public Test::Fixture<Parse3>
+{
+public:
+    Parse3()
+    {
+        AddTest(&Parse3::TestParse);
+    }
+
+    enum Nodes { IntNode, AddNode, MinusNode };
+
+    using Int = token<IntNode, plus<digit>>;
+    using Add = token<AddNode, ch<'+'>>;
+    using Sub = token<MinusNode, ch<'-'>>;
+
+    class Expr : public symbol<
+            rule<AddNode, Expr, Add, Int>,
+            rule<MinusNode, Expr, Sub, Int>,
+            Int
+            >
+        {};
+
+    using Tokens = alt<Int, Add, Sub>;
+
+    void TestParse()
+    {
+        auto parser = cellar::make_parser<Tokens, Expr>();
+
+        auto t1 = parser.parse("12");
+        CHECK(t1.success);        
+        t1 = parser.parse("1+1");
+        CHECK(t1.success);
+        t1 = parser.parse("1+1-1+1");
+        CHECK(t1.success);
+        t1 = parser.parse("+");
+        CHECK(!t1.success);
+    }
+} p3;
 

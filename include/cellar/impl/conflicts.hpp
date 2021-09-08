@@ -51,7 +51,8 @@ namespace cellar
     template<typename Shift, typename Reduce>
     struct shift_reduce_conflict
     {
-        static_assert(ignore_conflicts(Reduce()), "Shift/reduce conflict detected in grammar");
+        static const bool b = type_equals(Shift(),Reduce());
+        static_assert(b, "Shift/reduce conflict detected in grammar");
         using resolution = Shift;
     };
 

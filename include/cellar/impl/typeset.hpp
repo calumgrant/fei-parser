@@ -187,4 +187,10 @@ namespace cellar
     {
         return typeset_union<typeset<Ts1...>, typeset<Ts2...>>::type();
     }
+
+    template<typename T1, typename T2>
+    constexpr bool type_equals(T1, T2) { return false; }
+
+    template<typename T>
+    constexpr bool type_equals(T a, T b) { return true; }
 }

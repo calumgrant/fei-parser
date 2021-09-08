@@ -234,9 +234,7 @@ namespace cellar
     {
         parse_state<It> state(tokens);
 
-        // Do the parsing
         using State0 = typename initial_state<Symbol>::type;
-        // state.stack.push_back(parse_success);
 
         state.tokens.lex();
         parse<State0>(state);
