@@ -1,11 +1,5 @@
 
 
-- Parser implementation
-  - Problem: I need to store the name of the symbol in the "reduce action"
-  - rule_position needs an additional member, the target symbol
-When computing the actions
-
-
 - Code reorg
   - Create a library with all the parsers
   - Rename to cellar again.

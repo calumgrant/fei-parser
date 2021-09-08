@@ -2,13 +2,20 @@
 
 #include <typeinfo>
 
-#include <iostream>
 
 #include "rules.hpp"
 #include "closure.hpp"
 #include "action.hpp"
 #include "goto.hpp"
 #include "conflicts.hpp"
+
+#ifndef CELLAR_TRACE_PARSER
+#define CELLAR_TRACE_PARSER 0
+#endif 
+
+#if CELLAR_TRACE_PARSER
+#include <iostream>
+#endif
 
 namespace cellar
 {
@@ -96,6 +103,20 @@ namespace cellar
         }
     };
 
+    template<typename State, typename Symbol, typename It>
+    struct process_goto<State, typeset<Symbol>, It>
+    {
+        // Optimization when there is only one shift type
+        // - there is no need to check the type as this should always be true.
+        static void process(parse_state<It> & state, const std::type_info & type)
+        {
+            assert(typeid(Symbol) == type);
+            using NextState = typename goto_<State, Symbol>::type;
+            parse<NextState>(state);
+        }
+    };
+
+
     /*
         This function has been called when a rule has been reduced.
         The reduced rule is stored in the "rule" parameter.
@@ -106,7 +127,9 @@ namespace cellar
         // Find all the gotos for a given state.
         using C = typename closure<State>::type;
         using Gotos = typename build_goto_list<C>::type;
+#if CELLAR_TRACE_PARSER
         std::cout << "Reduced to state " << C() << " with gotos = " << Gotos() << std::endl;
+#endif
         process_goto<State, Gotos, It>::process(ps, rule);
     }
 
@@ -138,7 +161,9 @@ namespace cellar
     {
         static void process(parse_state<It> & state)
         {
+#if CELLAR_TRACE_PARSER
             std::cout << "Shifting token " << Token << std::endl;
+#endif
             state.tokens.lex();
             using S2 = typename shift_action<State, Token>::type;
             state.stack.push_back(&reduce_fn<State, It>);
@@ -170,7 +195,9 @@ namespace cellar
             
             using Rule = typename Reduce::rule;
             
+#if CELLAR_TRACE_PARSER
             std::cout << "Action = " << Reduce() << std::endl;
+#endif
             for(int i=1; i<Rule::length; ++i)
                 state.stack.pop_back();
             // state.stack.pop_back();
@@ -215,8 +242,10 @@ namespace cellar
         using Closure = typename closure<State>::type;
         using Tokens = typename build_next_token_list<Closure>::type;
 
+#if CELLAR_TRACE_PARSER
         std::cout << "Parsing token in state " << Closure() << std::endl;
         std::cout << "Possible tokens = " << Tokens() << std::endl;
+#endif
 
         process_token_list<State, Tokens, It>::process(state);
     }
