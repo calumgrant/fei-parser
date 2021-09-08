@@ -536,7 +536,7 @@ public:
         AddTest(&ExprGrammar2::TestParse);
     }
 
-    enum Nodes { Id, Int, Add, Minus, Brackets, Open, Close };
+    enum Nodes { Id, Int, Add, Minus, MulNode, DivNode, Brackets, Open, Close };
 
     using IntToken = token<Int, plus<digit>>;
     using AddToken = token<Add, ch<'+'>>;
@@ -544,19 +544,27 @@ public:
     using IdToken  = token<Id, plus<alpha>>;
     using OpenToken = token<Open, ch<'('>>;
     using CloseToken = token<Close, ch<')'>>;
+    using MulToken = token<MulNode, ch<'*'>>;
+    using DivToken = token<DivNode, ch<'/'>>;
     
     struct Expr;
     
-    using Primary = symbol<
+    using PrimaryExpr = symbol<
         IntToken,
         IdToken,
         rule<Brackets, OpenToken, Expr, CloseToken>
         >;
+    
+    class MulExpr : public symbol<
+        PrimaryExpr,
+        rule<MulNode, MulExpr, MulToken, PrimaryExpr>,
+        rule<DivNode, MulExpr, DivToken, PrimaryExpr>
+    > {};
 
     class Expr : public symbol<
-            rule<Add, Expr, AddToken, Primary>,
-            rule<Minus, Expr, SubToken, Primary>,
-            Primary
+            rule<Add, Expr, AddToken, MulExpr>,
+            rule<Minus, Expr, SubToken, MulExpr>,
+            MulExpr
             >
         {};
 
