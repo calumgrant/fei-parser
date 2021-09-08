@@ -62,6 +62,13 @@ namespace cellar
         using type = typename expand_item<S, symbol<T, Items...>, Follows, Closure>::type;
     };
 
+    template<typename S, typename...Items1, typename...Items2, typename Follows, typename Closure>
+    struct expand_item<S, symbol<symbol<Items1...>, Items2...>, Follows, Closure>
+    {
+        using T = typename expand_item<S, symbol<Items1...>, Follows, Closure>::type;
+        using type = typename expand_item<S, symbol<T, Items2...>, Follows, T>::type;
+    };
+
     template<typename Symbol, typename Rule, typename Follows, typename Closure>
     struct add_items;
 

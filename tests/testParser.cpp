@@ -517,8 +517,7 @@ public:
         CHECK(t1.success);
         t1 = parser.parse("1+1");
         CHECK(t1.success);
-        std::cout << "\n\n=== Starting parse ===\n";
-        t1 = parser.parse("1+a"); // Failure
+        t1 = parser.parse("1+a");
         CHECK(t1.success);
         t1 = parser.parse("a+1-1+a");
         std::cout << t1;
