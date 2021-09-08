@@ -14,7 +14,10 @@ namespace cellar
     */    
 
     template<int Token, typename Rule>
-    struct shift {};
+    struct shift
+    {
+        using rule = Rule;
+    };
 
     template<int Lookahead, typename Symbol, typename Rule>
     struct reduce

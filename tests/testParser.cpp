@@ -432,3 +432,46 @@ public:
     }
 } p3;
 
+template<> struct ignore_shift_reduce_conflict<2,2> : public true_value {};
+template<> struct ignore_shift_reduce_conflict<1,2> : public true_value {};
+template<> struct ignore_reduce_reduce_conflict<0,100> : public true_value {};
+
+class Conflicts2 : public Test::Fixture<Conflicts2>
+{
+public:
+    Conflicts2()
+    {
+        AddTest(&Conflicts2::TestParse);
+    }
+
+    enum Nodes { IntNode, AddNode, MinusNode };
+
+    using Int = token<IntNode, plus<digit>>;
+    using Add = token<AddNode, ch<'+'>>;
+    using Sub = token<MinusNode, ch<'-'>>;
+
+    class Expr : public symbol<
+            rule<AddNode, Expr, Add, Int>,
+            rule<MinusNode, Expr, Sub, Expr>,  // Shift/reduce conflict
+            Int,
+            rule<100, Int>  // Reduce-reduce conflict
+            >
+        {};
+
+    using Tokens = alt<Int, Add, Sub>;
+
+    void TestParse()
+    {
+        auto parser = cellar::make_parser<Tokens, Expr>();
+
+        auto t1 = parser.parse("12");
+        CHECK(t1.success);        
+        t1 = parser.parse("1+1");
+        CHECK(t1.success);
+        t1 = parser.parse("1+1-1+1");
+        CHECK(t1.success);
+        t1 = parser.parse("+");
+        CHECK(!t1.success);
+    }
+} conflicts1;
+

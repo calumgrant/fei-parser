@@ -45,27 +45,70 @@ namespace cellar
         return Id;
     }
 
-    template<typename T>
-    constexpr bool ignore_conflicts(T) { return false; }
+    struct true_value
+    {
+        static const bool value = true;
+        constexpr operator bool() { return value; }
+    };
+
+    struct false_value
+    {
+        static const bool value = false;
+        constexpr operator bool() { return value; }
+    };
+
+    template<int ShiftId, int ReduceId>
+    struct ignore_shift_reduce_conflict : public false_value
+    {
+        static const bool value = false;
+    };
 
     template<typename Shift, typename Reduce>
     struct shift_reduce_conflict
     {
-        static const bool b = type_equals(Shift(),Reduce());
-        static_assert(b, "Shift/reduce conflict detected in grammar");
+        /*
+            If this assertion fails, then you have a shift/reduce conflict in your grammar.
+            There are two solutions to this:
+            1. Rewrite your grammar (recommended)
+            2. Whitelist the shift/reduce conflict using `cellar::ignore_shift_reduce_conflict, for example
+
+            ```
+                template<> struct cellar::ignore_shift_reduce_conflict<1,2> :
+                    public true_value {};
+            ```
+        */
+        static_assert(ignore_shift_reduce_conflict<Shift::rule::id, Reduce::rule::id>(),
+            "Shift/reduce conflict detected in grammar");
         using resolution = Shift;
+    };
+
+    template<int Rule1, int Rule2>
+    struct ignore_reduce_reduce_conflict : public false_value
+    {
+        static const bool value = false;
     };
 
     template<typename Reduce1, typename Reduce2>
     struct reduce_reduce_conflict
     {
         using resolution = typename type_if<
-            ruleid(Reduce1()) < ruleid(Reduce2()),
+            Reduce1::rule::id < Reduce2::rule::id,
             Reduce1, Reduce2>::type;
 
-        static_assert(ignore_conflicts(Reduce1()) || ignore_conflicts(Reduce2()), "Reduce/reduce conflict detected in grammar");
-    };
+        /*
+            If this assertion fails, then you have a reduce/reduce conflict in your grammar.
+            There are two solutions to this:
+            1. Rewrite your grammar (strongly recommended)
+            2. Whitelist the reduce/reduce conflict using `cellar::ignore_reduce_reduce_conflict, for example
 
+            ```
+                template<> struct cellar::ignore_reduce_reduce_conflict<1,2> :
+                    public true_value {};
+            ```
+        */
+        static_assert(ignore_reduce_reduce_conflict<Reduce1::rule::id, Reduce2::rule::id>(),
+            "Reduce/reduce conflict detected in grammar");
+    };
 
 
     template<typename Action1, typename Action2>
