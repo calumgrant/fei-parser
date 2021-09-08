@@ -345,7 +345,7 @@ public:
 
     void TestParse()
     {
-        auto parser = cellar::make_parser<Tokens, Expr>();
+        auto parser = cellar::make_parser<Expr, Tokens>();
 
         auto t1 = parser.parse("12");
         CHECK(t1.success);
@@ -381,7 +381,7 @@ public:
 
     void TestParse()
     {
-        auto parser = cellar::make_parser<Tokens, Expr>();
+        auto parser = cellar::make_parser<Expr, Tokens>();
 
         auto t1 = parser.parse("12");
         CHECK(t1.success);
@@ -428,7 +428,7 @@ public:
 
     void TestParse()
     {
-        auto parser = cellar::make_parser<Tokens, Expr>();
+        auto parser = cellar::make_parser<Expr, Tokens>();
 
         auto t1 = parser.parse("12");
         CHECK(t1.success);        
@@ -471,7 +471,7 @@ public:
 
     void TestParse()
     {
-        auto parser = cellar::make_parser<Tokens, Expr>();
+        auto parser = cellar::make_parser<Expr, Tokens>();
 
         auto t1 = parser.parse("12");
         CHECK(t1.success);        
@@ -509,7 +509,7 @@ public:
     void TestParse()
     {
         std::cout << make_lexer_from_grammar<Expr>::type() << std::endl;
-        auto parser = cellar::make_parser2<Expr>();
+        auto parser = cellar::make_parser<Expr>();
 
         auto t1 = parser.parse("12");
         CHECK(t1.success);        
