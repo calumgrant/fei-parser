@@ -7,6 +7,8 @@
   - Create an evaluator for said expression parser
   - Create a toy language as a demo
 
+- Test parsing istreams. How does the token value work???
+
 - Test empty rules
 
 - XML parser

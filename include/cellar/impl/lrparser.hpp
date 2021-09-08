@@ -8,6 +8,7 @@
 #include "action.hpp"
 #include "goto.hpp"
 #include "conflicts.hpp"
+#include "tokens.hpp"
 
 #ifndef CELLAR_TRACE_PARSER
 #define CELLAR_TRACE_PARSER 0
@@ -287,8 +288,15 @@ namespace cellar
         parse<Grammar>(tokens, t);
     }
 
+    // Remove this version
     template<typename Lexer, typename Grammar, typename It = const char*>
     parser<It> make_parser()
+    {
+        return parser<It>(parse<Lexer, Grammar>);
+    }
+
+    template<typename Grammar, typename Lexer = typename make_lexer_from_grammar<Grammar>::type, typename It = const char*>
+    parser<It> make_parser2()
     {
         return parser<It>(parse<Lexer, Grammar>);
     }

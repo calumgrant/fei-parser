@@ -484,3 +484,42 @@ public:
     }
 } conflicts1;
 
+class ExprGrammar1 : public Test::Fixture<ExprGrammar1>
+{
+public:
+    ExprGrammar1()
+    {
+        AddTest(&ExprGrammar1::TestParse);
+    }
+
+    enum Nodes { IntNode, AddNode, MinusNode };
+
+    using Int = token<IntNode, plus<digit>>;
+    using Add = token<AddNode, ch<'+'>>;
+    using Sub = token<MinusNode, ch<'-'>>;
+
+    class Expr : public symbol<
+            rule<AddNode, Expr, Add, Int>,
+            rule<MinusNode, Expr, Sub, Expr>,  // Shift/reduce conflict
+            Int,
+            rule<100, Int>  // Reduce-reduce conflict
+            >
+        {};
+
+    void TestParse()
+    {
+        std::cout << make_lexer_from_grammar<Expr>::type() << std::endl;
+        auto parser = cellar::make_parser2<Expr>();
+
+        auto t1 = parser.parse("12");
+        CHECK(t1.success);        
+        t1 = parser.parse("1+1");
+        CHECK(t1.success);
+        t1 = parser.parse("1+1-1+1");
+        std::cout << t1;
+        CHECK(t1.success);
+        t1 = parser.parse("+");
+        CHECK(!t1.success);
+    }
+} exprGrammar1;
+
