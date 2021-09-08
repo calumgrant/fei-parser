@@ -36,6 +36,12 @@ namespace cellar
         {
             using type = typeset<>;
         };
+    
+        template<typename...Ss, typename Visited>
+        struct token_symbols<symbol<Ss...>, Visited>
+        {
+            using type = typename tokens<symbol<Ss...>, Visited>::type;
+        };
 
         template<int Id, typename S, typename...Ss, typename Visited>
         struct token_symbols<rule<Id, S, Ss...>, Visited>

@@ -73,7 +73,7 @@ namespace cellar
     template<int Ch1, int Ch2>
     std::ostream & operator<<(std::ostream & os, chrange<Ch1, Ch2>)
     {
-        return os << "chrange<'" << (char)Ch1 << "','" << (char)Ch2 << ">";
+        return os << "chrange<'" << (char)Ch1 << "','" << (char)Ch2 << "'>";
     }
 
     template<int Token, typename Rule>

@@ -441,9 +441,9 @@ public:
     }
 } p3;
 
-template<> struct ignore_shift_reduce_conflict<2,2> : public true_value {};
-template<> struct ignore_shift_reduce_conflict<1,2> : public true_value {};
-template<> struct ignore_reduce_reduce_conflict<0,100> : public true_value {};
+template<> struct ignore_shift_reduce_conflict<1002,1002> : public true_value {};
+template<> struct ignore_shift_reduce_conflict<1001,1002> : public true_value {};
+template<> struct ignore_reduce_reduce_conflict<1000,100> : public true_value {};
 
 class Conflicts2 : public Test::Fixture<Conflicts2>
 {
@@ -453,7 +453,7 @@ public:
         AddTest(&Conflicts2::TestParse);
     }
 
-    enum Nodes { IntNode, AddNode, MinusNode };
+    enum Nodes { IntNode=1000, AddNode=1001, MinusNode=1002 };
 
     using Int = token<IntNode, plus<digit>>;
     using Add = token<AddNode, ch<'+'>>;
@@ -492,17 +492,19 @@ public:
         AddTest(&ExprGrammar1::TestParse);
     }
 
-    enum Nodes { IntNode, AddNode, MinusNode };
+    enum Nodes { IdNode, IntNode, AddNode, MinusNode };
 
     using Int = token<IntNode, plus<digit>>;
     using Add = token<AddNode, ch<'+'>>;
     using Sub = token<MinusNode, ch<'-'>>;
+    using Id  = token<IdNode, plus<alpha>>;
+    
+    using Primary = symbol<Int, Id>;
 
     class Expr : public symbol<
-            rule<AddNode, Expr, Add, Int>,
-            rule<MinusNode, Expr, Sub, Expr>,  // Shift/reduce conflict
-            Int,
-            rule<100, Int>  // Reduce-reduce conflict
+            rule<AddNode, Expr, Add, Primary>,
+            rule<MinusNode, Expr, Sub, Primary>,
+            Primary
             >
         {};
 
@@ -512,10 +514,13 @@ public:
         auto parser = cellar::make_parser<Expr>();
 
         auto t1 = parser.parse("12");
-        CHECK(t1.success);        
+        CHECK(t1.success);
         t1 = parser.parse("1+1");
         CHECK(t1.success);
-        t1 = parser.parse("1+1-1+1");
+        std::cout << "\n\n=== Starting parse ===\n";
+        t1 = parser.parse("1+a"); // Failure
+        CHECK(t1.success);
+        t1 = parser.parse("a+1-1+a");
         std::cout << t1;
         CHECK(t1.success);
         t1 = parser.parse("+");

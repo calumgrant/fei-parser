@@ -10,6 +10,8 @@
 #include "conflicts.hpp"
 #include "tokens.hpp"
 
+#define CELLAR_TRACE_PARSER 1
+
 #ifndef CELLAR_TRACE_PARSER
 #define CELLAR_TRACE_PARSER 0
 #endif 
@@ -163,7 +165,7 @@ namespace cellar
         static void process(parse_state<It> & state)
         {
 #if CELLAR_TRACE_PARSER
-            std::cout << "Shifting token " << Token << std::endl;
+            std::cout << "Shifting" << std::endl;
 #endif
             auto node = state.parse_tree.shift(Token, state.tokens.begin().location, state.tokens.size());
 
@@ -204,7 +206,7 @@ namespace cellar
             using Rule = typename Reduce::rule;
             
 #if CELLAR_TRACE_PARSER
-            std::cout << "Action = " << Reduce() << std::endl;
+            std::cout << "Reducing " << Reduce() << std::endl;
 #endif
             for(int i=1; i<Rule::length; ++i)
                 state.stack.pop_back();
@@ -251,7 +253,12 @@ namespace cellar
         using Tokens = typename build_next_token_list<Closure>::type;
 
 #if CELLAR_TRACE_PARSER
-        std::cout << "Parsing token in state " << Closure() << std::endl;
+        std::cout << "Lookahead token = " << state.tokens.token() << " = ";
+        for(auto ch : state.tokens)
+            std::cout << ch;
+        std::cout << std::endl;
+        std::cout << "State = " << State() << std::endl;
+        std::cout << "Closure = " << Closure() << std::endl;
         std::cout << "Possible tokens = " << Tokens() << std::endl;
 #endif
 
@@ -269,6 +276,10 @@ namespace cellar
     template<typename Symbol, typename It>
     void parse(const token_stream<It> &tokens, tree&t)
     {
+#if CELLAR_TRACE_PARSER
+        std::cout << "\n\n=== Starting parse ===\n";
+#endif
+
         parse_state<It> state(tokens);
         state.parse_tree = std::move(t);
         t.clear();
