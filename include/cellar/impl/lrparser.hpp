@@ -10,8 +10,6 @@
 #include "conflicts.hpp"
 #include "tokens.hpp"
 
-#define CELLAR_TRACE_PARSER 1
-
 #ifndef CELLAR_TRACE_PARSER
 #define CELLAR_TRACE_PARSER 0
 #endif 

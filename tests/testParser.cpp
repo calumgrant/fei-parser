@@ -527,3 +527,106 @@ public:
     }
 } exprGrammar1;
 
+
+class ExprGrammar2 : public Test::Fixture<ExprGrammar2>
+{
+public:
+    ExprGrammar2()
+    {
+        AddTest(&ExprGrammar2::TestParse);
+    }
+
+    enum Nodes { Id, Int, Add, Minus, Brackets, Open, Close };
+
+    using IntToken = token<Int, plus<digit>>;
+    using AddToken = token<Add, ch<'+'>>;
+    using SubToken = token<Minus, ch<'-'>>;
+    using IdToken  = token<Id, plus<alpha>>;
+    using OpenToken = token<Open, ch<'('>>;
+    using CloseToken = token<Close, ch<')'>>;
+    
+    struct Expr;
+    
+    using Primary = symbol<
+        IntToken,
+        IdToken,
+        rule<Brackets, OpenToken, Expr, CloseToken>
+        >;
+
+    class Expr : public symbol<
+            rule<Add, Expr, AddToken, Primary>,
+            rule<Minus, Expr, SubToken, Primary>,
+            Primary
+            >
+        {};
+
+    void TestParse()
+    {
+        std::cout << make_lexer_from_grammar<Expr>::type() << std::endl;
+        auto parser = cellar::make_parser<Expr>();
+
+        auto t1 = parser.parse("12");
+        CHECK(t1.success);
+        t1 = parser.parse("1+1");
+        CHECK(t1.success);
+        t1 = parser.parse("1+a");
+        CHECK(t1.success);
+        t1 = parser.parse("a+1-1+a");
+        std::cout << t1;
+        CHECK(t1.success);
+
+        t1 = parser.parse("(1)");
+        std::cout << t1;
+        CHECK(t1.success);
+
+        t1 = parser.parse("a+(1-(1))+a");
+        std::cout << t1;
+        CHECK(t1.success);
+
+        t1 = parser.parse("+");
+        CHECK(!t1.success);
+    }
+} exprGrammar2;
+
+class RecursionTest : public Test::Fixture<RecursionTest>
+{
+public:
+    RecursionTest()
+    {
+#ifdef NDEBUG
+        AddTest(&RecursionTest::Run);
+#endif
+    }
+
+    enum Nodes { DigitNode, ListNode };
+    
+    using DigitToken = token<DigitNode, digit>;
+    
+    class List1 : public symbol<
+        DigitToken,
+        rule<ListNode, List1, DigitToken>
+    > {};
+
+    class List2 : public symbol<
+        DigitToken,
+        rule<ListNode, DigitToken, List2>
+    > {};
+
+    
+    void Run()
+    {
+        const int size = 1000000;
+        std::vector<char> data(size, '0');
+        
+        auto p = make_parser<List1>();
+        auto t = p.parse(data.data(), data.data()+size);
+        CHECK(t.success);
+
+        p = make_parser<List2>();
+        t = p.parse(data.data(), data.data()+size);
+        CHECK(t.success);
+
+    };
+    
+} rec1;
+

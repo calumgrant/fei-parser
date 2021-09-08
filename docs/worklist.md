@@ -23,6 +23,8 @@ When performing a reduction (`writable_tree::reduce`), it walks the children as 
 
 Nodes can be set (via their id) to `Hidden` which removes the node but exposes its children in the parent, or `Remove` which removes the node entirely (including its children).
 
+Maybe, negative nodes are "hidden" or something? Or any node above 1000 is hidden? Problem is that we need to have distinct token nodes.
+
 - class `writable_tree`
 
 - Improve node class
