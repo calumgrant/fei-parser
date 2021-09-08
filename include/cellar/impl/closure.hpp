@@ -1,16 +1,80 @@
 #pragma once
 
+/*
+    This file has to do with building "closures".
+
+    For example, for every item `A -> B . C ..., x`
+    we need to "add" all of the rules in `C` as well.
+
+    We need the "closure" to figure out which symbols can be shifted at each state.
+*/
+
 #include "typeset.hpp"
 #include "potentially_empty_symbol.hpp"
 #include "follow.hpp"
 
 namespace cellar
 {
-    /*
-        Finds the next symbol in an Item (the symbol to the right of the `.`)
-    */
-    template<typename Item>
-    struct getnext;
+    namespace impl
+    {
+        /*
+            Loops through the items in the `Items`, adding them to the closure `type`.
+        */
+        template<typename Items, typename Closure>
+        struct build_closure;
+
+        /*
+            Finds the next symbol in an Item (the symbol to the right of the `.`)
+        */
+        template<typename Item>
+        struct getnext;
+
+        /*
+            Expands the symbol `Symbol`, with `Rules` being the rules in the symbol.
+
+            `Follows` is the typeset of all symbols that follow the item being added, or
+            possibly a single token `token<>`.
+        */
+        template<typename Symbol, typename Rules, typename Follows, typename Closure>
+        struct expand_symbol;
+    
+        // ?? Delete
+        template<typename Item>
+        struct item;
+
+        /*
+            Adds a new item to a closure `Closure`, giving the result in `type`.
+            `Rule` is a `rule<>` or possibly a `token<>`, that is turned into
+            an item by setting its position to 0, and .
+
+            - I think we can get rid of this one and fold it into
+        */
+        template<typename Symbol, typename Rule, typename Follows, typename Closure>
+        struct add_rule;
+
+        template<typename Item>
+        struct skip_symbol;
+
+        /*
+            Adds and item `Item` to `Closure`, returning the new closure in `type`.
+         */
+        template<typename Item, typename Closure, bool NeedToExpand = !typeset_contains<Item, Closure>::value && item<Item>::reads_symbol>
+        struct add_to_closure;
+
+
+        /*
+            Holds if `Symbol` is a symbol (and not a token)
+         */
+        template<typename Symbol>
+        struct is_symbol;
+
+
+
+
+
+
+
+
 
     template<typename S, int Id, int Lookahead, typename Symbol, typename...Symbols>
     struct getnext<rule_position<S, rule<Id, Symbol, Symbols...>, 0, Lookahead>>
@@ -39,69 +103,61 @@ namespace cellar
         using type_or_lookahead = token<Lookahead>;
     };
 
-
-    template<typename Symbol, typename Closure>
-    struct expand_next;
+    template<typename S, typename Follows, typename Closure>
+    struct expand_symbol<S, symbol<>, Follows, Closure>
+    {
+        using type = Closure;
+    };
 
     template<typename S, typename Item, typename Follows, typename Closure>
-    struct expand_item
+    struct expand_symbol
     {
-        using type = Closure;
+        using type = typename expand_symbol<S, typename Item::rules, Follows, Closure>::type;
     };
 
+    
     template<typename S, typename Item, typename...Items, typename Follows, typename Closure>
-    struct expand_item<S, symbol<Item, Items...>, Follows, Closure>
+    struct expand_symbol<S, symbol<Item, Items...>, Follows, Closure>
     {
-        using type = Closure;
+        using C1 = typename expand_symbol<S, Item, Follows, Closure>::type;
+        using type = typename expand_symbol<S, symbol<Items...>, Follows, C1>::type;
     };
 
-    template<typename S, int Id, typename...Rule, typename...Items, typename Follows, typename Closure>
-    struct expand_item<S, symbol<token<Id, Rule...>, Items...>, Follows, Closure>
+    template<typename S, int Id, typename...Rule, typename Follows, typename Closure>
+    struct expand_symbol<S, token<Id, Rule...>, Follows, Closure>
     {
         using T = rule<Id, token<Id, Rule...>>;
-        using type = typename expand_item<S, symbol<T, Items...>, Follows, Closure>::type;
+        using type = typename expand_symbol<S, T, Follows, Closure>::type;
     };
 
     template<typename S, typename...Items1, typename...Items2, typename Follows, typename Closure>
-    struct expand_item<S, symbol<symbol<Items1...>, Items2...>, Follows, Closure>
+    struct expand_symbol<S, symbol<symbol<Items1...>, Items2...>, Follows, Closure>
     {
-        using T = typename expand_item<S, symbol<Items1...>, Follows, Closure>::type;
-        using type = typename expand_item<S, symbol<T, Items2...>, Follows, T>::type;
+        using T = typename expand_symbol<S, symbol<Items1...>, Follows, Closure>::type;
+        using type = typename expand_symbol<S, symbol<Items2...>, Follows, T>::type;
     };
 
-    template<typename Symbol, typename Rule, typename Follows, typename Closure>
-    struct add_items;
-
-    template<typename S, typename Rule, typename Closure>
-    struct add_items<S, Rule, typeset<>, Closure>
-    {
-        using type = Closure;
-    };
-
-    template<typename Item>
-    struct item;
-
-    template<typename Item, typename Closure, bool NeedToExpand = !typeset_contains<Item, Closure>::value && item<Item>::reads_symbol>
-    struct add_to_closure;
-
+    /*
     template<typename S, typename Rule, int Lookahead, typename...Follows, typename Closure>
-    struct add_items<S, Rule, typeset<token<Lookahead>, Follows...>, Closure>
+    struct expand_symbol<S, Rule, typeset<token<Lookahead>, Follows...>, Closure>
     {
         using Item = rule_position<S, Rule, 0, Lookahead>;
         using type = typename add_to_closure<Item, Closure>::type;
     };
-
-    template<typename T>
-    struct Debug
+     */
+    template<typename S, int Id, typename... Rule, typename... Follows, typename Closure, int Lookahead>
+    struct expand_symbol<S, rule<Id, Rule...>, typeset<token<Lookahead>, Follows...>, Closure>
     {
-        using Break = typename T::fail;
+        using Item = rule_position<S, rule<Id, Rule...>, 0, Lookahead>;
+        using T = typename expand_symbol<S, rule<Id, Rule...>, typeset<Follows...>, Closure>::type;
+        using type = typename add_to_closure<Item, T>::type;
     };
 
-    template<typename S, int Id, typename...Rule, typename...Items, typename Follows, typename Closure>
-    struct expand_item<S, symbol<rule<Id, Rule...>, Items...>, Follows, Closure>
+    template<typename S, int Id, typename... Rule, typename Closure>
+    struct expand_symbol<S, rule<Id, Rule...>, typeset<>, Closure>
     {
-        using C0 = typename add_items<S, rule<Id, Rule...>, Follows, Closure>::type;
-        using type = typename expand_item<S, symbol<Items...>, Follows, C0>::type;
+        // Empty follows set - base case
+        using type = Closure;
     };
 
     template<typename Item, typename Closure>
@@ -134,8 +190,6 @@ namespace cellar
         static const bool value = false;
     };
 
-    template<typename Item>
-    struct skip_symbol;
 
     template<typename S, typename Rule, int Position, int Lookahead>
     struct skip_symbol<rule_position<S, Rule, Position, Lookahead>>
@@ -143,8 +197,6 @@ namespace cellar
         using type = rule_position<S, Rule, Position+1, Lookahead>;
     };
     
-    template<typename Item>
-    struct item;
 
     template<typename S, int Id, typename Symbol, typename... Symbols, int Position, int Lookahead>
     struct item<rule_position<S, rule<Id, Symbol, Symbols...>, Position, Lookahead>>
@@ -204,12 +256,10 @@ namespace cellar
             typename add_to_closure<typename skip_symbol<Item>::type, C1>::type,
             C1>::type;
 
-        using type = typename expand_item<NextSymbol, typename NextSymbol::rules, Follows, C2>::type;
+        using type = typename expand_symbol<NextSymbol, typename NextSymbol::rules, Follows, C2>::type;
     };
 
 
-    template<typename Closure, typename Added>
-    struct build_closure;
 
     template<typename Closure>
     struct build_closure<typeset<>, Closure>
@@ -223,6 +273,7 @@ namespace cellar
         using C1 = typename build_closure<typeset<Items...>, Closure>::type;
         using type = typename add_to_closure<Item, C1>::type;
     };
+    }
 
     /*
         Expands a "kernel" (a set of items), into its closure, where each item containing `. X` is expanded into all 
@@ -231,6 +282,6 @@ namespace cellar
     template<typename Kernel>
     struct closure
     {
-        using type = typename build_closure<Kernel, typeset<>>::type;
+        using type = typename impl::build_closure<Kernel, typeset<>>::type;
     };
 }

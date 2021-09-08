@@ -90,7 +90,7 @@ namespace cellar
     template<typename Item>
     struct build_goto_item
     {
-        using Symbol = typename getnext<Item>::type;
+        using Symbol = typename impl::getnext<Item>::type;
         using type = typename type_if<is_symbol2<Symbol>::value, typeset<Symbol>, typeset<>>::type;
     };
 

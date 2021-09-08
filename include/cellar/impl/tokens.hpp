@@ -22,49 +22,39 @@ namespace cellar
             using type = typeset<>;
         };
 
-        template<typename Symbol, typename Visited>
-        struct token_symbols;
-
-        template<int Id, typename...Def, typename Visited>
-        struct token_symbols<token<Id, Def...>, Visited>
-        {
-            using type = typeset<token<Id, Def...>>;
-        };
-
-        template<int Id, typename Visited>
-        struct token_symbols<rule<Id>, Visited>
-        {
-            using type = typeset<>;
-        };
-    
-        template<typename...Ss, typename Visited>
-        struct token_symbols<symbol<Ss...>, Visited>
-        {
-            using type = typename tokens<symbol<Ss...>, Visited>::type;
-        };
-
-        template<int Id, typename S, typename...Ss, typename Visited>
-        struct token_symbols<rule<Id, S, Ss...>, Visited>
-        {
-            using T1 = typename tokens<S, Visited>::type;
-            using T2 = typename token_symbols<rule<Id, Ss...>, Visited>::type;
-            using type = typename typeset_union<T1, T2>::type;
-        };
-
-        template<typename S, typename...Ss, typename Visited>
-        struct tokens<symbol<S, Ss...>, Visited, false>
-        {
-            using T1 = typename token_symbols<S, Visited>::type;
-            using T2 = typename tokens<symbol<Ss...>, Visited>::type;
-            using type = typename typeset_union<T1,T2>::type;
-        };
-
         template<int Id, typename...Def, typename Visited>
         struct tokens<token<Id, Def...>, Visited, false>
         {
             using type = typeset<token<Id, Def...>>;
         };
 
+        template<int Id, typename Visited>
+        struct tokens<rule<Id>, Visited, false>
+        {
+            using type = typeset<>;
+        };
+    
+        template<typename...Ss, typename Visited>
+        struct tokens<symbol<Ss...>, Visited, false>
+        {
+            using type = typename tokens<symbol<Ss...>, Visited>::type;
+        };
+
+        template<int Id, typename S, typename...Ss, typename Visited>
+        struct tokens<rule<Id, S, Ss...>, Visited, false>
+        {
+            using T1 = typename tokens<S, Visited>::type;
+            using T2 = typename tokens<rule<Id, Ss...>, Visited>::type;
+            using type = typename typeset_union<T1, T2>::type;
+        };
+
+        template<typename S, typename...Ss, typename Visited>
+        struct tokens<symbol<S, Ss...>, Visited, false>
+        {
+            using T1 = typename tokens<S, Visited>::type;
+            using T2 = typename tokens<symbol<Ss...>, Visited>::type;
+            using type = typename typeset_union<T1,T2>::type;
+        };
 
         template<typename Tokens>
         struct make_lexer;
