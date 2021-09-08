@@ -1,6 +1,7 @@
 #pragma once
 
 #include "location.hpp"
+#include <string>
 
 namespace cellar
 {
@@ -22,11 +23,14 @@ namespace cellar
         node() : p() {}
         explicit node(const node_data * p) : p(p) {}
 
-        std::string str() const;
+        std::string str() const { return std::string(c_str(), c_str() + tokenLength()); }
+        
         const char * c_str() const { return (const char*)extraData(); }
-        location getLocation() const;
-
-        int length() const;
+        
+        location getLocation() const
+        {
+            return *(cellar::location*)((char*)p - sizeof(cellar::location));
+        }
 
         int id() const { return p->id; }
 
@@ -36,15 +40,6 @@ namespace cellar
         }
 
         typedef std::uint16_t size_type;
-
-        struct iterator
-        {
-            typedef node value_type;
-
-            node operator*() const;
-            node operator->() const;
-            iterator & operator++();
-        };
 
         // Iteration
         node begin() const { return size()==0 ? end() : first(); }
@@ -67,8 +62,13 @@ namespace cellar
             return node((const node_data*)((const char*)p - sizeof(node_data)));
         }
 
-        int size() const { return p->numberOfChildren; }
+        int size() const { return p ? p->numberOfChildren : 0; }
 
+        // A node is its own iterator
+        
+        typedef node value_type;
+        typedef node iterator;
+        
         node operator*() const { return *this; }
 
         node & operator++()
@@ -93,9 +93,13 @@ namespace cellar
         }
 
         const void* extraData() const { return (const char*)p - p->size + sizeof(node_data); }
+        
+        int tokenLength() const { return isToken() ? p->size - sizeof(node_data) - sizeof(location) - 1 : 0; }
 
         const node_data * p;
     };
+
+    // Maybe move to impl and away from here
 
     class writable_node
     {
@@ -119,8 +123,6 @@ namespace cellar
         void setLocation(cellar::location l)
         {
             *(cellar::location*)((char*)p - sizeof(cellar::location)) = l;
-
         }
-
     };
 }

@@ -156,7 +156,7 @@ void outputState()
 {
     using C = typename closure<State>::type;
     std::cout << "State kernel: " << State();
-    std::cout << "Closure: " << C() << std::endl;;
+    std::cout << "\nClosure: " << C() << std::endl;;
 
     // Show the transitions
     using Tokens = typename build_next_token_list<C>::type;
@@ -389,7 +389,7 @@ public:
         
         t1 = parser.parse("1+2");
         CHECK(t1.success);
-        t1 = parser.parse("1+2+3+4");
+        t1 = parser.parse("1 + 2 + 3 + 4");
         std::cout << t1;
         auto r = t1.root();
         CHECK(t1.success);

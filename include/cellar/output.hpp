@@ -226,27 +226,24 @@ namespace cellar
     inline void output_node(std::ostream & os, node n, int indent)
     {
         for(int i=0; i<indent; ++i) os << "  ";
-        os << "Node type = " << n.id();
-        os << ", size = " << n.size() << " ";
-
-        if(n.hasLocation())
+        os << "Node type=" << n.id();
+        
+        if(n.isToken())
         {
-            
-        }
-        
-        if(n.hasString())
-        {
-            os << ", text = \"" << n.c_str() << '\"';
-        }
-        
-        os << std::endl;
-        
-        if(n.size()==0)
             assert(n.begin()==n.end());
-        
-        // Navigate children
-        for(auto i : n)
-            output_node(os, i, indent+1);
+
+            auto loc = n.getLocation();
+            os << ", location=" << loc.row << ":" << loc.col;
+            assert(n.tokenLength() == n.str().length());
+            os << ", text=\"" << n.c_str() << "\"" << std::endl;
+        }
+        else
+        {
+            // Display children
+            os << std::endl;
+            for(auto i : n)
+                output_node(os, i, indent+1);
+        }
     }
 
     inline std::ostream & operator<<(std::ostream & os, node root)
