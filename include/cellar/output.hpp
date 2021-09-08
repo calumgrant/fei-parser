@@ -222,4 +222,46 @@ namespace cellar
     {
         return os << "<error>";
     }
+
+    inline void output_node(std::ostream & os, node n, int indent)
+    {
+        for(int i=0; i<indent; ++i) os << "  ";
+        os << "Node type = " << n.id();
+        os << ", size = " << n.size() << " ";
+
+        if(n.hasLocation())
+        {
+            
+        }
+        
+        if(n.hasString())
+        {
+            os << ", text = \"" << n.c_str() << '\"';
+        }
+        
+        os << std::endl;
+        
+        if(n.size()==0)
+            assert(n.begin()==n.end());
+        
+        // Navigate children
+        for(auto i : n)
+            output_node(os, i, indent+1);
+    }
+
+    inline std::ostream & operator<<(std::ostream & os, node root)
+    {
+        output_node(os, root, 0);
+        return os;
+    }
+
+    inline std::ostream & operator<<(std::ostream & os, const tree & tree)
+    {
+        if(tree.empty())
+            os << "<empty tree>";
+        else
+            os << tree.root();
+        return os;
+    }
+
 }

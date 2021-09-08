@@ -385,9 +385,13 @@ public:
 
         auto t1 = parser.parse("12");
         CHECK(t1.success);
+        std::cout << t1;
+        
         t1 = parser.parse("1+1");
         CHECK(t1.success);
         t1 = parser.parse("1+1+1+1");
+        std::cout << t1;
+        auto r = t1.root();
         CHECK(t1.success);
         t1 = parser.parse("+");
         CHECK(!t1.success);

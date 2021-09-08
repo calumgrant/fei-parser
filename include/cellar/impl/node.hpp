@@ -4,25 +4,36 @@
 
 namespace cellar
 {
-    struct node_data;
-    class children;
+    struct node_data
+    {
+        std::uint32_t size;  // Size of node in bytes, including node_data
+        std::uint16_t id, numberOfChildren;
+    };
+
+    class children
+    {
+        int id;
+    };
 
     class node
     {
     public:
         // Constructs an empty node;
-        node();
-        node(const node_data * p);
+        node() : p() {}
+        explicit node(const node_data * p) : p(p) {}
 
         std::string str() const;
-        const char * c_str() const;
-        cellar::location location() const;
+        const char * c_str() const { return (const char*)extraData(); }
+        location getLocation() const;
 
         int length() const;
 
-        int id() const;
-        node first() const;
-        node next() const;
+        int id() const { return p->id; }
+
+        node next() const
+        {
+            return node((node_data*)((char*)p - p->size));
+        }
 
         typedef std::uint16_t size_type;
 
@@ -36,110 +47,80 @@ namespace cellar
         };
 
         // Iteration
-        iterator begin() const;
-        iterator end() const;
+        node begin() const { return size()==0 ? end() : first(); }
+        node end() const { return next(); }
 
         node operator[](size_type i) const;
 
         operator bool() const { return p; }
 
-        children get(int id);
+        // children get(int id);
 
         // Container of nodes of a given type
-
+        
+        bool operator==(node other) const { return p == other.p; }
+        bool operator!=(node other) const { return p != other.p; }
 
         // Gets the first node with a given id, or returns the empty node
-        node first(int id) const;
-    private:
-        const node_data * p;
-    };
-
-    class children
-    {
-        int id;
-        node a, b;
-    };
-
-    /*
-        A node in the parse tree.
-
-        This is a compact and memory-efficient representation designed basically for speed.
-        The nodes are stored in a vector<char>, and are navigated using pointer offsets.
-        
-        This has advantages:
-        1. It supports the shift and reduce operations but just pushing a new node at the end of the vector 
-        2. It removes the need for memory allocation, except to extend a vector
-        3. Memory locality: adjacent nodes are stored adjacently in memory.
-        4. Memory safety: The vector cleans up the contents at the end.
-     */ 
-    class node2
-    {
-    public:
-
-        int id() const { return nodeId; }
-        int size() const { return numberOfChildren; }
-
-        const char * c_str();
-
-        bool leaf() const { return size()==0; }
-
-        class iterator
+        node first() const
         {
-        public:
-            iterator(const node2 *n) : current(n) {}
-
-            iterator & operator++()
-            {
-                current = &current->previous();
-                return *this;
-            }
-
-            bool operator!=(iterator other) const { return current != other.current; }
-
-            const node2 & operator*() const { return *current; }
-
-        private:
-            const node2 * current;
-        };
-
-        iterator begin() const
-        {
-            return &first();
+            return node((const node_data*)((const char*)p - sizeof(node_data)));
         }
 
-        iterator end() const
-        {
-            return &previous();
-        }
+        int size() const { return p->numberOfChildren; }
 
-        const node2 & previous() const
-        {
-            return *(this - sizeInNodes);
-        }
+        node operator*() const { return *this; }
 
-        const node2 & first() const
+        node & operator++()
         {
-            return *(this-1);
-        }
-
-        const node2 & operator[](int child) const
-        {
-            for(const auto & i : *this)
-            {
-                if(child-- == 0) return i;
-            }
-            // Undefined / return something
+            *this = next();
             return *this;
         }
 
-        const void * data() const
+        bool isToken() const
         {
-            return (const void*)(this + 1 - sizeInNodes);
+            return p && p->numberOfChildren==0;
         }
 
-    private:
-        std::uint32_t sizeInNodes;  // The size of the node, including this node data.
-        std::uint16_t nodeId;
-        std::uint16_t numberOfChildren;
+        bool hasLocation() const
+        {
+            return isToken() && p->size >= sizeof(node) + sizeof(location);
+        }
+
+        bool hasString() const
+        {
+            return isToken() && p->size > sizeof(node) + sizeof(location);
+        }
+
+        const void* extraData() const { return (const char*)p - p->size + sizeof(node_data); }
+
+        const node_data * p;
+    };
+
+    class writable_node
+    {
+    public:
+        writable_node() : p() {}
+        explicit writable_node(node_data * p) : p(p) {}
+
+        operator node() const { return node(p); }
+
+        node_data * p;
+
+        void* extraData() const { return (char*)p - p->size + sizeof(node_data); }
+
+        char * c_str() const { return (char*)extraData(); }
+
+        void setData(node_data data)
+        {
+            *p = data;
+        }
+
+        void setLocation(cellar::location l)
+        {
+            *(cellar::location*)((char*)p - sizeof(cellar::location)) = l;
+
+        }
+
     };
 }

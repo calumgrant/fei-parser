@@ -164,6 +164,9 @@ namespace cellar
 #if CELLAR_TRACE_PARSER
             std::cout << "Shifting token " << Token << std::endl;
 #endif
+            auto node = state.parse_tree.shift(Token, state.tokens.begin().location, state.tokens.size());
+            // TODO: Write the string into the node
+
             state.tokens.lex();
             using S2 = typename shift_action<State, Token>::type;
             state.stack.push_back(&reduce_fn<State, It>);
@@ -200,7 +203,7 @@ namespace cellar
 #endif
             for(int i=1; i<Rule::length; ++i)
                 state.stack.pop_back();
-            // state.stack.pop_back();
+            state.parse_tree.reduce(Rule::id, Rule::length);
             auto fn = state.stack.back();
             fn(state, typeid(typename Reduce::symbol));
         }

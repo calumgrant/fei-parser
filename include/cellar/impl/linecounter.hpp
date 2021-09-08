@@ -44,6 +44,10 @@ namespace cellar
             return it != other.it;
         }
 
+        auto operator-(const linecounter & other) const
+        {
+            return it - other.it;
+        }
 
         // TODO: Other iterator stuff
     private:
