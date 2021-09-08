@@ -7,6 +7,8 @@
   - Create an evaluator for said expression parser
   - Create a toy language as a demo
 
+- Check whether we are an LALR algorithm and how to reduce the states.
+
 - Test parsing istreams. How does the token value work???
 
 - Test empty rules

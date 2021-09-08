@@ -11,7 +11,7 @@
 #include "tokens.hpp"
 
 #ifndef CELLAR_TRACE_PARSER
-#define CELLAR_TRACE_PARSER 1
+#define CELLAR_TRACE_PARSER 0
 #endif 
 
 #if CELLAR_TRACE_PARSER
@@ -20,12 +20,6 @@
 
 namespace cellar
 {
-    template<typename Symbol>
-    struct tokens
-    {
-
-    };
-
     // Should really be hidden/moved from here
     template<typename It>
     struct parse_state

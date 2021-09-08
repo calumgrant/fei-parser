@@ -64,7 +64,14 @@ namespace cellar
         node begin() const { return size()==0 ? end() : first(); }
         node end() const { return next(); }
 
-        node operator[](size_type i) const;
+        node operator[](size_type i) const
+        {
+            if(i>=size()) return *this;
+            node n = begin();
+            for(++i; i<size(); ++i)
+                ++n;
+            return n;
+        }
 
         operator bool() const { return p; }
 

@@ -559,14 +559,13 @@ public:
         PrimaryExpr,
         rule<MulNode, MulExpr, MulToken, PrimaryExpr>,
         rule<DivNode, MulExpr, DivToken, PrimaryExpr>
-    > {};
+        > {};
 
     class Expr : public symbol<
-            rule<Add, Expr, AddToken, MulExpr>,
-            rule<Minus, Expr, SubToken, MulExpr>,
-            MulExpr
-            >
-        {};
+        rule<Add, Expr, AddToken, MulExpr>,
+        rule<Minus, Expr, SubToken, MulExpr>,
+        MulExpr
+        > {};
 
     void TestParse()
     {
@@ -593,6 +592,54 @@ public:
 
         t1 = parser.parse("+");
         CHECK(!t1.success);
+        
+        t1 = parser.parse("10");
+        EQUALS(10, eval(t1.root()));
+        t1 = parser.parse("(10)");
+        EQUALS(10, eval(t1.root()));
+        t1 = parser.parse("(10)");
+        EQUALS(10, eval(t1.root()));
+        
+        EQUALS(3, eval("1+2"));
+        EQUALS(-1, eval("xyz"));
+        EQUALS(10, eval("2 * 5"));
+        EQUALS(5, eval("10/2"));
+        EQUALS(11, eval("3+2*4"));
+        EQUALS(20, eval("(3+2)*4"));
+        EQUALS(1, eval("x*y"));
+        EQUALS(10, eval("13-2-1"));
+        EQUALS(12, eval("13-(2-1)"));
+    }
+
+    int eval(const char * str)
+    {
+        auto parser = cellar::make_parser<Expr>();
+        auto t = parser.parse(str, str+std::strlen(str));
+        CHECK(t.success);
+        return eval(t.root());
+    }
+    
+    int eval(node n)
+    {
+        switch(n.id())
+        {
+            case Int:
+                return atoi(n.c_str());
+            case Brackets:
+                return eval(n[1]);
+            case Id:
+                return -1;
+            case Add:
+                return eval(n[0]) + eval(n[2]);
+            case Minus:
+                return eval(n[0]) - eval(n[2]);
+            case MulNode:
+                return eval(n[0]) * eval(n[2]);
+            case DivNode:
+                return eval(n[0]) / eval(n[2]);
+            default:
+                return 0;
+        }
     }
 } exprGrammar2;
 
