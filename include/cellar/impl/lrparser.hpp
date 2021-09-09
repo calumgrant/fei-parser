@@ -200,6 +200,9 @@ namespace cellar
 #if CELLAR_TRACE_PARSER
             std::cout << "Reducing " << Reduce() << std::endl;
 #endif
+            if(Rule::length==0)
+                state.stack.push_back(&reduce_fn<State, It>);
+                
             for(int i=1; i<Rule::length; ++i)
                 state.stack.pop_back();
             state.parse_tree.reduce(Rule::id, Rule::length);
@@ -279,6 +282,7 @@ namespace cellar
         using State0 = typename initial_state<Symbol>::type;
 
         state.tokens.lex();
+        state.stack.push_back(parse_success);
         parse<State0>(state);
 
         t = std::move(state.parse_tree);

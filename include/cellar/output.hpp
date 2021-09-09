@@ -156,15 +156,21 @@ namespace cellar
         }
     };
 
+    template<int Lookahead>
+    inline void outputLookahead(std::ostream &os)
+    {
+        if(Lookahead == EndOfStream)
+            os << "$";
+        else os << Lookahead;
+    }
+
     template<typename S, int Id, typename...Symbols, int Position, int Lookahead>
     std::ostream & operator<<(std::ostream & os, const rule_position<S, rule<Id, Symbols...>, Position, Lookahead> &)
     {
         os << "rule<" << Id << "> ->";
         write_rule<Position, Symbols...>::write(os);
         os << ", ";
-        if(Lookahead == EndOfStream)
-            os << "$";
-        else os << Lookahead;
+        outputLookahead<Lookahead>(os);
         
         return os;
     }
@@ -215,7 +221,9 @@ namespace cellar
     template<int Token, typename S, typename Rule>
     std::ostream & operator<<(std::ostream & os, reduce<Token, S, Rule>)
     {
-        return os << "r" << Token << "[" << Rule() << "]";
+        os <<  Rule() << " . , ";
+        outputLookahead<Token>(os);
+        return os;
     }
 
     inline std::ostream & operator<<(std::ostream & os, syntax_error)
@@ -228,7 +236,11 @@ namespace cellar
         for(int i=0; i<indent; ++i) os << "  ";
         os << "Node type=" << n.id();
         
-        if(n.isToken())
+        if(n.isEmptyNode())
+        {
+            os << ", empty\n";
+        }
+        else if(n.isToken())
         {
             assert(n.begin()==n.end());
 

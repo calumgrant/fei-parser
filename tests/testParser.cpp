@@ -1,4 +1,6 @@
 
+#define CELLAR_TRACE_PARSER 0
+
 #include <cellar/cellar.hpp>
 #include <cellar/output.hpp>
 #include <simpletest.hpp>
@@ -685,3 +687,57 @@ public:
     
 } rec1;
 
+// template<> struct ignore_shift_reduce_conflict<1, 0> : public true_value {};
+// template<> struct ignore_shift_reduce_conflict<2, 1> : public true_value {};
+
+class EmptyRule : public Test::Fixture<EmptyRule>
+{
+public:
+    EmptyRule()
+    {
+        AddTest(&EmptyRule::TestConst);
+        AddTest(&EmptyRule::TestConstVolatile);
+    }
+
+    enum Nodes { ConstNode=10, VolatileNode, QualifiersNode };
+
+    using ConstToken = token<ConstNode, string<'c', 'o', 'n', 's', 't'>>;
+    using VolatileToken = token<VolatileNode, string<'v', 'o', 'l', 'i', 't', 'l', 'e'>>;
+
+    using ConstOpt = symbol< 
+        rule<ConstNode>,
+        rule<ConstNode, ConstToken>
+        >;
+    using VolatileOpt = symbol<
+        rule<VolatileNode>,
+        rule<VolatileNode, VolatileToken>
+        >;
+
+    using Qualifiers = symbol<
+        rule<QualifiersNode, ConstOpt, VolatileOpt>
+        >;
+    
+    void TestConst()
+    {
+        auto p = make_parser<ConstOpt>();
+
+        auto t = p.parse("const");
+        CHECK(t);
+        t = p.parse("");
+        CHECK(t);
+        std::cout << t;
+        CHECK(t);
+    }
+
+    void TestConstVolatile()
+    {
+        auto p = make_parser<Qualifiers>();
+
+        auto t = p.parse("const");
+        CHECK(t);
+        t = p.parse("");
+        CHECK(t);
+        std::cout << t;
+        CHECK(t);
+    }
+} er1;

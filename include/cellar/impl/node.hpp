@@ -130,7 +130,12 @@ namespace cellar
 
         bool isToken() const
         {
-            return p && p->numberOfChildren==0;
+            return p && p->numberOfChildren==0 && p->size > sizeof(node_data);
+        }
+        
+        bool isEmptyNode() const
+        {
+            return p && p->size == sizeof(node_data);
         }
 
         bool hasLocation() const

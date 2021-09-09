@@ -20,6 +20,8 @@ namespace cellar
 
         bool empty() const { return data.empty(); }
 
+        operator bool() const { return success; }
+
         writable_node shift(int tokenId, location l, int length)
         {
             std::uint32_t size = sizeof(node_data) + sizeof(location) + length + 1;

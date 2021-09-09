@@ -178,6 +178,12 @@ namespace cellar
         static const bool value = false;
     };
 
+    template<int Id, typename...Ss>
+    struct is_symbol<rule<Id, Ss...>>
+    {
+        static const bool value = false;
+    };
+
     template<typename...X>
     struct is_symbol<symbol<X...>>
     {
@@ -251,12 +257,12 @@ namespace cellar
 
         using NextSymbol= typename getnext<Item>::type;
 
-        using C2 = typename type_if<
-            potentially_empty_symbol<NextSymbol>::value,
-            typename add_to_closure<typename skip_symbol<Item>::type, C1>::type,
-            C1>::type;
+        //using C2 = typename type_if<
+        //    potentially_empty_symbol<NextSymbol>::value,
+        //    typename add_to_closure<typename skip_symbol<Item>::type, C1>::type,
+        //  C1>::type;
 
-        using type = typename expand_symbol<NextSymbol, typename NextSymbol::rules, Follows, C2>::type;
+        using type = typename expand_symbol<NextSymbol, typename NextSymbol::rules, Follows, C1>::type;
     };
 
 
