@@ -1,7 +1,7 @@
 #pragma once
 
+#include "make_lexer.hpp"
 #include "impl/lrparser.hpp"
-#include "impl/typeset.hpp"
 
 namespace cellar
 {

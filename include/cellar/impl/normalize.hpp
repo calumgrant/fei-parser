@@ -9,28 +9,13 @@
     string<A,B,C> gets simplified to seq<ch<A>, seq<ch<B>, ch<C>>>
 */
 
-// !! Rename this to normalize
+#include "utils.hpp"
 
 namespace cellar
 {
     // Rewrites lexer rules to a canonical form.
     template<typename Rule>
     struct normalize;
-
-    template<bool B, typename T, typename F>
-    struct type_if;
-
-    template<typename T, typename F>
-    struct type_if<true, T, F>
-    {
-        typedef T type;
-    };
-
-    template<typename T, typename F>
-    struct type_if<false, T, F>
-    {
-        typedef F type;
-    };
 
     // The base types do not normalize
     template<int Ch>
