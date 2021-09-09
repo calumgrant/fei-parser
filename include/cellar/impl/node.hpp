@@ -1,6 +1,7 @@
 #pragma once
 
 #include "location.hpp"
+#include "node_types.hpp"
 #include <string>
 
 namespace cellar

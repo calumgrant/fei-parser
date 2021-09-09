@@ -1,6 +1,7 @@
 #pragma once
 #include "accepts.hpp"
 #include "next.hpp"
+#include "linecounter.hpp"
 
 #if VERBOSE_LEXER
 #include <iostream>

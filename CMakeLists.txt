@@ -10,6 +10,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include_directories(include external/simpletest)
 add_subdirectory(parsers/java)
+add_subdirectory(parsers/xml)
 
 add_executable(lexertests tests/testLexer.cpp)
 

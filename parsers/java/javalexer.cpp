@@ -2,7 +2,7 @@
     A lexical analyser for Java written using the fei-parser.
     
     This is in a separate file and can be compiled seperately.
-    The generated parser is the `JavaParser::lexer` object.
+    The generated parser is the `cellar::java::lexer` object.
     
     The lexer is specified using C++ datatypes, and compiled using just a C++ compiler.
 
@@ -13,10 +13,10 @@
  */
 
 #include <cellar/java.hpp>
-#include <cellar/cellar.hpp>
+#include <cellar/make_lexer.hpp>
 
 using namespace cellar;
-using namespace JavaParser;
+using namespace cellar::java;
 
 // 3.1 Unicode
 
@@ -128,7 +128,7 @@ using HexDigits = alt<HexDigit, seq<HexDigit, HexDigitsAndUnderscores, HexDigit>
 using HexNumeral = seq<ch<'0'>, chalt<'x','X'>, HexDigits>;
 
 using HexIntegerLiteral = seq<HexNumeral, optional<IntegerTypeSuffix>>;
-using HexIntegerLiteralToken = token<JavaParser::HexIntegerLiteral, ::HexIntegerLiteral>;
+using HexIntegerLiteralToken = token<java::HexIntegerLiteral, ::HexIntegerLiteral>;
 
 using OctalDigit = chrange<'0','7'>;
 using OctalDigitOrUnderscore = alt<OctalDigit, ch<'_'>>;
@@ -177,8 +177,8 @@ using BinaryExponent = seq<BinaryExponentIndicator, SignedInteger>;
 using HexadecimalFloatingPointLiteral = seq<HexSignificand, BinaryExponent, optional<FloatTypeSuffix>>;
 
 using FloatingPointLiteralToken = alt<
-    token<JavaParser::DecimalFloatingPointLiteral, ::DecimalFloatingPointLiteral>,
-    token<JavaParser::HexadecimalFloatingPointLiteral, ::HexadecimalFloatingPointLiteral>
+    token<java::DecimalFloatingPointLiteral, ::DecimalFloatingPointLiteral>,
+    token<java::HexadecimalFloatingPointLiteral, ::HexadecimalFloatingPointLiteral>
     >;
 
 // 3.10.3 Boolean Literals
@@ -216,7 +216,7 @@ using CharacterLiteral = alt<
     seq<ch<'\''>, EscapeSequence, ch<'\''>>
     >;
 
-using CharacterLiteralToken = token<JavaParser::CharacterLiteral, ::CharacterLiteral>;
+using CharacterLiteralToken = token<java::CharacterLiteral, ::CharacterLiteral>;
 
 // 3.10.5 String Literals
 
@@ -236,7 +236,7 @@ using TextBlock = seq<StringBlockTerminator, star<TextBlockCh>, optional<string<
 using StringLiteral = alt<
     seq<ch<'\"'>, star<StringCharacter>, ch<'\"'>>,
     TextBlock>;
-using StringLiteralToken = token<JavaParser::StringLiteral, ::StringLiteral>;
+using StringLiteralToken = token<java::StringLiteral, ::StringLiteral>;
 
 // 3.10.7 The null literal
 
@@ -341,4 +341,4 @@ using JavaTokens = alt<
 
 #endif
 
-cellar::char_lexer JavaParser::lexer = make_lexer<JavaTokens>();
+cellar::char_lexer java::lexer = make_lexer<JavaTokens>();

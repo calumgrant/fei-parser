@@ -1,7 +1,7 @@
 #include <cellar/lexer.hpp>
 #include <cellar/parser.hpp>
 
-namespace JavaParser
+namespace cellar::java
 {
     enum Tokens
     {

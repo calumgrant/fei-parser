@@ -1,6 +1,7 @@
 #pragma once
 
 #include "impl/tree.hpp"
+#include "impl/node_types.hpp"
 
 namespace cellar
 {

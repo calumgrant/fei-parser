@@ -39,6 +39,8 @@ Maybe, negative nodes are "hidden" or something? Or any node above 1000 is hidde
 
 # Other stuff to do
 
+- Proper handling of unicode
+
 - Better utf16 handling
   - What happens if characters overflow??
 

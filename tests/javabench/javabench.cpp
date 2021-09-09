@@ -7,7 +7,6 @@
 #include <fstream>
 
 #include <cellar/output.hpp>
-
 #include <cellar/java.hpp>
 
 class JavaFileList
@@ -117,7 +116,7 @@ int main(int argc, char**argv)
             }
             else
             {
-                auto stream = JavaParser::lexer.tokenize(contents.data(), contents.data() + contents.size());
+                auto stream = cellar::java::lexer.tokenize(contents.data(), contents.data() + contents.size());
                 while(stream.lex_including_whitespace())
                 {
                     const bool show_errors = true;
