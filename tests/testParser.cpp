@@ -1,4 +1,3 @@
-
 #define CELLAR_TRACE_PARSER 0
 
 #include <cellar/cellar.hpp>
@@ -687,8 +686,12 @@ public:
     
 } rec1;
 
-// template<> struct ignore_shift_reduce_conflict<1, 0> : public true_value {};
-// template<> struct ignore_shift_reduce_conflict<2, 1> : public true_value {};
+int count_nodes(node n)
+{
+    int count=0;
+    n.visitRecursive([&](node) { ++count; });
+    return count;
+}
 
 class EmptyRule : public Test::Fixture<EmptyRule>
 {
@@ -702,7 +705,7 @@ public:
     enum Nodes { ConstNode=10, VolatileNode, QualifiersNode };
 
     using ConstToken = token<ConstNode, string<'c', 'o', 'n', 's', 't'>>;
-    using VolatileToken = token<VolatileNode, string<'v', 'o', 'l', 'i', 't', 'l', 'e'>>;
+    using VolatileToken = token<VolatileNode, string<'v', 'o', 'l', 'a', 't', 'i', 'l', 'e'>>;
 
     using ConstOpt = symbol< 
         rule<ConstNode>,
@@ -735,9 +738,23 @@ public:
 
         auto t = p.parse("const");
         CHECK(t);
+        EQUALS(4, count_nodes(t.root()));
+        
         t = p.parse("");
+        EQUALS(3, count_nodes(t.root()));
         CHECK(t);
+        
+        t = p.parse("volatile");
         std::cout << t;
         CHECK(t);
+        EQUALS(4, count_nodes(t.root()));
+
+        t = p.parse("const volatile");
+        CHECK(t);
+        std::cout << t;
+        EQUALS(5, count_nodes(t.root()));
+
+        t = p.parse("volatile const");
+        CHECK(!t);
     }
 } er1;
