@@ -1,7 +1,6 @@
 
 # Plan for the next week
 
-- Auto-generate the token list from the grammar as an option
 
 - Create an expression parser with precedence
   - Create an evaluator for said expression parser
@@ -9,17 +8,16 @@
 
 - Check whether we are an LALR algorithm and how to reduce the states.
 
-- Test parsing istreams. How does the token value work???
-
-- Test empty rules
+- API tests
+  - Test parsing istreams. How does the token value work???
+ - Auto-generate the token list from the grammar as an option
 
 - XML parser
   - Nodes should be easily navigable without visitors
-
-- Ability to tweak the tree
-  - Hide tokens that aren't interesting?
-  - Mark some nodes as hidden - perhaps by ID = Hidden
-  - Optimizations, for example reducing hidden nodes with size 1
+  - Ability to tweak the tree
+    - Hide tokens that aren't interesting?
+    - Mark some nodes as hidden - perhaps by ID = Hidden
+    - Optimizations, for example reducing hidden nodes with size 1
 
 When performing a reduction (`writable_tree::reduce`), it walks the children as before. Each time it finds a hidden node (by looking at its id), it resizes it to zero children, sets its children to 0, and adds its count to the length of the parent, minus one. The `node::next()` function skips hidden nodes, so hidden nodes do not contribute to its length.
 

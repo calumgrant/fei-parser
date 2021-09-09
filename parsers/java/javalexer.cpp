@@ -12,7 +12,7 @@
 
  */
 
-#include "java.hpp"
+#include <cellar/java.hpp>
 #include <cellar/cellar.hpp>
 
 using namespace cellar;

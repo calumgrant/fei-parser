@@ -8,8 +8,7 @@
 
 #include <cellar/output.hpp>
 
-#include "java.hpp"
-
+#include <cellar/java.hpp>
 
 class JavaFileList
 {
