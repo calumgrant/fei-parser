@@ -5,6 +5,10 @@
 
 int main()
 {
-    auto t = cellar::xml::parser.parse("<ksdjcn>");
+    auto t = cellar::xml::parser.parse("<?xml  ?>");
+
+    if(!t)
+    std::cout << "Syntax error! at " <<  t.errorLocation.offset << std::endl;
+
     std::cout << t;
 }

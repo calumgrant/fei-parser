@@ -9,9 +9,7 @@
 
 using namespace cellar;
 
-using S = token<Whitespace, plus<chalt<' ', '\r', '\n', '\t'>>>;
-
-using SOpt = symbol<rule<Hidden>, rule<Hidden, S>>;
+using S = plus<chalt<' ', '\r', '\n', '\t'>>;
 
 using NameStartChar = alt<
     chalt<':', '_'>,
@@ -26,8 +24,10 @@ using NameChar = alt<
     >;
 
 // using xml = seq<chalt<'x','X'>, chalt<'m','M'>, chalt<'l', 'L'>>;
-using XMLDeclToken = token<xml::XmlDeclToken, string<'<', '?', 'x', 'm', 'l'>>;
+using XmlDeclOpen = token<xml::XmlDeclOpen, string<'<', '?', 'x', 'm', 'l'>>;
+using XmlDeclClose = token<xml::XmlDeclClose, string<'?', '>'>>;
+using SToken = token<xml::S, S>;
 
-using Tokens = alt< XMLDeclToken >;
+using Tokens = alt< XmlDeclOpen, XmlDeclClose, SToken >;
 
 char_lexer xml::lexer = make_lexer<Tokens>();

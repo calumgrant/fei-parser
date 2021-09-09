@@ -10,8 +10,9 @@ class MiscS : public symbol<
     rule<xml::Misc, MiscS, Misc>
     > {};
 
+using S = token<xml::S>; // rule<100, token<xml::S>>;
 
-using XmlDecl = rule<xml::XmlDecl, token<xml::XmlDeclToken>>;
+using XmlDecl = rule<xml::XmlDecl, token<xml::XmlDeclOpen>, S, token<xml::XmlDeclClose>>;
 
 // https://www.w3.org/TR/xml/#NT-prolog
 class prolog : public symbol<
@@ -22,7 +23,7 @@ class element : public symbol<> {};
 
 // https://www.w3.org/TR/xml/#NT-document
 class document : public symbol<
-    rule<xml::document, prolog, element, MiscS>
+    rule<xml::document, prolog>
     > {};
 
 

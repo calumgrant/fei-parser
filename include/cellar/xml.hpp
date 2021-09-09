@@ -6,8 +6,7 @@ namespace cellar::xml
     enum Nodes
     {
         // Elements
-        document = 1,
-        Document = document,
+        document,
 
         Element,
         Attribute,
@@ -17,23 +16,24 @@ namespace cellar::xml
         CharData,
         Reference,
         CDSect,
-        PI = 16,
-        Misc = 27,
-        ElementDecl = 45,
+        PI,
+        Misc,
+        ElementDecl,
         ContentSpec,
 
-        XmlDecl = 23,
-        XmlDeclToken,
+        XmlDecl,
+        XmlDeclOpen,
+        XmlDeclClose, 
 
         // Tokens
         OpenAngle,
         CloseEmpty,
 
         // Note: Assigned elements need to go at the end to avoid duplicates
-        S = Hidden,
-        Comment = Whitespace,
-        STag = Hidden,
-        XmlDocument = Hidden
+        S,
+        Comment,
+        STag,
+        XmlDocument
     };
 
     extern cellar::char_lexer lexer;
