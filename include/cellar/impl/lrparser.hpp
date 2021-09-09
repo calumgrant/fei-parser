@@ -1,7 +1,7 @@
 #pragma once
 
 #include <typeinfo>
-
+#include <cassert>
 
 #include "rules.hpp"
 #include "closure.hpp"

@@ -3,6 +3,7 @@
 #include <cellar/cellar.hpp>
 #include <cellar/output.hpp>
 #include <simpletest.hpp>
+#include <cstring>
     
 using namespace cellar;
 
@@ -442,9 +443,9 @@ public:
     }
 } p3;
 
-template<> struct ignore_shift_reduce_conflict<1002,1002> : public true_value {};
-template<> struct ignore_shift_reduce_conflict<1001,1002> : public true_value {};
-template<> struct ignore_reduce_reduce_conflict<1000,100> : public true_value {};
+template<> struct cellar::ignore_shift_reduce_conflict<1002,1002> : public true_value {};
+template<> struct cellar::ignore_shift_reduce_conflict<1001,1002> : public true_value {};
+template<> struct cellar::ignore_reduce_reduce_conflict<1000,100> : public true_value {};
 
 class Conflicts2 : public Test::Fixture<Conflicts2>
 {
