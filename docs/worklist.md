@@ -43,6 +43,11 @@ Maybe, negative nodes are "hidden" or something? Or any node above 1000 is hidde
 
 - Tidy up the code a bit
 
+- Check safety of node, for example `c_str()`.
+  - Tests for that
+
+- Tidy up API of tree and node.
+
 
 # Other stuff to do
 
