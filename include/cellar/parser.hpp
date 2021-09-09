@@ -39,6 +39,11 @@ namespace cellar
             return parse(str, str+N-1);
         }
 
+        tree parse(const std::string & src) const
+        {
+            return parse(src.data(), src.data() + src.size());
+        }
+
         tree parseFile(const char * filename) const;
 
     private:

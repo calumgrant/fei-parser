@@ -54,16 +54,18 @@ namespace cellar
             errorLocation = l;
         }
 
-        bool success = false;
-
         void clear()
         {
             data.resize(0);  // Note: keep unreserved size
             success = false;
         }
 
-    protected:
+        location getError() const { return errorLocation; }
+
         location errorLocation;
+        bool success = false;
+
+    protected:
         std::vector<char> data;
     };
 }

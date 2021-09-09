@@ -1,6 +1,13 @@
 
 # Plan for the next week
 
+- XML parsing
+  - [ ] trivial document parse
+  - [ ] Simple XML subset
+  - [ ] Navigate the tree
+  - [ ] Utils, for example to construct strings.
+  - [ ] Samples
+  - [ ] Documentation
 
 - Create an expression parser with precedence
   - Create an evaluator for said expression parser
@@ -39,7 +46,40 @@ Maybe, negative nodes are "hidden" or something? Or any node above 1000 is hidde
 
 # Other stuff to do
 
+- Can you combine ints and types in a rule - ints mean "token" ???
+
 - Proper handling of unicode
+
+- Push parser
+  - Needs a push_lexer as well
+
+```
+auto pl = lexer.start();
+
+pl.push(start, end, fn);
+pl.end(fn);
+
+auto pp = parser.start();
+// Pushes one token
+pp.push(tokeniser);
+
+if(pp.tree.success)
+{
+  // Blah blah blah
+}
+
+
+pp.push(...)
+
+
+
+```
+
+- Restartable parser
+  - Push tokens instead 
+
+
+- Fix how to specify precedence and associativity
 
 - Better utf16 handling
   - What happens if characters overflow??

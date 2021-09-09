@@ -11,6 +11,8 @@ using namespace cellar;
 
 using S = token<Whitespace, plus<chalt<' ', '\r', '\n', '\t'>>>;
 
+using SOpt = symbol<rule<Hidden>, rule<Hidden, S>>;
+
 using NameStartChar = alt<
     chalt<':', '_'>,
     chrange<'A','Z'>,
@@ -28,4 +30,4 @@ using XMLDeclToken = token<xml::XmlDeclToken, string<'<', '?', 'x', 'm', 'l'>>;
 
 using Tokens = alt< XMLDeclToken >;
 
-cellar::char_lexer xml::lexer = make_lexer<Tokens>();
+char_lexer xml::lexer = make_lexer<Tokens>();

@@ -349,13 +349,13 @@ public:
         auto parser = cellar::make_parser<Expr, Tokens>();
 
         auto t1 = parser.parse("12");
-        CHECK(t1.success);
+        CHECK(t1);
         t1 = parser.parse("1+1");
-        CHECK(t1.success);
+        CHECK(t1);
         t1 = parser.parse("1+1+1+1");
-        CHECK(t1.success);
+        CHECK(t1);
         t1 = parser.parse("+");
-        CHECK(!t1.success);
+        CHECK(!t1);
     }
 } p1;
 

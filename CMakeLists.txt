@@ -31,3 +31,4 @@ add_test(NAME xml COMMAND xmltests)
 
 add_executable(ugen unicode/generator.cpp)
 
+add_executable(calculator tests/calculator.cpp)

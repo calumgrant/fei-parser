@@ -12,3 +12,4 @@
 #include "regex.hpp"
 #include "make_lexer.hpp"
 #include "make_parser.hpp"
+#include "output.hpp"

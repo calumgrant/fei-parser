@@ -219,6 +219,14 @@ namespace cellar
     {
         static void process(parse_state<It> & state)
         {
+            // Shift the error token onto the tree for debugging purposes
+            auto node = state.parse_tree.shift(state.tokens.token(), state.tokens.begin().location, state.tokens.size());
+
+            // Write the token into the parse tree
+            auto p = node.c_str();
+            for(auto ch : state.tokens)
+                *p++ = ch;
+
             // TODO: Report list of possible tokens
             state.parse_tree.SyntaxError(state.tokens.begin().location);
         }
