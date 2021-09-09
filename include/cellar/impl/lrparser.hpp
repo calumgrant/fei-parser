@@ -295,9 +295,15 @@ namespace cellar
         parse<Grammar>(tokens, t);
     }
 
+    template<typename Grammar, typename It = const char*>
+    parser<It> make_parser(const lexer<linecounter<It>> & l)
+    {
+        return parser<It>(l, parse<Grammar>);
+    }
+
     template<typename Grammar, typename Lexer = typename make_lexer_from_grammar<Grammar>::type, typename It = const char*>
     parser<It> make_parser()
     {
-        return parser<It>(parse<Lexer, Grammar>);
+        return make_parser<Grammar>(make_lexer<Lexer, linecounter<It>>());
     }
 }

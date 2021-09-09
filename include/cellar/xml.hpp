@@ -1,3 +1,4 @@
+#include <cellar/lexer.hpp>
 #include <cellar/parser.hpp>
 
 namespace cellar::xml
@@ -21,12 +22,12 @@ namespace cellar::xml
         ElementDecl = 45,
         ContentSpec,
 
+        XmlDecl = 23,
+        XmlDeclToken,
 
         // Tokens
         OpenAngle,
         CloseEmpty,
-
-
 
         // Note: Assigned elements need to go at the end to avoid duplicates
         S = Hidden,
@@ -34,4 +35,7 @@ namespace cellar::xml
         STag = Hidden,
         XmlDocument = Hidden
     };
+
+    extern cellar::char_lexer lexer;
+    extern cellar::char_parser parser;
 }

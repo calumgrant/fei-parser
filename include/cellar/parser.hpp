@@ -1,7 +1,14 @@
+/*
+    This contains declarations to USE a parser.
+    If you need to construct a parser (ideally in a separate file),
+    you need to include "make_parser.hpp" instead.
+*/
+
 #pragma once
 
 #include "impl/tree.hpp"
 #include "impl/node_types.hpp"
+#include "lexer.hpp"
 
 namespace cellar
 {
@@ -9,9 +16,9 @@ namespace cellar
     class parser
     {
     public:
-        typedef void (*ParseFn)(It, It, tree&);
+        typedef void (*ParseFn)(const token_stream<linecounter<It>> &, tree&);
 
-        parser(ParseFn fn) : fn(fn) {}
+        parser(lexer<linecounter<It>> lex, ParseFn fn) : lex(lex), fn(fn) {}
 
         tree parse(It a, It b) const
         {
@@ -22,7 +29,8 @@ namespace cellar
 
         void parse(It a, It b, tree & t) const
         {
-            fn(a,b,t);
+            auto tokens = lex.tokenize(a,b);
+            fn(tokens,t);
         }
 
         template<int N>
@@ -34,6 +42,7 @@ namespace cellar
         tree parseFile(const char * filename) const;
 
     private:
+        lexer<linecounter<It>> lex;
         ParseFn fn;
     };
 

@@ -23,4 +23,9 @@ using NameChar = alt<
     ch<0xb7>
     >;
 
-using xml = seq<chalt<'x','X'>, chalt<'m','M'>, chalt<'l', 'L'>>;
+// using xml = seq<chalt<'x','X'>, chalt<'m','M'>, chalt<'l', 'L'>>;
+using XMLDeclToken = token<xml::XmlDeclToken, string<'<', '?', 'x', 'm', 'l'>>;
+
+using Tokens = alt< XMLDeclToken >;
+
+cellar::char_lexer xml::lexer = make_lexer<Tokens>();

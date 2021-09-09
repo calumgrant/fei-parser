@@ -3,7 +3,7 @@
 
 using namespace cellar;
 
-class Misc;
+using Misc = token<123, ch<'x'>>;
 
 class MiscS : public symbol< 
     rule<xml::Misc>,
@@ -11,12 +11,18 @@ class MiscS : public symbol<
     > {};
 
 
-// https://www.w3.org/TR/xml/#NT-document
+using XmlDecl = rule<xml::XmlDecl, token<xml::XmlDeclToken>>;
 
-class prolog : public symbol<> {};
+// https://www.w3.org/TR/xml/#NT-prolog
+class prolog : public symbol<
+    XmlDecl
+    > {};
 
 class element : public symbol<> {};
 
+// https://www.w3.org/TR/xml/#NT-document
 class document : public symbol<
     rule<xml::document, prolog, element, MiscS>
     > {};
+
+cellar::char_parser xml::parser = make_parser<::document>(xml::lexer);
