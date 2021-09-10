@@ -396,7 +396,7 @@ public:
 
         int count=0;
         t1.root().visitRecursive([&](node n) { ++count; });
-        EQUALS(11, count);
+        EQUALS(10, count);
 
         auto r = t1.root();
         CHECK(t1.success);
@@ -739,7 +739,7 @@ public:
 
         auto t = p.parse("const");
         CHECK(t);
-        EQUALS(4, count_nodes(t.root()));
+        EQUALS(3, count_nodes(t.root()));
         
         t = p.parse("");
         EQUALS(3, count_nodes(t.root()));
@@ -748,12 +748,12 @@ public:
         t = p.parse("volatile");
         std::cout << t;
         CHECK(t);
-        EQUALS(4, count_nodes(t.root()));
+        EQUALS(3, count_nodes(t.root()));
 
         t = p.parse("const volatile");
         CHECK(t);
         std::cout << t;
-        EQUALS(5, count_nodes(t.root()));
+        EQUALS(3, count_nodes(t.root()));
 
         t = p.parse("volatile const");
         CHECK(!t);

@@ -4,7 +4,7 @@
     See https://datatracker.ietf.org/doc/html/rfc7159
 */
 
-#define CELLAR_TRACE_PARSER 1
+#define CELLAR_TRACE_PARSER 0
 #include <cellar/json.hpp>
 #include <cellar/make_parser.hpp>
 

@@ -178,7 +178,7 @@ public:
             case IdNode:
                 // Keep it nice and simple - undeclared variables are silently initialised to 0.
                 // `str()` gets a `std::string` of the token text.
-                return variables[n[0].str()];
+                return variables[n.str()];
             case BracketNode:
                 return eval(n[1]);
 

@@ -34,6 +34,11 @@ namespace cellar
 
         writable_node reduce(int nodeId, int count)
         {
+            if(count==1 && root().id() == nodeId)
+            {
+                // Avoid creating nodes that just wrap a node of the same type
+                return writableRoot();
+            }
             std::uint32_t size = sizeof(node_data);
             data.resize(data.size() + size);
             auto r = writableRoot();
