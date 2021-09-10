@@ -32,24 +32,50 @@ namespace cellar
             return r;
         }
 
-        writable_node reduce(int nodeId, int count)
+        void reduce(int nodeId, int count)
         {
+            if(nodeId == Removed)
+            {
+                // Remove `count` nodes from the top
+                auto n = root();
+                auto size = 0;
+                for(int i=0; i<count; ++i)
+                {
+                    size += n.p->size;
+                    ++n;
+                }
+
+                data.resize(data.size() - size + sizeof(node_data));
+                auto r = writableRoot();
+                r.setData({sizeof(node_data), (std::int16_t)Hidden, 0});
+
+                return;
+            }
+
             if(count==1 && root().id() == nodeId)
             {
                 // Avoid creating nodes that just wrap a node of the same type
-                return writableRoot();
+                return; // writableRoot();
             }
             std::uint32_t size = sizeof(node_data);
             data.resize(data.size() + size);
             auto r = writableRoot();
             node child = node((node_data*)(data.data() + data.size() - size - sizeof(node)));
+            int addedMembers = 0;
             for(int i=0; i<count; ++i)
             {
+                auto oldChild = child;
                 child = child.next();
+                if(oldChild.id() == Hidden)
+                {
+                    addedMembers += oldChild.size();
+                    writable_node n = oldChild;
+                    n.setData({sizeof(node_data), Hidden, 0});
+                }
             }
             // TODO: Typedef some of these
-            r.setData({std::uint32_t((const char*)r.p - (const char*)child.p), (std::int16_t)nodeId, (std::uint16_t)count});
-            return r;
+            r.setData({std::uint32_t((const char*)r.p - (const char*)child.p), (std::int16_t)nodeId, (std::uint16_t)(count+addedMembers)});
+            // return r;
         }
 
         void syntax_error(location l);

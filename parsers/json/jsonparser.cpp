@@ -18,14 +18,14 @@ using True = token<json::True>;
 using Number = token<json::Number>;
 using String = token<json::String>;
 
-class Values : public symbol<Value, rule<Hidden, Values, token<','>, Value>> {};
+class Values : public symbol<Value, rule<Hidden, Values, rule<Removed, token<','>>, Value>> {};
 
-using Array = rule<json::Array, token<'['>, Values, token<']'>>;
+using Array = rule<json::Array, rule<Removed, token<'['>>, Values, rule<Removed, token<']'>>>;
 
-using Member = rule<json::Member, String, token<':'>, Value>;
-class Members : public symbol<Member, rule<Hidden, Members, token<','>, Member>> {};
+using Member = rule<json::Member, String, rule<Removed, token<':'>>, Value>;
+class Members : public symbol<Member, rule<Hidden, Members, rule<Removed, token<','>>, Member>> {};
 
-using Object = rule<json::Object, token<'{'>, Members, token<'}'>>;
+using Object = rule<json::Object, rule<Removed, token<'{'>>, Members, rule<Removed, token<'}'>>>;
 
 class Value : public symbol<False, Null, True, Object, Array, Number, String> {};
 

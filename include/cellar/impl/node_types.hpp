@@ -7,5 +7,5 @@ namespace cellar
     static const int Whitespace = -3;
     static const int EndOfStream = -4;
     static const int Hidden = -5;
-    static const int Remove = -6;
+    static const int Removed = -6;
 }

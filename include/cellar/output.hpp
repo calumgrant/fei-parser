@@ -254,7 +254,10 @@ namespace cellar
             // Display children
             os << std::endl;
             for(auto i : n)
-                output_node(os, i, indent+1);
+            {
+                if(i.id() != Hidden)
+                    output_node(os, i, indent+1);
+            }
         }
     }
 

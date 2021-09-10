@@ -53,7 +53,7 @@ namespace cellar
             return *(cellar::location*)((char*)p - sizeof(cellar::location));
         }
 
-        int id() const { return p->id; }
+        int id() const { return p ? p->id : Removed; }
 
         node next() const
         {
@@ -66,12 +66,17 @@ namespace cellar
         node begin() const { return size()==0 ? end() : first(); }
         node end() const { return next(); }
 
+        bool isHidden() const { return id() == Hidden; }
+
         node operator[](size_type i) const
         {
             if(i>=size()) return *this;
             node n = begin();
             for(++i; i<size(); ++i)
+            {                
                 ++n;
+                while(n.isHidden()) ++n;
+            }
             return n;
         }
 
@@ -163,6 +168,7 @@ namespace cellar
     {
     public:
         writable_node() : p() {}
+        writable_node(node p) : p(const_cast<node_data*>(p.p)) {}
         explicit writable_node(node_data * p) : p(p) {}
 
         operator node() const { return node(p); }

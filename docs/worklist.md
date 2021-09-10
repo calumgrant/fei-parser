@@ -2,8 +2,6 @@
 # Plan for the next week
 
 - Json
-  - Fix nested rules in grammar
-  - Remove dummy token rules in symbols
   - Flatten hidden nodes
   - Hide uninteresting tokens - Remove completely from the tree
   - Demo of working with the tree using the API
