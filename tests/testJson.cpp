@@ -25,7 +25,7 @@ public:
 
     void check(std::string str)
     {
-        auto t = cellar::json::parser.parse(str);
+        auto t = cellar::json::parser().parse(str);
         if(!t)
         {
             std::cout << "Syntax error!\n";
@@ -58,7 +58,7 @@ public:
 
     void TestAPI()
     {
-        auto t = cellar::json::parser.parse(example1);
+        auto t = cellar::json::parser().parse(example1);
 
         // Find Image.Width
         auto image = cellar::json::member(t.root(), "Image");

@@ -1,25 +1,14 @@
 
 # Plan for the next week
-
-- Json
-  - Flatten hidden nodes
-  - Hide uninteresting tokens - Remove completely from the tree
-  - Demo of working with the tree using the API
-    - Filtering children maybe
   
 - Create a `state` class with members
   - `kernel`
-  - `closure`  
-
-- Create an expression parser with precedence
-  - Create an evaluator for said expression parser
-  - Create a toy language as a demo
+  - `closure`
 
 - Check whether we are an LALR algorithm and how to reduce the states.
 
 - API tests
   - Test parsing istreams. How does the token value work???
- - Auto-generate the token list from the grammar as an option
 
 - XML parser
   - Nodes should be easily navigable without visitors
@@ -28,13 +17,10 @@
     - Mark some nodes as hidden - perhaps by ID = Hidden
     - Optimizations, for example reducing hidden nodes with size 1
 
-When performing a reduction (`writable_tree::reduce`), it walks the children as before. Each time it finds a hidden node (by looking at its id), it resizes it to zero children, sets its children to 0, and adds its count to the length of the parent, minus one. The `node::next()` function skips hidden nodes, so hidden nodes do not contribute to its length.
+- Think about API for hidden nodes.
+  - Can we avoid pushing hidden tokens on the stack in the first place??
 
-Nodes can be set (via their id) to `Hidden` which removes the node but exposes its children in the parent, or `Remove` which removes the node entirely (including its children).
-
-Maybe, negative nodes are "hidden" or something? Or any node above 1000 is hidden? Problem is that we need to have distinct token nodes.
-
-- output a tree without including lots of unnecessary stuff
+- output a tree without including lots of unnecessary header files
 
 - class `writable_tree`
 
