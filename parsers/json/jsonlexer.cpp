@@ -31,4 +31,4 @@ using Tokens = alt <
     token<json::String, String>
     >;
 
-char_lexer json::lexer = make_lexer<Tokens>();
+char_lexer json::lexer() { return make_lexer<Tokens>(); }

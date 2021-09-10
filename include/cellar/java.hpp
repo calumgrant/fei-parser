@@ -121,6 +121,6 @@ namespace cellar::java
         CompilationUnit = LastToken
     };
 
-    extern cellar::char_lexer lexer;
-    extern cellar::char_parser parser;
+    extern cellar::char_lexer lexer();
+    extern cellar::char_parser parser();
 }

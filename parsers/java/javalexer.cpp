@@ -341,4 +341,4 @@ using JavaTokens = alt<
 
 #endif
 
-cellar::char_lexer java::lexer = make_lexer<JavaTokens>();
+cellar::char_lexer java::lexer() { return make_lexer<JavaTokens>(); }

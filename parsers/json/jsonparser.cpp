@@ -7,7 +7,6 @@
 #define CELLAR_TRACE_PARSER 0
 #include <cellar/json.hpp>
 #include <cellar/make_parser.hpp>
-#include <cstring>
 
 using namespace cellar;
 
@@ -30,4 +29,4 @@ using Object = rule<json::Object, rule<Removed, token<'{'>>, Members, rule<Remov
 
 class Value : public symbol<False, Null, True, Object, Array, Number, String> {};
 
-char_parser json::parser = make_parser<Value>(lexer);
+char_parser json::parser = make_parser<Value>(lexer());

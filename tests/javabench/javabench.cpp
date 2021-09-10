@@ -107,6 +107,7 @@ int main(int argc, char**argv)
 
         std::size_t number_of_tokens = 0;
         std::size_t number_of_lexer_errors = 0;
+        auto lexer = cellar::java::lexer();
 
         for(auto & p : list.files)
         {
@@ -116,7 +117,7 @@ int main(int argc, char**argv)
             }
             else
             {
-                auto stream = cellar::java::lexer.tokenize(contents.data(), contents.data() + contents.size());
+                auto stream = lexer.tokenize(contents.data(), contents.data() + contents.size());
                 while(stream.lex_including_whitespace())
                 {
                     const bool show_errors = true;

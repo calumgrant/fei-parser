@@ -1,4 +1,5 @@
 #include <cellar/json.hpp>
+#include <cstring>
 
 using namespace cellar;
 
@@ -9,7 +10,7 @@ node json::member(node n, const char * key)
         int keylen = strlen(key);
         for(auto c : n)
         {
-            if(c.id() == Member && std::strncmp(c[0].c_str()+1, key, keylen)==0)
+            if(c.id() == Member && strncmp(c[0].c_str()+1, key, keylen)==0)
                 return c[1];
         }
     }

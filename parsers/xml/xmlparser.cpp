@@ -35,4 +35,4 @@ class document : public symbol<
     rule<xml::document, prolog>
     > {};
 
-char_parser xml::parser = make_parser<::document>(xml::lexer);
+char_parser xml::parser() { return make_parser<::document>(xml::lexer()); }

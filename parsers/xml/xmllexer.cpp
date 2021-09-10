@@ -60,4 +60,4 @@ using CommentToken = token<xml::Comment, Comment>;
 using Tokens = alt< XmlDeclOpen, XmlDeclClose, SToken, CommentToken, PIToken >;
 
 
-char_lexer xml::lexer = make_lexer<Tokens>();
+char_lexer xml::lexer() { return make_lexer<Tokens>(); }

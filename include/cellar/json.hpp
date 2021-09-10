@@ -15,7 +15,7 @@ namespace cellar::json
         Member
     };
 
-    extern char_lexer lexer;
+    extern char_lexer lexer();
     extern char_parser parser;
 
     node member(node object, const char * key);
