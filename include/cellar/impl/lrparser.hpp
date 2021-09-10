@@ -15,7 +15,7 @@
 #endif 
 
 #if CELLAR_TRACE_PARSER
-#include <iostream>
+#include "../output.hpp"
 #endif
 
 namespace cellar

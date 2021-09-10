@@ -4,10 +4,9 @@
     See https://datatracker.ietf.org/doc/html/rfc7159
 */
 
+#define CELLAR_TRACE_PARSER 1
 #include <cellar/json.hpp>
 #include <cellar/make_parser.hpp>
-
-
 
 using namespace cellar;
 
@@ -23,7 +22,8 @@ class Values : public symbol<Value, rule<Hidden, Values, token<','>, Value>> {};
 
 using Array = rule<json::Array, token<'['>, Values, token<']'>>;
 
-using Member = rule<json::Member, token<':'>, Value>;
+// !! Fix bug where we fail if member isn't a rule.
+using Member = symbol<rule<json::Member, String, token<':'>, Value>>;
 class Members : public symbol<Member, rule<Hidden, Members, token<','>, Member>> {};
 
 using Object = rule<json::Object, token<'{'>, Members, token<'}'>>;

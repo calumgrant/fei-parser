@@ -32,6 +32,7 @@ add_test(NAME javaparse COMMAND javabench tokenize ${CMAKE_CURRENT_SOURCE_DIR}/d
 add_test(NAME parsertests COMMAND parsertests)
 add_test(NAME typesets COMMAND typesetTests)
 add_test(NAME xml COMMAND xmltests)
+add_test(NAME json COMMAND jsontests)
 
 add_executable(ugen unicode/generator.cpp)
 

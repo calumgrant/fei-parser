@@ -55,6 +55,17 @@ static const bool valuetype<equals<Sym, typename Sym::rules>>=
 gather_symbols<Grammar>
 ```
 
+- Ensure that `node` is 100% safe to use.
+  - Think about a `raw_node` class
+
+- Better sytax error reporting
+  - Don't expose "success" and have a writable_tree
+  - Report list of tokens it would accept.
+  - Better strings in the syntax tree.
+
+- friendly type-name
+  - Parse the string appropriately.
+
 # Other stuff to do
 
 - Can you combine ints and types in a rule - ints mean "token" ???
