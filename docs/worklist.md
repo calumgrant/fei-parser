@@ -9,6 +9,9 @@
   - Demo of working with the tree using the API
     - Filtering children maybe
   
+- Create a `state` class with members
+  - `kernel`
+  - `closure`  
 
 - Create an expression parser with precedence
   - Create an evaluator for said expression parser
