@@ -1,13 +1,14 @@
 
 # Plan for the next week
 
-- XML parsing
-  - [ ] trivial document parse
-  - [ ] Simple XML subset
-  - [ ] Navigate the tree
-  - [ ] Utils, for example to construct strings.
-  - [ ] Samples
-  - [ ] Documentation
+- Json
+  - Fix nested rules in grammar
+  - Remove dummy token rules in symbols
+  - Flatten hidden nodes
+  - Hide uninteresting tokens - Remove completely from the tree
+  - Demo of working with the tree using the API
+    - Filtering children maybe
+  
 
 - Create an expression parser with precedence
   - Create an evaluator for said expression parser
@@ -31,6 +32,8 @@ When performing a reduction (`writable_tree::reduce`), it walks the children as 
 Nodes can be set (via their id) to `Hidden` which removes the node but exposes its children in the parent, or `Remove` which removes the node entirely (including its children).
 
 Maybe, negative nodes are "hidden" or something? Or any node above 1000 is hidden? Problem is that we need to have distinct token nodes.
+
+- output a tree without including lots of unnecessary stuff
 
 - class `writable_tree`
 

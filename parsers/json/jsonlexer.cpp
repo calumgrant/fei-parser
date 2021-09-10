@@ -30,4 +30,5 @@ using Tokens = alt <
     token<json::Number, Number>,
     token<json::String, String>
     >;
+
 char_lexer json::lexer = make_lexer<Tokens>();

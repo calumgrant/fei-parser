@@ -181,7 +181,7 @@ namespace cellar
     template<int Id, typename...Ss>
     struct is_symbol<rule<Id, Ss...>>
     {
-        static const bool value = false;
+        static const bool value = true;
     };
 
     template<typename...X>

@@ -23,7 +23,7 @@ class Values : public symbol<Value, rule<Hidden, Values, token<','>, Value>> {};
 using Array = rule<json::Array, token<'['>, Values, token<']'>>;
 
 // !! Fix bug where we fail if member isn't a rule.
-using Member = symbol<rule<json::Member, String, token<':'>, Value>>;
+using Member = rule<json::Member, String, token<':'>, Value>;
 class Members : public symbol<Member, rule<Hidden, Members, token<','>, Member>> {};
 
 using Object = rule<json::Object, token<'{'>, Members, token<'}'>>;

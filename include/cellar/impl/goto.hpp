@@ -61,6 +61,8 @@ namespace cellar
         using type = typename impl::goto_<C, Symbol>::type;
     };
 
+    // TODO: Consolidate with is_symbol
+    // and move away from here
     template<typename Symbol>
     struct is_symbol2
     {
@@ -71,6 +73,12 @@ namespace cellar
     struct is_symbol2<token<Token, Def...>>
     {
         static const bool value = false;
+    };
+
+    template<int Id, typename...Def>
+    struct is_symbol2<rule<Id, Def...>>
+    {
+        static const bool value = true;
     };
 
     template<>
