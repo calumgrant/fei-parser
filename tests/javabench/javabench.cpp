@@ -139,7 +139,33 @@ int main(int argc, char**argv)
     }
     else if(mode == "parse")
     {
+        std::vector<char> contents;
+        cellar::tree tree;
 
+        auto parser = cellar::java::parser();
+
+        for(auto & p : list.files)
+        {
+            if(!ReadFile(p.c_str(), contents))
+            {
+                std::cout << "Error reading file " << p << std::endl;
+            }
+            else
+            {
+                parser.parse(contents.data(), contents.data() + contents.size(), tree);
+
+                if(tree)
+                {
+                    std::cout << "Parse success!\n";
+                    std::cout << tree;
+                }
+                else
+                {
+                    std::cout << "Node I have = " << tree.root().id() << std::endl;
+                    std::cout << "Syntax error at " << p << ":" << tree.errorLocation.row << ":" << tree.errorLocation.col << std::endl;
+                }
+            }
+        }
     }
     else
     {

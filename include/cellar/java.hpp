@@ -123,7 +123,9 @@ namespace cellar::java
         TypeDeclarationList,
         TypeDeclaration,
         ImportDeclarationList,
-        ImportDeclaration
+        ImportDeclaration,
+        PackageModifierList,
+        SingleTypeImportDeclaration
     };
 
     extern cellar::char_lexer lexer();

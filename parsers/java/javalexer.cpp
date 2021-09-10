@@ -311,8 +311,6 @@ using OperatorToken = alt<
     token<RRightShiftEq, string<'>','>','>','='>>
 >;
 
-#if NDEBUG
-
 using JavaTokens = alt<
     CommentToken,
     WhiteSpaceToken,
@@ -323,22 +321,5 @@ using JavaTokens = alt<
     SeparatorToken,
     OperatorToken
     >;
-
-#else
-
-// This is just to speed up compilation during development
-
-using JavaTokens = alt<
-    // CommentToken,
-    //WhiteSpaceToken,
-    KeywordToken,
-    //WhiteSpaceToken,
-    //IdentifierToken,
-    //LiteralToken,
-    SeparatorToken,
-    OperatorToken
-    >;
-
-#endif
 
 cellar::char_lexer java::lexer() { return make_lexer<JavaTokens>(); }
