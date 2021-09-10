@@ -54,7 +54,11 @@ gather_symbols<Grammar>
   - Better strings in the syntax tree.
 
 - friendly type-name
-  - Parse the string appropriately.
+  - Parse the typename appropriately.
+
+- How do we turn "nodes" into "objects"
+
+- Invalid parse -> empty tree / null root
 
 # Other stuff to do
 

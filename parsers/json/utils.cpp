@@ -50,3 +50,26 @@ bool json::getValue(node n, std::string & result)
         return false;
     }
 }
+
+json::Value::Value(node n) : node(n) {}
+
+json::Value json::Value::operator[](int n) const { return node::operator[](n); }
+
+json::Value json::Value::operator[](const char * key) const
+{
+    return member(*this, key);
+}
+
+int json::Value::getInt() const
+{
+    int result = 0;
+    getValue(*this, result);
+    return result;
+}
+
+std::string json::Value::getString() const
+{
+    std::string result;
+    getValue(*this, result);
+    return result;
+}

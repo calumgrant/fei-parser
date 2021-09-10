@@ -28,7 +28,8 @@ using Tokens = alt <
     token<json::Null, string<'n', 'u', 'l', 'l'>>,
     token<json::False, string<'f', 'a', 'l', 's', 'e'>>,
     token<json::Number, Number>,
-    token<json::String, String>
+    token<json::String, String>,
+    whitespace<plus<chalt<' ', '\t', '\r', '\n'>>>
     >;
 
 char_lexer json::lexer() { return make_lexer<Tokens>(); }
