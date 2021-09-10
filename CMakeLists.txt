@@ -11,6 +11,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include_directories(include external/simpletest)
 add_subdirectory(parsers/java)
 add_subdirectory(parsers/xml)
+add_subdirectory(parsers/json)
 
 add_executable(lexertests tests/testLexer.cpp)
 
@@ -22,6 +23,9 @@ target_link_libraries(xmltests cellar-xml)
 
 add_executable(javabench tests/javabench/javabench.cpp)
 target_link_libraries(javabench cellar-java)
+
+add_executable(jsontests tests/testJson.cpp)
+target_link_libraries(jsontests cellar-json)
 
 add_test(NAME lexertests COMMAND lexertests)
 add_test(NAME javaparse COMMAND javabench tokenize ${CMAKE_CURRENT_SOURCE_DIR}/data/AllInOne8.java)

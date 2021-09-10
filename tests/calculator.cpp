@@ -13,7 +13,7 @@
 #include <map>
 #include <cmath>
 
-// All cellar names are in this namespace.
+// All Cellar names are in this namespace.
 using namespace cellar;
 
 // You need to define identifiers for all tokens and nodes.
@@ -202,8 +202,8 @@ int main()
 {
     std::cout << "Welcome to the Cellar calculator demo. Type \"exit\" or ^D to exit.\n";
 
-    std::string line;
     Calculator calc;
+    std::string line;
 
     do
     {
