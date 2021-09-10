@@ -118,7 +118,12 @@ namespace cellar::java
 
     enum Nodes
     {
-        CompilationUnit = LastToken
+        CompilationUnit = LastToken,
+        PackageDeclaration,
+        TypeDeclarationList,
+        TypeDeclaration,
+        ImportDeclarationList,
+        ImportDeclaration
     };
 
     extern cellar::char_lexer lexer();

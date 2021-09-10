@@ -95,8 +95,6 @@ namespace cellar
 
         location errorLocation;
         bool success = false;
-
-    protected:
         std::vector<char> data;
     };
 }

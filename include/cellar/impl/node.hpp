@@ -46,7 +46,7 @@ namespace cellar
 
         std::string str() const { return std::string(c_str(), c_str() + tokenLength()); }
         
-        const char * c_str() const { return (const char*)extraData(); }
+        const char * c_str() const { return isToken() ? (const char*)extraData() : ""; }
         
         location getLocation() const
         {

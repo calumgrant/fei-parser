@@ -1,1 +1,1 @@
-add_library(cellar-java javalexer.cpp ../../include/cellar/java.hpp)
+add_library(cellar-java javalexer.cpp javaparser.cpp ../../include/cellar/java.hpp)

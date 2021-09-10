@@ -1,6 +1,14 @@
 
 # Plan for the next week
-  
+
+- Optimizing performance
+  - Don't store location info?
+  - Don't store token contents
+  - Optimizing the function call: which tokens to expect
+  - Optimizing with UTF8
+  - Optimizing switches, for example switch on 4 bits?
+
+
 - Create a `state` class with members
   - `kernel`
   - `closure`

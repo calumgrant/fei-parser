@@ -1,5 +1,7 @@
 #include <simpletest.hpp>
 
+#define CELLAR_DISABLE_TREE 1
+
 #include <cellar/json.hpp>
 #include <cellar/output.hpp>
 #include <sstream>
@@ -147,8 +149,10 @@ public:
     {
         using namespace cellar::json;
         auto contents = MakeTest();
-
-        auto t = parser().parse(contents);
+        std::cout << "Input size = " << contents.size() << std::endl;
+        cellar::tree t;
+        parser().parse(contents.data(), contents.data() + contents.size(), t);
+        std::cout << "Size of tree BLOB = " << t.data.size() << std::endl;
     }
 } jt;
 
