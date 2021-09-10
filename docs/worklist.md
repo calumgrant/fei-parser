@@ -48,10 +48,18 @@ Maybe, negative nodes are "hidden" or something? Or any node above 1000 is hidde
 
 - Tidy up API of tree and node.
 
+```
+is_user_defined_symbol
+static const bool valuetype<equals<Sym, typename Sym::rules>>=
+
+gather_symbols<Grammar>
+```
 
 # Other stuff to do
 
 - Can you combine ints and types in a rule - ints mean "token" ???
+
+- Tests for well-formedness
 
 - Proper handling of unicode
 

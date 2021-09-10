@@ -23,11 +23,41 @@ using NameChar = alt<
     ch<0xb7>
     >;
 
+using Name = seq<NameStartChar, star<NameChar>>;
+
 // using xml = seq<chalt<'x','X'>, chalt<'m','M'>, chalt<'l', 'L'>>;
 using XmlDeclOpen = token<xml::XmlDeclOpen, string<'<', '?', 'x', 'm', 'l'>>;
 using XmlDeclClose = token<xml::XmlDeclClose, string<'?', '>'>>;
 using SToken = token<xml::S, S>;
 
-using Tokens = alt< XmlDeclOpen, XmlDeclClose, SToken >;
+// 15
+using Comment = seq<
+    string<'<','!','-','-'>,
+    star<alt<notch<'-'>, seq<ch<'-'>,notch<'-'>>>>,
+    string<'-','-','>'>
+    >;
+
+/*
+Copied from Java
+using NotStar = notch<'*'>;
+using NotStarNotSlash  = notch<'*','/'>;
+using InputCharacter = notch<'\n','\r'>;
+using CommentBody = star<alt<NotStar, seq<plus<ch<'*'>>, NotStarNotSlash>>>;
+using TraditionalComment = seq<ch<'/'>, ch<'*'>, CommentBody, plus<ch<'*'>>, ch<'/'>>;
+using EndOfLineComment = seq<ch<'/'>, ch<'/'>, star<InputCharacter>>;
+using Comment = alt<TraditionalComment, EndOfLineComment>;
+using CommentToken = whitespace<Comment>;
+*/
+
+using NotStar = notch<'?'>;
+using NotStarNotSlash  = notch<'?','>'>;
+using CommentBody = star<alt<NotStar, seq<plus<ch<'?'>>, NotStarNotSlash>>>;
+using PI = seq<ch<'<'>, ch<'?'>, CommentBody, plus<ch<'?'>>, ch<'>'>>;
+using PIToken = token<xml::PI, PI>;
+
+using CommentToken = token<xml::Comment, Comment>;
+
+using Tokens = alt< XmlDeclOpen, XmlDeclClose, SToken, CommentToken, PIToken >;
+
 
 char_lexer xml::lexer = make_lexer<Tokens>();

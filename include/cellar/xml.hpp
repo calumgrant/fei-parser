@@ -16,7 +16,6 @@ namespace cellar::xml
         CharData,
         Reference,
         CDSect,
-        PI,
         Misc,
         ElementDecl,
         ContentSpec,
@@ -24,6 +23,8 @@ namespace cellar::xml
         XmlDecl,
         XmlDeclOpen,
         XmlDeclClose, 
+
+        PI,  // Note: comes after XMLDecl
 
         // Tokens
         OpenAngle,

@@ -9,7 +9,8 @@ namespace cellar
     struct node_data
     {
         std::uint32_t size;  // Size of node in bytes, including node_data
-        std::uint16_t id, numberOfChildren;
+        std::int16_t id;
+        std::uint16_t numberOfChildren;
     };
 
     class children

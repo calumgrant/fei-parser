@@ -48,12 +48,12 @@ namespace cellar
         return os << "alt<" << R1() << "," << R2() << '>';
     }
 
-    std::ostream & operator<<(std::ostream & os, empty)
+    inline std::ostream & operator<<(std::ostream & os, empty)
     {
         return os << "empty";
     }
 
-    std::ostream & operator<<(std::ostream & os, reject)
+    inline std::ostream & operator<<(std::ostream & os, reject)
     {
         return os << "reject";
     }

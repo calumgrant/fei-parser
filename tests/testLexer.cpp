@@ -13,6 +13,8 @@
 
 struct foo {};
 
+using namespace cellar;
+
 namespace fp = cellar;
 
 void testAny()
@@ -515,6 +517,43 @@ void testKeywords()
     // StateGraph{KeywordToken(), true};
     //  std::cout << sg;
 }
+
+class TestPI : public Test::Fixture<TestPI>
+{
+public:
+    TestPI()
+    {
+
+    }
+
+
+    using S = plus<chalt<' ', '\r', '\n', '\t'>>;
+
+    using NameStartChar = alt<
+        chalt<':', '_'>,
+        chrange<'A','Z'>,
+        chrange<'a','Z'>
+        >;
+
+    using NameChar = alt<
+        NameStartChar,
+        chalt<'-', '.'>,
+        ch<0xb7>
+        >;
+
+    using Name = seq<NameStartChar, star<NameChar>>;
+    
+    using NotStar = notch<'?'>;
+    using NotStarNotSlash  = notch<'?','>'>;
+    using CommentBody = star<alt<NotStar, seq<plus<ch<'?'>>, NotStarNotSlash>>>;
+    using PI = seq<ch<'<'>, ch<'?'>, Name, CommentBody, plus<ch<'?'>>, ch<'>'>>;
+    using PIToken = token<100, PI>;
+
+    void Test()
+    {
+        check_matches<PI>("<?xml  ?>");
+    }
+} pitest;
 
 void testTextBlock()
 {

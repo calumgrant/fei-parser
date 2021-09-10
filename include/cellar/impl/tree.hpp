@@ -27,7 +27,7 @@ namespace cellar
             std::uint32_t size = sizeof(node_data) + sizeof(location) + length + 1;
             data.resize(data.size() + size);
             auto r = writableRoot();
-            r.setData({size, std::uint16_t(tokenId), 0});
+            r.setData({size, std::int16_t(tokenId), 0});
             r.setLocation(l);
             return r;
         }
@@ -43,7 +43,7 @@ namespace cellar
                 child = child.next();
             }
             // TODO: Typedef some of these
-            r.setData({std::uint32_t((const char*)r.p - (const char*)child.p), (std::uint16_t)nodeId, (std::uint16_t)count});
+            r.setData({std::uint32_t((const char*)r.p - (const char*)child.p), (std::int16_t)nodeId, (std::uint16_t)count});
             return r;
         }
 
