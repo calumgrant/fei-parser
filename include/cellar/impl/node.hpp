@@ -72,11 +72,13 @@ namespace cellar
         {
             if(i>=size()) return *this;
             node n = begin();
+            while(n.isHidden()) ++n;
             for(++i; i<size(); ++i)
             {                
                 ++n;
                 while(n.isHidden()) ++n;
             }
+            // !! Could this buffer overflow
             return n;
         }
 

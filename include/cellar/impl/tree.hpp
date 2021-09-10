@@ -68,7 +68,7 @@ namespace cellar
                 child = child.next();
                 if(oldChild.id() == Hidden)
                 {
-                    addedMembers += oldChild.size();
+                    addedMembers += oldChild.size()-1;
                     writable_node n = oldChild;
                     n.setData({sizeof(node_data), Hidden, 0});
                 }

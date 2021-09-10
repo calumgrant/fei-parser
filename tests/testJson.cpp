@@ -34,10 +34,10 @@ public:
         CHECK(t);
     }
 
-
     JsonTest()
     {
         AddTest(&JsonTest::Successes);
+        AddTest(&JsonTest::TestAPI);
         name = "Json parsing";
     }
 
@@ -55,17 +55,34 @@ public:
         check("{ \"Name\": 123, \"Age\": 99 }");
         check(example1);
     }
-} jt;
 
-void check(std::string str)
-{
-    auto t = cellar::json::parser.parse(str);
-    if(t)
+    void TestAPI()
     {
-        std::cout << "Parse success!\n";
-        std::cout << t;
+        auto t = cellar::json::parser.parse(example1);
+
+        // Find Image.Width
+        auto image = cellar::json::member(t.root(), "Image");
+        CHECK(image);
+        auto ids = cellar::json::member(image, "IDs");
+        CHECK(ids);
+        int i;
+        CHECK(cellar::json::getValue(ids[2], i));
+        EQUALS(234, i);
+
+        CHECK(cellar::json::getValue(ids[0], i));
+        EQUALS(116, i);
+
+        CHECK(cellar::json::getValue(ids[3], i));
+        EQUALS(38793, i);
+
+        auto title = cellar::json::member(image, "Title");
+        CHECK(title);
+
+        std::string str;
+        CHECK(cellar::json::getValue(title, str));
+        EQUALS(str, "View from 15th Floor");
     }
-}
+} jt;
 
 int main()
 {

@@ -7,6 +7,7 @@
 #define CELLAR_TRACE_PARSER 0
 #include <cellar/json.hpp>
 #include <cellar/make_parser.hpp>
+#include <cstring>
 
 using namespace cellar;
 

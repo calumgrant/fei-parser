@@ -1,1 +1,1 @@
-add_library(cellar-json jsonlexer.cpp jsonparser.cpp ../../include/cellar/json.hpp)
+add_library(cellar-json jsonlexer.cpp jsonparser.cpp utils.cpp ../../include/cellar/json.hpp)
