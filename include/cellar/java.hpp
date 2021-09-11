@@ -92,6 +92,7 @@ namespace cellar::java
         MinusEq,
         LtEq,
         Times,
+        Star=Times,
         TimesEq,
         NotEq,
         Div,
@@ -125,7 +126,10 @@ namespace cellar::java
         ImportDeclarationList,
         ImportDeclaration,
         PackageModifierList,
-        SingleTypeImportDeclaration
+        SingleTypeImportDeclaration,
+        TypeImportOnDemandDeclaration,
+        SingleStaticImportDeclaration,
+        StaticImportOnDemandDeclaration
     };
 
     extern cellar::char_lexer lexer();

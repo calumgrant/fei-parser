@@ -28,6 +28,8 @@
 - Think about API for hidden nodes.
   - Can we avoid pushing hidden tokens on the stack in the first place??
 
+- Avoid storing tokens by id.
+
 - output a tree without including lots of unnecessary header files
 
 - class `writable_tree`

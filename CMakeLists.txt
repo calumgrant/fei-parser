@@ -21,7 +21,7 @@ add_executable(typesetTests tests/testTypeset.cpp)
 add_executable(xmltests tests/testXML.cpp)
 target_link_libraries(xmltests cellar-xml)
 
-add_executable(javabench tests/javabench/javabench.cpp)
+add_executable(javabench tests/java/javabench.cpp)
 target_link_libraries(javabench cellar-java)
 
 add_executable(jsontests tests/testJson.cpp)
