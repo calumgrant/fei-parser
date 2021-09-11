@@ -9,6 +9,12 @@
   - Optimizing switches, for example switch on 4 bits?
 
 
+- Token types
+  - Stored, fully
+  - Hidden completely
+  - Stored without location/text info
+
+
 - Create a `state` class with members
   - `kernel`
   - `closure`
@@ -27,6 +33,8 @@
 
 - Think about API for hidden nodes.
   - Can we avoid pushing hidden tokens on the stack in the first place??
+
+- But iterating a node when the last (first) node is empty, e.g. "package".
 
 - Avoid storing tokens by id.
 

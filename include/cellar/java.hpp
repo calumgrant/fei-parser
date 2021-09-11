@@ -129,7 +129,27 @@ namespace cellar::java
         SingleTypeImportDeclaration,
         TypeImportOnDemandDeclaration,
         SingleStaticImportDeclaration,
-        StaticImportOnDemandDeclaration
+        StaticImportOnDemandDeclaration,
+        NormalClassDeclaration,
+        ClassModifierList,
+        TypeParameter,
+        TypeParameterList,
+        TypeParameterModifierList,
+        TypeBoundExtendsVar,
+        TypeBoundExtendsClassOrInterface,
+        AdditionalBound,
+        AnnotationList,
+        ClassType,
+        TypeArgumentList,
+        ArrayType,
+        PrimitiveType,
+        Dims,
+        Wildcard,
+        ExtendsWildcard,
+        SuperWildcard,
+        Superclass,
+        Superinterfaces,
+        ClassBody
     };
 
     extern cellar::char_lexer lexer();
