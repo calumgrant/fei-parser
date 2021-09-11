@@ -70,7 +70,7 @@ using PackageDeclaration = rule<java::Package,
 
 // https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-ClassModifier
 using ClassModifier = symbol<
-    Annotation,
+    // Annotation, 
     token<java::Public>,
     token<java::Protected>,
     token<java::Private>,
@@ -189,7 +189,7 @@ class ClassBody : public symbol<
 // https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-NormalClassDeclaration
 using NormalClassDeclaration = rule<
     java::NormalClassDeclaration,
-    // OptionalList<java::ClassModifierList, ClassModifier>,
+    OptionalList<java::ClassModifierList, ClassModifier>,
     Tok<java::Class>,
     Identifier,
     /* Optional<java::TypeParameterList, TypeParameters>, */
@@ -197,7 +197,6 @@ using NormalClassDeclaration = rule<
     /* Optional<java::Superinterfaces, Superinterfaces>, */
     ClassBody
     >;
-    // , TODO;
 
 class ClassDeclaration : public symbol<NormalClassDeclaration /*, EnumDeclaration*/> {};
 
