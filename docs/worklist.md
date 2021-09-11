@@ -1,6 +1,10 @@
 
 # Plan for the next week
 
+- Java parser
+  - Dealing with the shift-reduce conflicts in the grammar
+    - Problem is the `Annotation` on javaparser.cpp:73. It seems to be ambiguous about how to
+
 - Optimizing performance
   - Don't store location info?
   - Don't store token contents

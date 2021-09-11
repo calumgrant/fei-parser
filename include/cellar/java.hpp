@@ -149,7 +149,10 @@ namespace cellar::java
         SuperWildcard,
         Superclass,
         Superinterfaces,
-        ClassBody
+        ClassBody,
+        NormalAnnotation,
+        ElementValuePairList,
+        ElementValuePair
     };
 
     extern cellar::char_lexer lexer();

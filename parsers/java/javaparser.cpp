@@ -53,7 +53,25 @@ using ImportDeclaration = symbol<
     StaticImportOnDemandDeclaration
     >;
 
-using Annotation = token<-1234>;
+class Annotation;
+
+using ElementValue = symbol<
+    /* ConditionalExpression, */
+    /* ElementValueArrayInitializer, */
+    Annotation
+    >;
+
+using ElementValuePair = rule<java::ElementValuePair, 
+    Identifier, Tok<java::Eq>, ElementValue>;
+
+using NormalAnnotation = rule<
+    java::NormalAnnotation, 
+    Tok<java::At>,
+    Tok<java::OpenParen>,
+    Optional<java::ElementValuePairList, Sequence<ElementValuePair, Tok<java::Comma>>>
+    >;
+
+class Annotation : public symbol<NormalAnnotation /*, MarkerAnnotation, SingleElementAnnotation*/> {};
 
 using PackageModifier = symbol<Annotation>;
 
@@ -63,14 +81,14 @@ using PackageDeclaration = rule<java::Package,
     Tok<java::Package>,
     Sequence<Identifier, Tok<java::Dot>>,
     Tok<java::Semicolon>
-    >;    
+    >;
 
 // 7.6 Top Level Type Declarations
 
 
 // https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-ClassModifier
 using ClassModifier = symbol<
-    // Annotation, 
+    Annotation, 
     token<java::Public>,
     token<java::Protected>,
     token<java::Private>,
@@ -193,8 +211,8 @@ using NormalClassDeclaration = rule<
     Tok<java::Class>,
     Identifier,
     /* Optional<java::TypeParameterList, TypeParameters>, */
-    /* Optional<java::Superclass, Superclass>, */
-    /* Optional<java::Superinterfaces, Superinterfaces>, */
+    Optional<java::Superclass, Superclass>,
+    Optional<java::Superinterfaces, Superinterfaces>,
     ClassBody
     >;
 
@@ -205,8 +223,16 @@ class TypeDeclaration : public symbol<ClassDeclaration, /* InterfaceDeclaration,
 using CompilationUnit = symbol<
     rule<java::CompilationUnit, 
         Optional<java::PackageDeclaration, PackageDeclaration>, 
-        Optional<java::ImportDeclarationList, List<ImportDeclaration>>,
-        Optional<java::TypeDeclarationList, List<TypeDeclaration>>
+        OptionalList<java::ImportDeclarationList, ImportDeclaration>,
+        OptionalList<java::TypeDeclarationList, TypeDeclaration>
         >>;
+
+// Conflicts detected so far
+
+template<> struct cellar::ignore_shift_reduce_conflict<-6, 143> : public true_value {};
+template<> struct cellar::ignore_shift_reduce_conflict<-6, 112> : public true_value {};
+template<> struct cellar::ignore_shift_reduce_conflict<49, 130> : public true_value {};
+template<> struct cellar::ignore_shift_reduce_conflict<144, 143> : public true_value {};
+template<> struct cellar::ignore_shift_reduce_conflict<-6, 130> : public true_value {};
 
 char_parser java::parser() { return make_parser<::CompilationUnit>(lexer()); }
