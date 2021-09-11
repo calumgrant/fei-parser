@@ -152,7 +152,8 @@ namespace cellar::java
         ClassBody,
         NormalAnnotation,
         ElementValuePairList,
-        ElementValuePair
+        ElementValuePair,
+        TypeBound
     };
 
     extern cellar::char_lexer lexer();

@@ -183,7 +183,7 @@ using TypeParameter = rule<
     java::TypeParameter,
     OptionalList<java::TypeParameterModifierList, Annotation>,
     Identifier,
-    List<TypeBound>
+    Optional<java::TypeBound, TypeBound>
     >;
 
 using TypeParameters = rule<java::TypeParameterList,
@@ -210,7 +210,7 @@ using NormalClassDeclaration = rule<
     OptionalList<java::ClassModifierList, ClassModifier>,
     Tok<java::Class>,
     Identifier,
-    /* Optional<java::TypeParameterList, TypeParameters>, */
+    Optional<java::TypeParameterList, TypeParameters>,
     Optional<java::Superclass, Superclass>,
     Optional<java::Superinterfaces, Superinterfaces>,
     ClassBody
@@ -234,5 +234,7 @@ template<> struct cellar::ignore_shift_reduce_conflict<-6, 112> : public true_va
 template<> struct cellar::ignore_shift_reduce_conflict<49, 130> : public true_value {};
 template<> struct cellar::ignore_shift_reduce_conflict<144, 143> : public true_value {};
 template<> struct cellar::ignore_shift_reduce_conflict<-6, 130> : public true_value {};
+template<> struct cellar::ignore_shift_reduce_conflict<130, 129> : public true_value {};
+template<> struct cellar::ignore_reduce_reduce_conflict<130, 129> : public true_value {};
 
 char_parser java::parser() { return make_parser<::CompilationUnit>(lexer()); }

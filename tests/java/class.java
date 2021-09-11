@@ -1,2 +1,2 @@
 
-public class Foo extends Bar {}
+public class Foo<T> extends Bar<?> {}
