@@ -1,9 +1,36 @@
 
 # Plan for the next week
 
+- LALR efficiency
+  - Reduce the state size
+  - Count the number of states in a grammar
+  - `grammar_analysis.hpp`
+    - Count the number of states.
+    - Gather the number of states.
+  - Output states nicely (Workitems)
+    - Abbreviate names (e.g. only pick out capital letters)
+  - error_on_shift_reduce_conflicts<Grammar>().
+  - diagnostics.hpp
+    - list all states (and count them!)
+    - list all conflicts (and, show_which_reductions!)
+
+
+```
+template<typename T>
+void outputRuleName(std::ostream & os, T)
+{
+  std::cout << typeid(T).name();
+}
+```
+
 - Java parser
   - Dealing with the shift-reduce conflicts in the grammar
     - Problem is the `Annotation` on javaparser.cpp:73. It seems to be ambiguous about how to
+
+- How to debug conflicts:
+  - Show the conflicts in "trace mode"
+
+- Sorted typelist - based on constexpr typeinfo::before or just a comparand
 
 - Optimizing performance
   - Don't store location info?

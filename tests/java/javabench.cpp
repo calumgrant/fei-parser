@@ -63,7 +63,7 @@ bool ReadFile(const char * path, std::vector<char> & output)
 
 int main(int argc, char**argv)
 {
-    std::cout << "Running fei-parser Java benchmark\n";
+    std::cout << "Running Cellar Java benchmark\n";
 
     if(argc<=2)
     {

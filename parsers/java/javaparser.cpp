@@ -68,16 +68,36 @@ using NormalAnnotation = rule<
     java::NormalAnnotation, 
     Tok<java::At>,
     Tok<java::OpenParen>,
-    Optional<java::ElementValuePairList, Sequence<ElementValuePair, Tok<java::Comma>>>
+    Optional<java::ElementValuePairList, Sequence<ElementValuePair, Tok<java::Comma>>>,
+    Tok<java::CloseParen>
     >;
 
 class Annotation : public symbol<NormalAnnotation /*, MarkerAnnotation, SingleElementAnnotation*/> {};
+
+/*
+    In a deviation from the standard grammar, we allow all modifiers on all declarations.
+    This makes parsing much easier, but is too permissive.
+*/
+class Modifier : public symbol<
+    // Annotation,
+    token<java::Public>,
+    token<java::Private>,
+    token<java::Protected>,
+    token<java::Abstract>,
+    token<java::Default>,
+    token<java::Static>,
+    token<java::Strictfp>,
+    token<java::Final>
+    > {};
+
+class OptionalModifiers : public OptionalList<java::ModifierList, Modifier> {};
 
 using PackageModifier = symbol<Annotation>;
 
 // https://docs.oracle.com/javase/specs/jls/se8/html/jls-7.html#jls-PackageDeclaration
 using PackageDeclaration = rule<java::Package, 
-    Optional<java::PackageModifierList, List<PackageModifier>>,
+    // OptionalModifiers,
+    // Optional<java::PackageModifierList, List<PackageModifier>>,
     Tok<java::Package>,
     Sequence<Identifier, Tok<java::Dot>>,
     Tok<java::Semicolon>
@@ -87,16 +107,6 @@ using PackageDeclaration = rule<java::Package,
 
 
 // https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-ClassModifier
-using ClassModifier = symbol<
-    // Annotation, 
-    token<java::Public>,
-    token<java::Protected>,
-    token<java::Private>,
-    token<java::Abstract>,
-    token<java::Static>,
-    token<java::Final>,
-    token<java::Strictfp>
-    >;
 
 using TypeVariable = symbol<
     OptionalList<java::AnnotationList, Annotation>, Identifier
@@ -123,7 +133,6 @@ using Dims = rule<
     java::Dims,
     List<Dim>
     >;
-    
 
 using ArrayType = symbol<
     rule<java::ArrayType, PrimitiveType, Dims>,
@@ -162,12 +171,12 @@ using TypeArguments = rule<java::TypeArgumentList,
 class ClassType : public symbol <
     rule<java::ClassType, 
         OptionalList<java::AnnotationList, Annotation>,
-        Identifier,
-        Optional<java::TypeArgumentList, TypeArguments>>,
+        Identifier
+        /*Optional<java::TypeArgumentList, TypeArguments>*/>,
     rule<java::ClassType,
         ClassOrInterfaceType, Tok<java::Dot>, OptionalList<java::AnnotationList, Annotation>, 
-        Identifier,
-        Optional<java::TypeArgumentList, TypeArguments>>
+        Identifier
+        /*Optional<java::TypeArgumentList, TypeArguments>*/>
     > {};
 
 using InterfaceType = ClassType;
@@ -176,7 +185,7 @@ using AdditionalBound = rule<java::AdditionalBound, Tok<java::Amp>, InterfaceTyp
 
 using TypeBound = symbol<
     rule<java::TypeBoundExtendsVar, Tok<java::Extends>, TypeVariable>,
-    rule<java::TypeBoundExtendsClassOrInterface, Tok<java::Extends>, Optional<java::AdditionalBound, AdditionalBound>>
+    rule<java::TypeBoundExtendsClassOrInterface, Tok<java::Extends>, ClassOrInterfaceType, OptionalList<java::AdditionalBound, AdditionalBound>>
     >;
 
 using TypeParameter = rule<
@@ -192,9 +201,6 @@ using TypeParameters = rule<java::TypeParameterList,
     Tok<java::Gt>
     >;
 
-//template<> class cellar::ignore_shift_reduce_conflict<49, 130> : public true_value {};
-//template<> class cellar::ignore_shift_reduce_conflict<-5, 130> : public true_value {};
-
 using Superclass = rule<java::Superclass, Tok<java::Extends>, ClassType>;
 
 using Superinterfaces = rule<java::Superinterfaces, Tok<java::Implements>, Sequence<InterfaceType, Tok<java::Comma>>>;
@@ -206,10 +212,12 @@ class InterfaceBody;
 using NormalClassDeclaration = rule<
     java::NormalClassDeclaration,
     // OptionalList<java::AnnotationList, Annotation>,
-    OptionalList<java::ClassModifierList, ClassModifier>,
+    OptionalModifiers,
+    // OptionalList<java::ClassModifierList, ClassModifier>,
     Tok<java::Class>,
     Identifier,
-    Optional<java::TypeParameterList, TypeParameters>,
+
+    // Optional<java::TypeParameterList, TypeParameters>,
     Optional<java::Superclass, Superclass>,
     Optional<java::Superinterfaces, Superinterfaces>,
     ClassBody
@@ -223,10 +231,11 @@ using ExtendsInterfaces = rule<java::ExtendsInterfaces,
 using NormalInterfaceDeclaration = rule<
     java::NormalInterfaceDeclaration,
     // OptionalList<java::AnnotationList, Annotation>,
-    OptionalList<java::InterfaceModifierList, ClassModifier>,
+    //OptionalList<java::InterfaceModifierList, ClassModifier>,
+    OptionalModifiers,
     Tok<java::Interface>,
     Identifier,
-    Optional<java::TypeParameterList, TypeParameters>,
+    // Optional<java::TypeParameterList, TypeParameters>,
     Optional<java::Superinterfaces, ExtendsInterfaces>,
     InterfaceBody
     >;
@@ -236,7 +245,7 @@ class ClassDeclaration : public symbol<NormalClassDeclaration /*, EnumDeclaratio
 
 class InterfaceDeclaration : public symbol<NormalInterfaceDeclaration /*, AnnotationTypeDeclaration*/> {};
 
-class TypeDeclaration : public symbol<ClassDeclaration, /* InterfaceDeclaration, */ Tok<java::Semicolon>> {};
+class TypeDeclaration : public symbol<ClassDeclaration, InterfaceDeclaration, Tok<java::Semicolon>> {};
 
 using CompilationUnit = symbol<
     rule<java::CompilationUnit, 
@@ -290,16 +299,24 @@ class InterfaceBody : public symbol<
     >
     {};
 
+// Methods
 
+// https://docs.oracle.com/javase/specs/jls/se8/html/jls-9.html#jls-InterfaceMethodDeclaration
+
+/*
+class InterfaceMethodDeclaration : public symbol<
+    rule<java::InterfaceMethodDeclaration>,
+        OptionalModifiers,
+        MethodHeader,
+        MethodBody>
+    > {};
+    */
 
 // Conflicts detected so far
 
-template<> struct cellar::ignore_shift_reduce_conflict<-6, 143> : public true_value {};
-template<> struct cellar::ignore_shift_reduce_conflict<-6, 112> : public true_value {};
-template<> struct cellar::ignore_shift_reduce_conflict<49, 130> : public true_value {};
-template<> struct cellar::ignore_shift_reduce_conflict<144, 143> : public true_value {};
-template<> struct cellar::ignore_shift_reduce_conflict<-6, 130> : public true_value {};
-template<> struct cellar::ignore_shift_reduce_conflict<130, 129> : public true_value {};
-template<> struct cellar::ignore_reduce_reduce_conflict<130, 129> : public true_value {};
+template<> struct ignore_shift_reduce_conflict<57, 140> : public true_value {};
+template<> struct ignore_shift_reduce_conflict<-6, 140> : public true_value {};
+template<> struct ignore_shift_reduce_conflict<42, 121> : public true_value {};
+template<> struct ignore_shift_reduce_conflict<41, 121> : public true_value {};
 
 char_parser java::parser() { return make_parser<::CompilationUnit>(lexer()); }

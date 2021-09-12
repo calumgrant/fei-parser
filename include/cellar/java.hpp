@@ -5,7 +5,7 @@ namespace cellar::java
 {
     enum Tokens
     {
-        Abstract,
+        Abstract=__LINE__,  // For easier debugging
         Assert,
         Boolean,
         Break,
@@ -91,8 +91,7 @@ namespace cellar::java
         GtEq,
         MinusEq,
         LtEq,
-        Times,
-        Star=Times,
+        Times, Star=Times,
         TimesEq,
         NotEq,
         Div,
@@ -113,13 +112,12 @@ namespace cellar::java
         RightShift,
         RightShiftEq,
         RRightShift,
-        RRightShiftEq,
-        LastToken
+        RRightShiftEq
     };
 
     enum Nodes
     {
-        CompilationUnit = LastToken,
+        CompilationUnit = __LINE__,  // We use the line number
         PackageDeclaration,
         TypeDeclarationList,
         TypeDeclaration,
@@ -132,7 +130,7 @@ namespace cellar::java
         StaticImportOnDemandDeclaration,
         NormalClassDeclaration,
         ClassModifierList,
-        InterfaceModifierList = ClassModifierList,
+        InterfaceModifierList,
         TypeParameter,
         TypeParameterList,
         TypeParameterModifierList,
@@ -159,7 +157,9 @@ namespace cellar::java
         NormalInterfaceDeclaration,
         ExtendsInterfaces,
         InterfaceBodyDeclaration,
-        InterfaceBody
+        InterfaceBody,
+        InterfaceMethodDeclaration,
+        ModifierList
     };
 
     extern cellar::char_lexer lexer();

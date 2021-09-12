@@ -1,6 +1,32 @@
 # Implementation of Cellar
 
-Cellar is an LALR parser library for C++, implemented using C++ templates. This approach means that the grammar is specified in C++ source code, meaning no external tools and no additional build steps. This in turn means that the parser is much easier to integrate.
+Cellar is an LALR parser library for C++, implemented using C++ templates. What is unusual about Cellar is that the construction of the parser happens at compile-time within the C++ compiler, so there is no need for an external tool to generate the parsing tables. The grammars (lexical and syntactic) are specified natively in C++ syntax, so there is no need to learn an additional tool and integrate it into the build.
+
+In summary then:
+
+Pros:
+- Extremely fast initialization and throughput
+- Easily integrated into a C++ build: just copy the header files
+- Work with existing C++ syntax. IDE integration (syntax highlighting, jump to def) just works.
+- Can reason about the parser in C++.
+- Can extend and configure the parser natively.
+- Can expose the lexer in different ways, for example as a regex library.
+- Extremely efficient parse tree.
+- Automatic parse tree support
+- Reusable grammars via parse trees.
+
+Cons:
+- Poor diagnostics
+- Slow compilation
+
+# Basic usage
+
+
+
+This means that the programmer can work within a familiar 
+
+
+This approach means that the grammar is specified in C++ source code, meaning no external tools and no additional build steps. This in turn means that the parser is much easier to integrate.
 
 The benefit of this approach is that:
 
