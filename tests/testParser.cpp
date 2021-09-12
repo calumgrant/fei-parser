@@ -4,6 +4,9 @@
 #include <cellar/output.hpp>
 #include <simpletest.hpp>
 #include <cstring>
+#include <sstream>
+
+#include <cellar/diagnostics.hpp>
     
 using namespace cellar;
 
@@ -194,8 +197,8 @@ public:
     }
 
     void f()
-    {     
-        outputState<S0>();
+    {
+        // outputState<S0>();
     }
 } find_tokens;
 
@@ -223,10 +226,11 @@ public:
 
     void Output()
     {
-        std::cout << S0() << std::endl;
-        std::cout << S1() << std::endl;
-        std::cout << S2() << std::endl;
-        std::cout << Gclosure() << std::endl;
+        std::stringstream ss;
+        ss << S0() << std::endl;
+        ss << S1() << std::endl;
+        ss << S2() << std::endl;
+        ss << Gclosure() << std::endl;
     }
 } c1;
 
@@ -297,15 +301,11 @@ public:
         outputState<Grammar2::S4>();
         outputGoto<Grammar2::S0, Grammar2::E>();
     }
-} g2;
+};
 
 
 int main()
 {
-
-    // Let's try a conflict
-    outputState<Conflicts1::S0>();
-    outputState<Conflicts1::S1>();
 }
 
 
@@ -387,12 +387,10 @@ public:
 
         auto t1 = parser.parse("12");
         CHECK(t1.success);
-        std::cout << t1;
         
         t1 = parser.parse("1+2");
         CHECK(t1.success);
         t1 = parser.parse("1 + 2 + 3 + 4");
-        std::cout << t1;
 
         int count=0;
         t1.root().visitRecursive([&](node n) { ++count; });
@@ -512,7 +510,6 @@ public:
 
     void TestParse()
     {
-        std::cout << make_lexer_from_grammar<Expr>::type() << std::endl;
         auto parser = cellar::make_parser<Expr>();
 
         auto t1 = parser.parse("12");
@@ -522,7 +519,6 @@ public:
         t1 = parser.parse("1+a");
         CHECK(t1.success);
         t1 = parser.parse("a+1-1+a");
-        std::cout << t1;
         CHECK(t1.success);
         t1 = parser.parse("+");
         CHECK(!t1.success);
@@ -571,7 +567,6 @@ public:
 
     void TestParse()
     {
-        std::cout << make_lexer_from_grammar<Expr>::type() << std::endl;
         auto parser = cellar::make_parser<Expr>();
 
         auto t1 = parser.parse("12");
@@ -581,15 +576,12 @@ public:
         t1 = parser.parse("1+a");
         CHECK(t1.success);
         t1 = parser.parse("a+1-1+a");
-        std::cout << t1;
         CHECK(t1.success);
 
         t1 = parser.parse("(1)");
-        std::cout << t1;
         CHECK(t1.success);
 
         t1 = parser.parse("a+(1-(1))+a");
-        std::cout << t1;
         CHECK(t1.success);
 
         t1 = parser.parse("+");
@@ -729,8 +721,6 @@ public:
         CHECK(t);
         t = p.parse("");
         CHECK(t);
-        std::cout << t;
-        CHECK(t);
     }
 
     void TestConstVolatile()
@@ -746,16 +736,76 @@ public:
         CHECK(t);
         
         t = p.parse("volatile");
-        std::cout << t;
         CHECK(t);
         EQUALS(3, count_nodes(t.root()));
 
         t = p.parse("const volatile");
         CHECK(t);
-        std::cout << t;
         EQUALS(3, count_nodes(t.root()));
 
         t = p.parse("volatile const");
         CHECK(!t);
     }
 } er1;
+
+class Diagnostics : public Test::Fixture<Diagnostics>
+{
+public:
+    Diagnostics() : base("Parser diagnostics")
+    {
+        AddTest(&Diagnostics::Test);
+    }
+
+    enum Nodes { Id, Int, Add, Minus, MulNode, DivNode, Brackets, Open, Close };
+
+    using IntToken = token<Int, plus<digit>>;
+    using AddToken = token<Add, ch<'+'>>;
+    using SubToken = token<Minus, ch<'-'>>;
+    using IdToken  = token<Id, plus<alpha>>;
+    using OpenToken = token<Open, ch<'('>>;
+    using CloseToken = token<Close, ch<')'>>;
+    using MulToken = token<MulNode, ch<'*'>>;
+    using DivToken = token<DivNode, ch<'/'>>;
+    
+    struct Expr;
+    
+    using PrimaryExpr = symbol<
+        IntToken,
+        IdToken,
+        rule<Brackets, OpenToken, Expr, CloseToken>
+        >;
+    
+    class MulExpr : public symbol<
+        PrimaryExpr,
+        rule<MulNode, MulExpr, MulToken, PrimaryExpr>,
+        rule<DivNode, MulExpr, DivToken, PrimaryExpr>
+        > {};
+
+    class Expr : public symbol<
+        rule<Add, Expr, AddToken, MulExpr>,
+        rule<Minus, Expr, SubToken, MulExpr>,
+        MulExpr
+        > {};
+
+    using diags = parser_diagnostics<Expr>;
+
+    struct E : public symbol<
+        rule<100, token<0>, token<1>>,
+        rule<101, token<0>, E, token<1>>
+        > {};
+
+    using diags2 = parser_diagnostics<E>;
+
+    void Test()
+    {
+        auto parser = make_parser<Expr>();
+
+        EQUALS(11, diags2::states().size());
+        EQUALS(97, diags::states().size());
+
+        // std::cout << diags::states() << std::endl;
+        std::cout << diags::states() << std::endl;
+
+    }
+
+} diagnostics;
