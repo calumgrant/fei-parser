@@ -88,7 +88,7 @@ using PackageDeclaration = rule<java::Package,
 
 // https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-ClassModifier
 using ClassModifier = symbol<
-    Annotation, 
+    // Annotation, 
     token<java::Public>,
     token<java::Protected>,
     token<java::Private>,
@@ -199,14 +199,13 @@ using Superclass = rule<java::Superclass, Tok<java::Extends>, ClassType>;
 
 using Superinterfaces = rule<java::Superinterfaces, Tok<java::Implements>, Sequence<InterfaceType, Tok<java::Comma>>>;
 
-class ClassBody : public symbol<
-    rule<java::ClassBody, Tok<java::OpenBrace>, /* TODO */ Tok<java::CloseBrace>> 
-    >
-    {};
+class ClassBody;
+class InterfaceBody;
 
 // https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-NormalClassDeclaration
 using NormalClassDeclaration = rule<
     java::NormalClassDeclaration,
+    // OptionalList<java::AnnotationList, Annotation>,
     OptionalList<java::ClassModifierList, ClassModifier>,
     Tok<java::Class>,
     Identifier,
@@ -216,7 +215,26 @@ using NormalClassDeclaration = rule<
     ClassBody
     >;
 
+using ExtendsInterfaces = rule<java::ExtendsInterfaces,
+    Tok<java::Extends>,
+    Sequence<InterfaceType, Tok<java::Comma>>
+    >;
+
+using NormalInterfaceDeclaration = rule<
+    java::NormalInterfaceDeclaration,
+    // OptionalList<java::AnnotationList, Annotation>,
+    OptionalList<java::InterfaceModifierList, ClassModifier>,
+    Tok<java::Interface>,
+    Identifier,
+    Optional<java::TypeParameterList, TypeParameters>,
+    Optional<java::Superinterfaces, ExtendsInterfaces>,
+    InterfaceBody
+    >;
+
+
 class ClassDeclaration : public symbol<NormalClassDeclaration /*, EnumDeclaration*/> {};
+
+class InterfaceDeclaration : public symbol<NormalInterfaceDeclaration /*, AnnotationTypeDeclaration*/> {};
 
 class TypeDeclaration : public symbol<ClassDeclaration, /* InterfaceDeclaration, */ Tok<java::Semicolon>> {};
 
@@ -226,6 +244,53 @@ using CompilationUnit = symbol<
         OptionalList<java::ImportDeclarationList, ImportDeclaration>,
         OptionalList<java::TypeDeclarationList, TypeDeclaration>
         >>;
+
+
+// Class body
+// https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-ClassBody        
+
+using ClassMemberDeclaration = symbol<
+    /* FieldDeclaration,
+    MethodDeclaration, */
+    ClassDeclaration,
+    InterfaceDeclaration
+    >;
+
+using ClassBodyDeclaration = symbol<
+    ClassMemberDeclaration /*,
+    InstanceInitializer,
+    StaticInitializer,
+    ConstructorDeclaration */
+    >;
+
+using InterfaceMemberDeclaration = symbol<
+    /* ConstantDeclaration,
+    InterfaceMethodDeclaration, */
+    ClassDeclaration,
+    InterfaceDeclaration
+    >;
+
+using InterfaceBodyDeclaration = symbol<
+    InterfaceMemberDeclaration /*,
+    InstanceInitializer,
+    StaticInitializer,
+    ConstructorDeclaration */
+    >;
+
+
+class ClassBody : public symbol<
+    rule<java::ClassBody, Tok<java::OpenBrace>, 
+        OptionalList<java::ClassBody, ClassBodyDeclaration>, Tok<java::CloseBrace>> 
+    >
+    {};
+
+class InterfaceBody : public symbol<
+    rule<java::InterfaceBody, Tok<java::OpenBrace>, 
+        OptionalList<java::ClassBody, InterfaceBodyDeclaration>, Tok<java::CloseBrace>> 
+    >
+    {};
+
+
 
 // Conflicts detected so far
 

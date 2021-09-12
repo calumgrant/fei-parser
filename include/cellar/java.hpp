@@ -132,6 +132,7 @@ namespace cellar::java
         StaticImportOnDemandDeclaration,
         NormalClassDeclaration,
         ClassModifierList,
+        InterfaceModifierList = ClassModifierList,
         TypeParameter,
         TypeParameterList,
         TypeParameterModifierList,
@@ -153,7 +154,12 @@ namespace cellar::java
         NormalAnnotation,
         ElementValuePairList,
         ElementValuePair,
-        TypeBound
+        TypeBound,
+        ClassBodyDeclarationList,
+        NormalInterfaceDeclaration,
+        ExtendsInterfaces,
+        InterfaceBodyDeclaration,
+        InterfaceBody
     };
 
     extern cellar::char_lexer lexer();
