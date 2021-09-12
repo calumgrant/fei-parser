@@ -58,7 +58,8 @@ namespace cellar
     struct goto_
     {
         using C = typename closure<State>::type;
-        using type = typename impl::goto_<C, Symbol>::type;
+        using T0 = typename impl::goto_<C, Symbol>::type;
+        using type = typename typeset_sort<T0>::type;
     };
 
     // TODO: Consolidate with is_symbol

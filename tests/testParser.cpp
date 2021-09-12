@@ -800,12 +800,10 @@ public:
     {
         auto parser = make_parser<Expr>();
 
-        EQUALS(11, diags2::states().size());
-        EQUALS(97, diags::states().size());
-
-        // std::cout << diags::states() << std::endl;
         std::cout << diags::states() << std::endl;
 
+        EQUALS(11, diags2::states().size());
+        EQUALS(49, diags::states().size());
     }
 
 } diagnostics;

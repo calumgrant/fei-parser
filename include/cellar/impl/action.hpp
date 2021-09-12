@@ -176,7 +176,8 @@ namespace cellar
     struct shift_action
     {
         using Closure = typename closure<State>::type;
-        using type = typename shift_action2<Closure, Token>::type;
+        using T0 = typename shift_action2<Closure, Token>::type;
+        using type = typename typeset_sort<T0>::type;
     };
 
     template<typename State, int Token, typename Action = typename shift_action<State, Token>::type>

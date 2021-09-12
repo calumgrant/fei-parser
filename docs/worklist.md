@@ -1,6 +1,19 @@
 
 # Plan for the next week
 
+- Sort the state
+
+- Wrap a state up `state`, for example
+
+```
+struct state<members>
+{
+
+};
+```
+
+
+
 - LALR efficiency
   - Reduce the state size
   - Count the number of states in a grammar
