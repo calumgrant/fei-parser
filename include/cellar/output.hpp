@@ -3,6 +3,7 @@
 #include "cellar.hpp"
 
 #include <iostream>
+#include <cctype>
 
 namespace cellar
 {
@@ -158,6 +159,32 @@ namespace cellar
     struct write_rule;
 
 
+    inline void writeSymbol(std::ostream & os, WholeProgram)
+    {
+        os << "WholeProgram";
+    }
+
+    template<typename T>
+    void writeSymbol(std::ostream & os, T)
+    {
+        // A very light and 
+        auto name = typeid(T).name();
+        while(std::isdigit(*name)) ++name; 
+        os << name;
+    }
+
+    template<int Token, typename...Rules>
+    void writeSymbol(std::ostream & os, token<Token, Rules...>)
+    {
+        os << Token; // "token<" << Token << ">";
+    }
+
+    template<typename...Rules>
+    void writeSymbol(std::ostream & os, symbol<Rules...>)
+    {
+        os << "S";
+    }
+
     template<typename...Rules>
     std::ostream & operator<<(std::ostream & os, symbol<Rules...>)
     {
@@ -170,7 +197,8 @@ namespace cellar
         static void write(std::ostream & os)
         {
             if(Position == 0) os << " .";
-            os << " " << typename S::rules();
+            os << " ";
+            writeSymbol(os, S());
             write_rule<Position-1, Ss...>::write(os);
         }
     };
@@ -196,7 +224,8 @@ namespace cellar
     template<typename S, int Id, typename...Symbols, int Position, int Lookahead>
     std::ostream & operator<<(std::ostream & os, const rule_position<S, rule<Id, Symbols...>, Position, Lookahead> &)
     {
-        os << "rule<" << Id << "> ->";
+        writeSymbol(os, S());
+        os << " <" << Id << "> ->"; // "rule<" << Id << "> ->";
         write_rule<Position, Symbols...>::write(os);
         os << ", ";
         outputLookahead<Lookahead>(os);

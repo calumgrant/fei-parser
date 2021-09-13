@@ -210,7 +210,7 @@ class Closure1 : public Test::Fixture<Closure1>
 
     class Expr : public symbol<rule<10,A>, rule<11, Expr, A>> {};
     
-    struct S;
+    struct S {};
 
     using S0 = typeset<rule_position<S, A, 0, 1>, rule_position<S, rule<123, A, B>,0,2>>;
     using S1 = typeset<rule_position<S, A, 0, 1>, rule_position<S, rule<123, A, B>,0,2>, rule_position<S, rule<123, A, B>,2,2>>;
@@ -241,7 +241,7 @@ class Grammar2 : public Test::Fixture<Grammar2>
 
     class E : public symbol<rule<10, a, b>, rule<11, a, E, b>> {};
     
-    struct S;
+    struct S {};
 
     using S0 = typeset<rule_position<S, rule<12, E, token<EndOfStream>>, 0, EndOfStream>>;
 

@@ -1,8 +1,60 @@
 
 # Plan for the next week
 
-- Simplify the Jabva 
-- Sort the state in the most efficient way
+- Display names in symbols instead of `S`
+
+- Think about how to reduce the sizes of things.
+  - When constructing a closure, think about reusing/computing the data as much as possible
+  - avoid building lists through types.
+
+- Think about how to represent the LALR kernel
+
+- `lalr_kernel<>`
+  - Items without lookahead
+  - How to gather this into the lookaheads?
+
+- `item` class
+  - `int shift_token`
+  - `int reduce_token`
+  - `bool shifts`
+  - `bool reduces`
+  - `next` - The next item after shifting one token. A typeset with 0 or 1 elements
+  - `rule`
+  - `position`
+  - `lookahead`
+  - `symbol` - The symbol being reduced.
+  - `next_symbol` - a token or symbol to the right of the `.`. If at the end 
+  - `next_symbols` - a typeset of 
+
+- `impl::symbol<T>`
+
+- `impl::nonterminal<T>` class
+  - `potentially_empty`
+  - `name = T`
+  - `is_userdefined`
+  - `name` ???
+
+
+  - Shifts symbol
+    - The next item
+  - Shifts token
+    - The next item
+  - Reduces with lookahead
+
+- `shift_reduce_conflict`
+- `reduce_reduce_conflict`
+
+- `state` class
+  - `conflicts` - Set of conflicts or `typeset<>`
+  - `tokens` - Sorted set of tokens that it accepts
+  - `kernal` - Sorted `typeset<>` of items in the state
+  - `closure` - 
+  - `potential_actions<token>` - a list of viable actions
+  - `resolved_action<Token>` - a single action: one of
+      `shift<NewState>::state` - the new state
+      `reduce<Rule, Symbol>::rule, ::symbol`
+      `syntax_error`
+      `accept`
 
 
 - Debug why we can't display a typeset for the Java parser. Is it too big??

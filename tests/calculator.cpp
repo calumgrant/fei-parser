@@ -20,11 +20,14 @@ using namespace cellar;
 // You need to define identifiers for all tokens and nodes.
 // These will be stored in the syntax tree.
 
-enum Nodes { ExitNode, IntNode, FloatNode, PlusNode, ExprNode,
+enum Nodes {
+    ExitNode, IntNode, FloatNode, PlusNode, ExprNode,
     AssignNode, EqNode, IdNode, OpenNode, CloseNode, BracketNode,
     AddNode, SubNode, MinusNode, MulNode, DivNode };
 
 // Define the lexer
+// Note that the entire grammar is defined using TYPES, not values.
+// If you are unfamiliar with C++, then `using` defines a type-alias (much like a `typedef`).
 
 // "Symbols" in the lexer are defined with `using`. They are types, having no run-time overhead.
 // The `plus` rule accepts one or more, and `digit` is any digit, defined as `chrange<'0', '9'>`.
@@ -78,16 +81,16 @@ using DivToken = token<DivNode, ch<'/'>>;
 class Expr;
 
 // Symbols are defined using the `symbol<>` template, containing the rules in the symbol.
-using PrimaryExpr = symbol<
+class PrimaryExpr : public symbol<
     IntToken,
     FloatToken,
     IdToken,
     rule<BracketNode, OpenToken, Expr, CloseToken>  // Match "( Expr )"
-    >;
+    > {};
 
 // This "symbol" is just a rule. Remember that `using` is just expanded into whatever
 // type uses it.
-using Assignment = rule<AssignNode, IdToken, EqToken, Expr>;
+class Assignment : public symbol<rule<AssignNode, IdToken, EqToken, Expr>> {};
 
 class MulExpr : public symbol <
     PrimaryExpr,
@@ -101,8 +104,7 @@ class Expr : public symbol<
     rule<SubNode, Expr, MinusToken, MulExpr> 
     > {};
 
-using CalculatorGrammar = symbol<ExitToken, Assignment, Expr>;
-
+class CalculatorGrammar : public symbol<ExitToken, Assignment, Expr> {};
 
 class Calculator
 {
