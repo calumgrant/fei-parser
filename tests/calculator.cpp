@@ -8,6 +8,7 @@
 
 // This header file includes the entire library.
 #include <cellar/cellar.hpp>
+#include <cellar/diagnostics.hpp>
 
 #include <iostream>
 #include <map>
@@ -119,6 +120,10 @@ public:
         // Pre-populate some useful variables.
         variables["pi"] = M_PI;
         variables["e"] = M_E;
+
+        using Diagnostics = parser_diagnostics<CalculatorGrammar>;
+
+        std::cout << Diagnostics::number_of_states << std::endl << Diagnostics::states();
     }
 
     // Return `false` to exit.

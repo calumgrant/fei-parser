@@ -3,7 +3,7 @@
 */
 
 #pragma once
-#include "impl/lrparser.hpp"
+#include "cellar.hpp"
 
 namespace cellar
 {

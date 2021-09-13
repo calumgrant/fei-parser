@@ -6,6 +6,14 @@
 
 namespace cellar
 {
+    template<typename... Items>
+    struct list {};
+
+    inline std::ostream & operator<<(std::ostream & os, list<>) { return os; }
+
+    template<typename Item>
+    std::ostream & operator<<(std::ostream & os, list<Item>) { return os << Item(); }
+
     template<int Ch>
     std::ostream & operator<<(std::ostream & os, ch<Ch>)
     {
@@ -36,16 +44,29 @@ namespace cellar
         return os << "seq<char<'" << char(Ch1) << "'>," << string<Ch2, Chs...>() << ">";;
     }
 
-    template<typename R1, typename R2>
-    std::ostream & operator<<(std::ostream & os, seq<R1,R2>)
+    template<typename...Rules>
+    std::ostream & operator<<(std::ostream & os, seq<Rules...>)
     {
-        return os << "seq<" << R1() << "," << R2() << '>';
+        return os << "seq<" << list<Rules...>() << '>';
     }
 
-    template<typename R1, typename R2>
-    std::ostream & operator<<(std::ostream & os, alt<R1,R2>)
+    template<typename Rule>
+    std::ostream & operator<<(std::ostream & os, optional<Rule>)
     {
-        return os << "alt<" << R1() << "," << R2() << '>';
+        return os << "optional<" << Rule() << '>';
+    }
+
+    template<int...Chs>
+    std::ostream & operator<<(std::ostream & os, chalt<Chs...>)
+    {
+        return os << "chalt<...>";
+    }
+
+
+    template<typename...Rules>
+    std::ostream & operator<<(std::ostream & os, alt<Rules...>)
+    {
+        return os << "alt<" << list<Rules...>() << '>';
     }
 
     inline std::ostream & operator<<(std::ostream & os, empty)
@@ -76,10 +97,18 @@ namespace cellar
         return os << "chrange<'" << (char)Ch1 << "','" << (char)Ch2 << "'>";
     }
 
-    template<int Token, typename Rule>
-    std::ostream & operator<<(std::ostream & os, token<Token,Rule>)
+
+    template<typename Item1, typename Item2, typename...Items>
+    std::ostream & operator<<(std::ostream & os, list<Item1, Item2, Items...>) 
     {
-        return os << "token<" << Token << "," << Rule() << ">";
+        return os << Item1() << ", " << list<Item2,Items...>();
+    }
+
+
+    template<int Token, typename Rule, typename...Rules>
+    std::ostream & operator<<(std::ostream & os, token<Token,Rule,Rules...>)
+    {
+        return os << "token<" << Token << "," << list<Rule,Rules...>() << ">";
     }
 
     template<int Token>
