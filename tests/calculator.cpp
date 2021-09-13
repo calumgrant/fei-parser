@@ -90,7 +90,8 @@ class PrimaryExpr : public symbol<
 
 // This "symbol" is just a rule. Remember that `using` is just expanded into whatever
 // type uses it.
-class Assignment : public symbol<rule<AssignNode, IdToken, EqToken, Expr>> {};
+class Assignment : public symbol<
+    rule<AssignNode, IdToken, EqToken, Expr>> {};
 
 class MulExpr : public symbol <
     PrimaryExpr,

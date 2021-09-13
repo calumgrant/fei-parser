@@ -158,11 +158,30 @@ namespace cellar
     template<int Position, typename...Symbols>
     struct write_rule;
 
-
     inline void writeSymbol(std::ostream & os, WholeProgram)
     {
         os << "WholeProgram";
     }
+
+    template<int Id, typename...Items>
+    inline void writeSymbol(std::ostream & os, rule<Id, Items...>)
+    {
+        os << "rule<" << Id << ">";
+    }
+
+
+    template<typename Item, int Id>
+    void writeSymbol(std::ostream & os, Optional<Id, Item>)
+    {
+        os << Item() << "?";
+    }
+
+    template<int Id>
+    void writeSymbol(std::ostream & os, Tok<Id>)
+    {
+        os << Id;
+    }
+
 
     template<typename T>
     void writeSymbol(std::ostream & os, T)
@@ -225,7 +244,7 @@ namespace cellar
     std::ostream & operator<<(std::ostream & os, const rule_position<S, rule<Id, Symbols...>, Position, Lookahead> &)
     {
         writeSymbol(os, S());
-        os << " <" << Id << "> ->"; // "rule<" << Id << "> ->";
+        os << "<" << Id << "> ->"; // "rule<" << Id << "> ->";
         write_rule<Position, Symbols...>::write(os);
         os << ", ";
         outputLookahead<Lookahead>(os);

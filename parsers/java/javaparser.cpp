@@ -8,23 +8,6 @@ using namespace cellar;
 
 // Helpers - move to a header file when done
 
-namespace cellar
-{
-    template<typename T, int Id=Hidden>
-    class List : public symbol<T, rule<Id, List<T>, T>> {};
-
-    template<typename T, typename Separator, int Id=Hidden>
-    class Sequence : public symbol<T, rule<Id, Sequence<T, Separator, Id>, Separator, T>> {};
-
-    template<int Id, typename T>
-    class Optional : public symbol<rule<Id>, rule<Id, T>> {};
-
-    template<int Id, typename T>
-    class OptionalList : public Optional<Id, List<T>> {};
-
-    template<int Id>
-    class Tok : public rule<Removed, token<Id>> {};
-}
 
 using Identifier = token<java::Identifier>;
 

@@ -1,8 +1,6 @@
 
 # Plan for the next week
 
-- Display names in symbols instead of `S`
-
 - Think about how to reduce the sizes of things.
   - When constructing a closure, think about reusing/computing the data as much as possible
   - avoid building lists through types.
