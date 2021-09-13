@@ -79,13 +79,14 @@ class OptionalModifiers : public OptionalList<java::ModifierList, Modifier> {};
 using PackageModifier = symbol<Annotation>;
 
 // https://docs.oracle.com/javase/specs/jls/se8/html/jls-7.html#jls-PackageDeclaration
-using PackageDeclaration = rule<java::Package, 
+class PackageDeclaration : public symbol<
+    rule<java::Package, 
     // OptionalModifiers,
     // Optional<java::PackageModifierList, List<PackageModifier>>,
-    Tok<java::Package>,
-    Sequence<Identifier, Tok<java::Dot>>,
-    Tok<java::Semicolon>
-    >;
+        Tok<java::Package>,
+        Sequence<Identifier, Tok<java::Dot>>,
+        Tok<java::Semicolon>
+    >> {};
 
 // 7.6 Top Level Type Declarations
 
@@ -231,12 +232,12 @@ class InterfaceDeclaration : public symbol<NormalInterfaceDeclaration /*, Annota
 
 class TypeDeclaration : public symbol<ClassDeclaration, InterfaceDeclaration, Tok<java::Semicolon>> {};
 
-using CompilationUnit = symbol<
+class CompilationUnit : public symbol<
     rule<java::CompilationUnit, 
         Optional<java::PackageDeclaration, PackageDeclaration>, 
         OptionalList<java::ImportDeclarationList, ImportDeclaration> //,
         // OptionalList<java::TypeDeclarationList, TypeDeclaration>
-        >>;
+        >> {};
 
 
 // Class body

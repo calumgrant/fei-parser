@@ -105,22 +105,30 @@ namespace cellar
         return os << Item1() << ", " << list<Item2,Items...>();
     }
 
+    template<int Token>
+    inline void outputNode(std::ostream &os)
+    {
+        switch(Token)
+        {
+            case EndOfStream: os << "$"; break;
+            case Hidden: os << "hidden"; break;
+            case Removed: os << "removed"; break;
+            default: os << Token; break;
+        }
+    }
 
     template<int Token, typename Rule, typename...Rules>
     std::ostream & operator<<(std::ostream & os, token<Token,Rule,Rules...>)
     {
-        return os << "token<" << Token << "," << list<Rule,Rules...>() << ">";
+        return os << "token<" << token<Token>() << "," << list<Rule,Rules...>() << ">";
     }
 
     template<int Token>
     std::ostream & operator<<(std::ostream & os, token<Token>)
     {
-        if(Token == EndOfStream)
-            return os << "$";
-        
-        return os << "token<" << Token << ">";
+        outputNode<Token>(os);
+        return os;
     }
-
 
     template<typename It>
     std::ostream & operator<<(std::ostream & os, const token_stream<It> & ts)
@@ -166,7 +174,7 @@ namespace cellar
     template<int Id, typename...Items>
     inline void writeSymbol(std::ostream & os, rule<Id, Items...>)
     {
-        os << "rule<" << Id << ">";
+        os << "rule<" << token<Id>() << ">";
     }
 
 
@@ -179,7 +187,7 @@ namespace cellar
     template<int Id>
     void writeSymbol(std::ostream & os, Tok<Id>)
     {
-        os << Id;
+        os << token<Id>();
     }
 
 
@@ -195,7 +203,7 @@ namespace cellar
     template<int Token, typename...Rules>
     void writeSymbol(std::ostream & os, token<Token, Rules...>)
     {
-        os << Token; // "token<" << Token << ">";
+        os << token<Token>();
     }
 
     template<typename...Rules>
@@ -232,14 +240,6 @@ namespace cellar
         }
     };
 
-    template<int Lookahead>
-    inline void outputLookahead(std::ostream &os)
-    {
-        if(Lookahead == EndOfStream)
-            os << "$";
-        else os << Lookahead;
-    }
-
     template<typename S, int Id, typename...Symbols, int Position, int Lookahead>
     std::ostream & operator<<(std::ostream & os, const rule_position<S, rule<Id, Symbols...>, Position, Lookahead> &)
     {
@@ -247,7 +247,7 @@ namespace cellar
         os << "<" << Id << "> ->"; // "rule<" << Id << "> ->";
         write_rule<Position, Symbols...>::write(os);
         os << ", ";
-        outputLookahead<Lookahead>(os);
+        outputNode<Lookahead>(os);
         
         return os;
     }
@@ -284,7 +284,7 @@ namespace cellar
     template<typename S, int Id, typename...Symbols, int Position, int Lookahead>
     std::ostream & operator<<(std::ostream & os, const rule_position<S, token<Id, Symbols...>, Position, Lookahead> &)
     {
-        os << "rule<" << Id << "> ->";
+        os << "rule<" << token<Id>() << "> ->";
         write_rule<Position, token<Id>>::write(os);
         return os << ", " << Lookahead;
     }
@@ -299,7 +299,7 @@ namespace cellar
     std::ostream & operator<<(std::ostream & os, reduce<Token, S, Rule>)
     {
         os <<  Rule() << " . , ";
-        outputLookahead<Token>(os);
+        outputNode<Token>(os);
         return os;
     }
 
