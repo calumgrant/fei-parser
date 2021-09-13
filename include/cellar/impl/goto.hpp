@@ -46,7 +46,7 @@ namespace cellar
             using T1 = rule_position<S, Rule, Position+1, Lookahead>;
             using T2 = typename goto_<typeset<Items...>, Symbol>::type;
             static const bool shiftsSymbol = shifts_symbol<Rule, Position, Symbol>::value;
-            using type = typename type_if<shiftsSymbol, typename typeset_insert<T1, T2>::type, T2>::type;
+            using type = typename type_if<shiftsSymbol, typename typeset_sorted_insert<T1, T2>::type, T2>::type;
         };
     }
     /*

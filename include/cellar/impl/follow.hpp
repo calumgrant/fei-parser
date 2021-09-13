@@ -2,6 +2,7 @@
 
 #include "rules.hpp"
 #include "first.hpp"
+#include "sorted_insert.hpp"
 
 namespace cellar
 {
@@ -14,6 +15,13 @@ namespace cellar
     */
     template<typename Item>
     struct follow;
+
+    template<int T1, int T2>
+    struct compare<token<T1>, token<T2>>
+    {
+        static const bool equal = T1 == T2;
+        static const bool less = T1 < T2;
+    };
 
     template<typename S, int Id, typename Symbol, int Lookahead>
     struct follow<rule_position<S, rule<Id, Symbol>, 0, Lookahead>>
@@ -35,7 +43,7 @@ namespace cellar
         using T = typename first<rule<Id, Symbols...>>::type;
         using type = typename type_if<
             potentially_empty_symbol<rule<Id, Symbols...>>::value, 
-            typename typeset_insert<token<Lookahead>, T>::type,
+            typename typeset_sorted_insert<token<Lookahead>, T>::type,
             T>::type;
     };
 

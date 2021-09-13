@@ -444,6 +444,7 @@ public:
 template<> struct cellar::ignore_shift_reduce_conflict<1002,1002> : public true_value {};
 template<> struct cellar::ignore_shift_reduce_conflict<1001,1002> : public true_value {};
 template<> struct cellar::ignore_reduce_reduce_conflict<1000,100> : public true_value {};
+template<> struct cellar::ignore_reduce_reduce_conflict<100,1000> : public true_value {};
 
 class Conflicts2 : public Test::Fixture<Conflicts2>
 {
@@ -803,7 +804,7 @@ public:
         std::cout << diags::states() << std::endl;
 
         EQUALS(11, diags2::states().size());
-        EQUALS(49, diags::states().size());
+        EQUALS(39, diags::states().size());
     }
 
 } diagnostics;

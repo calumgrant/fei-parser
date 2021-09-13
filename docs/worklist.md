@@ -1,7 +1,12 @@
 
 # Plan for the next week
 
-- Sort the state
+- Simplify the Jabva 
+- Sort the state in the most efficient way
+
+
+- Debug why we can't display a typeset for the Java parser. Is it too big??
+- Figure out how to merge the kernel sets in lookaheads in LALR.
 
 - Wrap a state up `state`, for example
 

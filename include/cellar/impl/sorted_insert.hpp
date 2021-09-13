@@ -36,9 +36,15 @@ namespace cellar
         using T2 = typeset<Item, Head, Tail...>;
         using T3 = typename typeset_ins<Head, typename typeset_sorted_insert<Item, typeset<Tail...>>::type>::type;
 
-        using type = typename type_if<Cmp::equal, 
+        using type = typename type_if<Cmp::equal,
             T1,
             typename type_if<Cmp::less, T2, T3>::type>::type; 
+    };
+
+    template<typename Item, typename...Tail>
+    struct typeset_sorted_insert<Item, typeset<Item, Tail...>>
+    {
+        using type = typeset<Item, Tail...>;
     };
 
     template<typename Typeset>

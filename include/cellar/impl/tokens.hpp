@@ -8,7 +8,7 @@ namespace cellar
         template<typename Symbol, typename Visited, bool Recursive = typeset_contains<Symbol, Visited>::value>
         struct tokens
         {
-            using V2 = typename typeset_insert<Symbol, Visited>::type;
+            using V2 = typename typeset_sorted_insert<Symbol, Visited>::type;
             using type = typename tokens<typename Symbol::rules, V2>::type;
         };
 

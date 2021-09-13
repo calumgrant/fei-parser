@@ -166,7 +166,7 @@ namespace cellar
         using T1 = rule_position<S, Rule, Position+1, Lookahead>;
         using T2 = typename shift_action2<typeset<Items...>, Token>::type;
         static const bool shiftsToken = shifts<Rule, Position, Token>::value;
-        using type = typename type_if<shiftsToken, typename typeset_insert<T1, T2>::type, T2>::type;
+        using type = typename type_if<shiftsToken, typename typeset_sorted_insert<T1, T2>::type, T2>::type;
     };
 
     /*

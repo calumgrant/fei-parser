@@ -171,7 +171,7 @@ namespace cellar
     template<typename Item, typename Closure>
     struct add_to_closure<Item, Closure, false>
     {
-        using type = typename typeset_insert<Item, Closure>::type;
+        using type = typename typeset_sorted_insert<Item, Closure>::type;
     };
 
     template<typename Symbol>
@@ -259,7 +259,7 @@ namespace cellar
     struct add_to_closure<Item, Closure, true>
     {
         // Insert Item into Closure
-        using C1 = typename typeset_insert<Item, Closure>::type;
+        using C1 = typename typeset_sorted_insert<Item, Closure>::type;
 
         using Follows = typename follow<Item>::type;
 
@@ -296,6 +296,7 @@ namespace cellar
     template<typename Kernel>
     struct closure
     {
-        using type = typename impl::build_closure<Kernel, typeset<>>::type;
+        using T0 = typename impl::build_closure<Kernel, typeset<>>::type;
+        using type = typename typeset_sort<T0>::type;
     };
 }

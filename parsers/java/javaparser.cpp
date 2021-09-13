@@ -1,6 +1,9 @@
 #define CELLAR_TRACE_PARSER 0
 #include <cellar/java.hpp>
 #include <cellar/make_parser.hpp>
+#include <cellar/output.hpp>
+#include <cellar/diagnostics.hpp>
+#include <iostream>
 
 using namespace cellar;
 
@@ -250,8 +253,8 @@ class TypeDeclaration : public symbol<ClassDeclaration, InterfaceDeclaration, To
 using CompilationUnit = symbol<
     rule<java::CompilationUnit, 
         Optional<java::PackageDeclaration, PackageDeclaration>, 
-        OptionalList<java::ImportDeclarationList, ImportDeclaration>,
-        OptionalList<java::TypeDeclarationList, TypeDeclaration>
+        OptionalList<java::ImportDeclarationList, ImportDeclaration> //,
+        // OptionalList<java::TypeDeclarationList, TypeDeclaration>
         >>;
 
 
@@ -319,4 +322,11 @@ template<> struct ignore_shift_reduce_conflict<-6, 140> : public true_value {};
 template<> struct ignore_shift_reduce_conflict<42, 121> : public true_value {};
 template<> struct ignore_shift_reduce_conflict<41, 121> : public true_value {};
 
-char_parser java::parser() { return make_parser<::CompilationUnit>(lexer()); }
+using Diagnostics = parser_diagnostics<CompilationUnit>;
+
+char_parser java::parser()
+{
+    std::cout << Diagnostics::number_of_states << std::endl << Diagnostics::states();
+
+    return make_parser<::CompilationUnit>(lexer());
+}
