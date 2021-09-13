@@ -309,6 +309,6 @@ char_parser java::parser()
 {
     using Diagnostics = parser_diagnostics<::CompilationUnit>;
     std::cout << Diagnostics::number_of_states << std::endl << Diagnostics::states();
-
+    std::cout << Diagnostics::debug();
     return make_parser<::CompilationUnit>(lexer());
 }

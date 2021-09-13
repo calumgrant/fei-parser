@@ -62,4 +62,20 @@ namespace cellar
         using type = typename typeset_sorted_insert<Item, typename typeset_sort<typeset<Items...>>::type>::type;
         static_assert(typeset_size<type>::value == typeset_size<typeset<Item, Items...>>::value, "Failure in typeset_sort");
     };
+
+    template<typename T1, typename T2>
+    struct typeset_sorted_union;
+
+    template<typename T2>
+    struct typeset_sorted_union<typeset<>, T2>
+    {
+        typedef T2 type;
+    };
+
+    template<typename Item, typename...Members, typename T2>
+    struct typeset_sorted_union<typeset<Item, Members...>, T2>
+    {
+        using S = typename typeset_sorted_union<typeset<Members...>, T2>::type;
+        using type = typename typeset_sorted_insert<Item, S>::type;
+    };
 }

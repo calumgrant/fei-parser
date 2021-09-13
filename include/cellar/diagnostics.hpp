@@ -86,6 +86,7 @@ namespace cellar
     {
         using S0 = typename initial_state<Grammar>::type;
         using states = typename gather_states<S0>::type;
+    using debug = typename gather_states<S0>::Gotos;
         static const int number_of_states = typeset_size<states>::value;
     };
 }

@@ -298,5 +298,9 @@ namespace cellar
     {
         using T0 = typename impl::build_closure<Kernel, typeset<>>::type;
         using type = typename typeset_sort<T0>::type;
+
+//        using T2 = typename closure<type>::type;
+
+//        static_assert(type_equals(type(), T2()), "Closure has failed to reach a fixed point");
     };
 }

@@ -117,7 +117,7 @@ namespace cellar
     {
         using T1 = typename build_goto_item<Item>::type;
         using T2 = typename build_goto_list2<typeset<Items...>>::type;
-        using type = typename typeset_union<T1, T2>::type;
+        using type = typename typeset_sorted_union<T1, T2>::type;
     };
 
     template<typename State>
