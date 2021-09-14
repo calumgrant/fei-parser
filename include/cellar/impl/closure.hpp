@@ -351,10 +351,12 @@ namespace cellar
     struct closure
     {
         using T0 = typename impl::build_closure<Kernel, typeset<>>::type;
+        // using type = T0;
         using type = typename typeset_sort<T0>::type;
 
         using T2 = typename closure<type>::type;
         using Cmp = impl::typeset_compare<type, T2>;
+        // These might still fail - perhaps drop these tests
         static_assert(type_equals(typename Cmp::left(), typename Cmp::right()), "Closure");
         static_assert(type() == T2(), "Closure error");
         static_assert(type_equals(type(), T2()), "Closure error");

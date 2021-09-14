@@ -68,7 +68,7 @@ namespace FirstTests
 
     using z = first<symbol<token<0>>>::type;
     using z = first<symbol<token<0>, token<0>>>::type;
-    using z2 = typeset<token<1>, token<0>>;
+    using z2 = typeset<token<0>, token<1>>;
     using z2 = first<symbol<token<0>, token<1>>>::type;
 
     class Empty1 : public rule<0> {};

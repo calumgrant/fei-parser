@@ -144,7 +144,7 @@ namespace cellar
     {
         using T0 = typename build_next_token_list<typeset<Items...>>::type;
         using T1 = typename get_next_token<Item>::type;
-        using type = typename typeset_union<T0, T1>::type;
+        using type = typename typeset_sorted_union<T0, T1>::type;
     };
 
     template<typename State, int Token, typename It, 

@@ -1,5 +1,6 @@
 #pragma once
 #include "utils.hpp"
+#include "sorted_insert.hpp"
 
 namespace cellar
 {
@@ -31,7 +32,7 @@ namespace cellar
     {
         using S1 = typename first<Rule, Visited>::type;
         using S2 = typename first<symbol<Rules...>, Visited>::type;
-        using type = typename typeset_union<S1,S2>::type;
+        using type = typename typeset_sorted_union<S1,S2>::type;
     };
 
     template<int Id, typename Visited>
@@ -51,7 +52,7 @@ namespace cellar
     {
         using S1 = typename first<Symbol, Visited>::type;
         using S2 = typename first<rule<Id, Symbols...>, Visited>::type;
-        using U = typename typeset_union<S1,S2>::type;
+        using U = typename typeset_sorted_union<S1,S2>::type;
         using type = typename type_if<potentially_empty_symbol<Symbol>::value, U, S1>::type;
     };
 }
