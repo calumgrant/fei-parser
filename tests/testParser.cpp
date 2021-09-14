@@ -804,7 +804,7 @@ public:
         std::cout << diags::states() << std::endl;
 
         EQUALS(11, diags2::states().size());
-        EQUALS(39, diags::states().size());
+        EQUALS(59, diags::states().size());
     }
 
 } diagnostics;
