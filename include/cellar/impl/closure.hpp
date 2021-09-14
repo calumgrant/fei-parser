@@ -16,11 +16,21 @@
 
 namespace cellar
 {
+    template<typename L, typename...Ls, typename R, typename...Rs>
+    struct compare<typeset<L, Ls...>, typeset<R, Rs...>>
+    {
+        using C1 = compare<L,R>;
+        using C2 = compare<typeset<Ls...>, typeset<Rs...>>;
+
+        static const bool equal = C1::equal && C2::equal;
+        static const bool less = C1::less || (C1::equal && C2::less);
+    };
+
     template<typename S1, int Id1, typename... R1, int P1, int L1, typename S2, int Id2, typename... R2, int P2, int L2>
     struct compare<rule_position<S1, rule<Id1, R1...>, P1, L1>, rule_position<S2, rule<Id2,R2...>, P2, L2>>
     {
         static const bool equal = false; // Would have been matched by previous case
-        static const bool less = Id1<Id2 || (Id1==Id2 && (P1<P2 || (P1==P2 && L1<L2)));
+        static const bool less = Id1<Id2 || (Id1==Id2 && (P1<P2 || (P1==P2 && (L1<L2 || (L1==L2 && compare<typeset<R1...>, typeset<R2...>>::less)))));
     };
 
     namespace impl
@@ -287,7 +297,51 @@ namespace cellar
         using C1 = typename build_closure<typeset<Items...>, Closure>::type;
         using type = typename add_to_closure<Item, C1>::type;
     };
+
+        // Helps to debug typesets
+        template<typename T1, typename T2>
+        struct typeset_compare;
+
+        template<>
+        struct typeset_compare<typeset<>, typeset<>>
+        {
+            using left = typeset<>;
+            using right = typeset<>;
+        };
+
+        template<typename L, typename...Ls>
+        struct typeset_compare<typeset<L, Ls...>, typeset<>>
+        {
+            using left = typeset<L, Ls...>;
+            using right = typeset<>;
+        };
+
+        template<typename R, typename...Rs>
+        struct typeset_compare<typeset<>, typeset<R, Rs...>>
+        {
+            using left = typeset<>;
+            using right = typeset<R, Rs...>;
+        };
+
+        template<typename I, typename... Ls, typename... Rs>
+        struct typeset_compare<typeset<I, Ls...>, typeset<I, Rs...>>
+        {
+            using C = typeset_compare<typeset<Ls...>, typeset<Rs...>>;
+            using left = typename C::left;
+            using right = typename C::right;
+        };
+
+        template<typename L, typename... Ls, typename R, typename... Rs>
+        struct typeset_compare<typeset<L, Ls...>, typeset<R, Rs...>>
+        {
+            using C = typeset_compare<typeset<Ls...>, typeset<Rs...>>;
+            using left = typename typeset_ins<L, typename C::left>::type;
+            using right = typename typeset_ins<R, typename C::right>::type;
+        };
+
     }
+
+
 
     /*
         Expands a "kernel" (a set of items), into its closure, where each item containing `. X` is expanded into all 
@@ -299,8 +353,11 @@ namespace cellar
         using T0 = typename impl::build_closure<Kernel, typeset<>>::type;
         using type = typename typeset_sort<T0>::type;
 
-//        using T2 = typename closure<type>::type;
-
-//        static_assert(type_equals(type(), T2()), "Closure has failed to reach a fixed point");
+        using T2 = typename closure<type>::type;
+        using Cmp = impl::typeset_compare<type, T2>;
+        static_assert(type_equals(typename Cmp::left(), typename Cmp::right()), "Closure");
+        static_assert(type() == T2(), "Closure error");
+        static_assert(type_equals(type(), T2()), "Closure error");
     };
+
 }

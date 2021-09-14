@@ -10,12 +10,14 @@ namespace cellar
         static const bool less = false;
     };
 
+/*
     template<typename T>
     struct compare<T, T>
     {
         static const bool equal = true;
         static const bool less = false;
     };
+    */
 
     template<typename Item, typename Set>
     struct typeset_sorted_insert;
