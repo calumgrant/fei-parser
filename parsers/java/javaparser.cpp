@@ -66,12 +66,12 @@ class Modifier : public symbol<
     // Annotation,
     token<java::Public>,
     token<java::Private>,
-    token<java::Protected>,
-    token<java::Abstract>,
-    token<java::Default>,
-    token<java::Static>,
-    token<java::Strictfp>,
-    token<java::Final>
+    token<java::Protected>
+    //token<java::Abstract>,
+    //token<java::Default>,
+    //token<java::Static>,
+    //token<java::Strictfp>,
+    //token<java::Final>
     > {};
 
 class OptionalModifiers : public OptionalList<java::ModifierList, Modifier> {};
@@ -204,8 +204,8 @@ using NormalClassDeclaration = rule<
 
     // Optional<java::TypeParameterList, TypeParameters>,
     Optional<java::Superclass, Superclass>,
-    Optional<java::Superinterfaces, Superinterfaces>,
-    ClassBody
+    Optional<java::Superinterfaces, Superinterfaces>
+    // ClassBody
     >;
 
 using ExtendsInterfaces = rule<java::ExtendsInterfaces,
@@ -221,7 +221,7 @@ using NormalInterfaceDeclaration = rule<
     Tok<java::Interface>,
     Identifier,
     // Optional<java::TypeParameterList, TypeParameters>,
-    Optional<java::Superinterfaces, ExtendsInterfaces>,
+    // Optional<java::Superinterfaces, ExtendsInterfaces>,
     InterfaceBody
     >;
 
@@ -230,13 +230,13 @@ class ClassDeclaration : public symbol<NormalClassDeclaration /*, EnumDeclaratio
 
 class InterfaceDeclaration : public symbol<NormalInterfaceDeclaration /*, AnnotationTypeDeclaration*/> {};
 
-class TypeDeclaration : public symbol<ClassDeclaration, InterfaceDeclaration, Tok<java::Semicolon>> {};
+class TypeDeclaration : public symbol<ClassDeclaration, /* InterfaceDeclaration, */ Tok<java::Semicolon>> {};
 
 class CompilationUnit : public symbol<
     rule<java::CompilationUnit, 
         Optional<java::PackageDeclaration, PackageDeclaration>, 
-        OptionalList<java::ImportDeclarationList, ImportDeclaration> //,
-        // OptionalList<java::TypeDeclarationList, TypeDeclaration>
+        OptionalList<java::ImportDeclarationList, ImportDeclaration>,
+        OptionalList<java::TypeDeclarationList, TypeDeclaration>
         >> {};
 
 
@@ -246,8 +246,8 @@ class CompilationUnit : public symbol<
 using ClassMemberDeclaration = symbol<
     /* FieldDeclaration,
     MethodDeclaration, */
-    ClassDeclaration,
-    InterfaceDeclaration
+    ClassDeclaration // ,
+    // InterfaceDeclaration
     >;
 
 using ClassBodyDeclaration = symbol<
@@ -274,7 +274,8 @@ using InterfaceBodyDeclaration = symbol<
 
 class ClassBody : public symbol<
     rule<java::ClassBody, Tok<java::OpenBrace>, 
-        OptionalList<java::ClassBody, ClassBodyDeclaration>, Tok<java::CloseBrace>> 
+        // OptionalList<java::ClassBody, ClassBodyDeclaration>, 
+        Tok<java::CloseBrace>> 
     >
     {};
 
@@ -309,7 +310,5 @@ char_parser java::parser()
 {
     using Diagnostics = parser_diagnostics<::CompilationUnit>;
     std::cout << Diagnostics::number_of_states << std::endl << Diagnostics::states();
-    //std::cout << Diagnostics::debug();
-    //std::cout << Diagnostics::debug2();
     return make_parser<::CompilationUnit>(lexer());
 }
