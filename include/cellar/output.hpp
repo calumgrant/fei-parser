@@ -190,6 +190,30 @@ namespace cellar
         os << token<Id>();
     }
 
+    template<typename Item, typename Sep>
+    void writeSymbol(std::ostream & os, Sequence<Item, Sep>)
+    {
+        os << "Sequence<";
+        writeSymbol(os, Item());
+        os << ",";
+        writeSymbol(os, Sep());
+        os << ">";
+    }
+
+    template<int Id, typename Item>
+    void writeSymbol(std::ostream & os, OptionalList<Id, Item>)
+    {
+        writeSymbol(os, Item());
+        os << "*";
+    }
+
+    template<int Id, typename Item>
+    void writeSymbol(std::ostream & os, List<Item, Id>)
+    {
+        writeSymbol(os, Item());
+        os << "+";
+    }
+
 
     template<typename T>
     void writeSymbol(std::ostream & os, T)
@@ -244,7 +268,9 @@ namespace cellar
     std::ostream & operator<<(std::ostream & os, const rule_position<S, rule<Id, Symbols...>, Position, Lookahead> &)
     {
         writeSymbol(os, S());
-        os << "<" << Id << "> ->"; // "rule<" << Id << "> ->";
+        os << "<";
+        outputNode<Id>(os);
+        os << "> ->"; // "rule<" << Id << "> ->";
         write_rule<Position, Symbols...>::write(os);
         os << ", ";
         outputNode<Lookahead>(os);

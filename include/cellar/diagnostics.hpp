@@ -63,8 +63,9 @@ namespace cellar
     template<typename Closure, typename Gathered, typename Goto, typename...Gotos>
     struct gather_goto_states<Closure, Gathered, typeset<Goto, Gotos...>>
     {
+        using G0 = typename gather_goto_states<Closure, Gathered, typeset<Gotos...>>::type;
         using NextState = typename goto_<Closure, Goto>::type;
-        using type = typename gather_states<NextState, Gathered>::type;
+        using type = typename gather_states<NextState, G0>::type;
     };
 
 
@@ -86,7 +87,8 @@ namespace cellar
     {
         using S0 = typename initial_state<Grammar>::type;
         using states = typename gather_states<S0>::type;
-    using debug = typename gather_states<S0>::Gotos;
+//    using debug = typename gather_states<S0>::Gotos;
+//    using debug2 = typename gather_goto_states<S0, typeset<>, debug>::NextState;
         static const int number_of_states = typeset_size<states>::value;
     };
 }
