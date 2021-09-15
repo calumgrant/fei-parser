@@ -26,4 +26,10 @@ namespace cellar
     struct expand_symbol_tag;
     struct build_next_token_list_tag;
     struct get_next_token_tag;
+    struct build_goto_list_tag;
+    struct gather_shift_states_tag;
+    struct resolve_conflicts_tag;
+    struct next_action_state_tag;
+    struct shift_action_tag;
+    struct goto_tag;
 }

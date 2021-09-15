@@ -12,6 +12,15 @@ Then we need to ensure that we call
 
 - Suspect that insertion is best handled by using typeset_contains<>
 
+- Think about an efficient "contains"
+
+```
+struct typeset_contains<A, typeset<A,B,C,D,E,F,G...>>
+{
+
+}
+```
+
 - YAML parser
 
 ```

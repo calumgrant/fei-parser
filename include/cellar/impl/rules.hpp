@@ -78,6 +78,8 @@ namespace cellar
     struct empty
     {
         using rules = empty;
+        using profile_tag = no_tag;
+        using profile_types = profile_types<>;
     };
 
     // Unused

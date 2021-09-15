@@ -145,6 +145,8 @@ namespace cellar
     struct resolve_action_set<Action, typeset<>>
     {
         using type = Action;
+        using profile_tag = resolve_conflicts_tag;
+        using profile_types = profile_types<>;
     };
 
     template<typename Action, typename A, typename...As>
@@ -152,6 +154,9 @@ namespace cellar
     {
         using T = typename resolve_action_set<Action, typeset<As...>>::type;
         using type = typename resolve_actions<T, A>::type;
+
+        using profile_tag = resolve_conflicts_tag;
+        using profile_types = profile_types<typeset<A, As...>, resolve_action_set<Action, typeset<As...>>>;
     };
 
     template<typename Action>
@@ -195,5 +200,11 @@ namespace cellar
 
         static const bool is_shift = cellar::is_shift2<type>::value;
         static const bool is_reduce = cellar::is_reduce2<type>::value;
+
+        using profile_tag = resolve_conflicts_tag;
+        using profile_types = profile_types<
+            resolve_action_set<syntax_error, typename PossibleActions::reduce_actions>,
+            resolve_action_set<A1, typename PossibleActions::shift_actions>
+            >;
     };
 }

@@ -14,6 +14,8 @@ namespace cellar
     struct gather_states<State, Gathered, true>
     {
         using type = Gathered;
+        using profile_tag = no_tag;
+        using profile_types = profile_types<State, Gathered, typeset_contains<State, Gathered>>;
     };
 
     template<typename Closure, typename Gathered, typename Tokens>
@@ -23,6 +25,9 @@ namespace cellar
     struct gather_shift_states<Closure, Gathered, typeset<>>
     {
         using type = Gathered;
+
+        using profile_tag = gather_shift_states_tag;
+        using profile_types = profile_types<Closure, Gathered, typeset<>>;
     };
 
     template<typename State, typename Gathered, typename Action>
@@ -33,12 +38,22 @@ namespace cellar
     {
         using NextState = typename shift_action<State, Token>::type;
         using type = typename gather_states<NextState, Gathered>::type;
+
+        using profile_tag = next_action_state_tag;
+        using profile_types = profile_types<
+            State, Gathered, NextState, 
+            shift_action<State, Token>,
+            gather_states<NextState, Gathered>
+            >;
     };
 
     template<typename State, typename Gathered, int Token, typename Rule, typename Symbol>
     struct next_action_state<State, Gathered, reduce<Token, Symbol, Rule>>
     {
         using type = Gathered;
+
+        using profile_tag = next_action_state_tag;
+        using profile_types = profile_types<State, Gathered, reduce<Token, Symbol, Rule>>;
     };
 
     template<typename Closure, typename Gathered, int Token, typename... Tokens>
@@ -49,6 +64,14 @@ namespace cellar
         using G0 = typename gather_shift_states<Closure, Gathered, typeset<Tokens...>>::type;
 
         using type = typename next_action_state<Closure, G0, Action>::type;
+
+        using profile_tag = gather_shift_states_tag;
+        using profile_types = profile_types<Closure, Gathered, typeset<token<Token>, Tokens...>,
+            resolve_conflicts<Closure, Token>,
+            gather_shift_states<Closure, Gathered, typeset<Tokens...>>,
+            next_action_state<Closure, G0, Action>
+            >;
+
     };
 
     template<typename Closure, typename Gathered, typename Gotos>
@@ -58,6 +81,8 @@ namespace cellar
     struct gather_goto_states<Closure, Gathered, typeset<>>
     {
         using type = Gathered;
+        using profile_tag = no_tag;
+        using profile_types = profile_types<Closure, Gathered>;
     };
 
     template<typename Closure, typename Gathered, typename Goto, typename...Gotos>
@@ -66,6 +91,15 @@ namespace cellar
         using G0 = typename gather_goto_states<Closure, Gathered, typeset<Gotos...>>::type;
         using NextState = typename goto_<Closure, Goto>::type;
         using type = typename gather_states<NextState, G0>::type;
+        using profile_tag = no_tag;
+        using profile_types = profile_types<
+            Closure,
+            Gathered,
+            typeset<Goto, Gotos...>,
+            gather_goto_states<Closure, Gathered, typeset<Gotos...>>,
+            goto_<Closure, Goto>,
+            gather_states<NextState, G0>
+            >;
     };
 
 
@@ -83,6 +117,7 @@ namespace cellar
 
         using profile_tag = no_tag;
         using profile_types = profile_types<
+            typeset_contains<State, Gathered>,
             typeset_insert<State, Gathered>,
             closure<State>, 
             build_next_token_list<Closure>,
