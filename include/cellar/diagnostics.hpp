@@ -127,6 +127,7 @@ namespace cellar
             >;
     };
 
+// Unused
     template<typename Tag>
     struct profile_tag {};
 
@@ -136,14 +137,76 @@ namespace cellar
         return os << static_count<Tag>();
     }
 
-    inline void output_profiler_stats(typeset<>) {}
+    inline void output_profiler_stats(typeset<>, const char **) {}
 
     template<typename T, typename... Ts>
-    void output_profiler_stats(typeset<T, Ts...>)
+    void output_profiler_stats(typeset<T, Ts...>, const char ** name)
     {
-        std::cout << static_count<T>() << std::endl;
-        output_profiler_stats(typeset<Ts...>());
+        std::cout << *name << " = " << static_count<T>() << std::endl;
+        output_profiler_stats(typeset<Ts...>(), name+1);
     }
+
+    using profile_tags = typeset<
+        add_to_closure_tag,
+        build_closure_tag,
+        closure_tag,
+        token_tag,
+        rule_tag,
+        rule_position_tag,
+        no_tag,
+        typeset_tag,
+        typeset_insert_tag,
+        typeset_union_tag,
+        typeset_contains_tag,
+        typeset_size_tag,
+        typeset_sort_tag,
+        typeset_sorted_insert_tag,
+        typeset_sorted_union_tag,
+        follow_tag,
+        first_tag,
+        potentially_empty_symbol_tag,
+        getnext_tag,
+        expand_symbol_tag,
+        build_next_token_list_tag,
+        get_next_token_tag,
+        build_goto_list_tag,
+        gather_shift_states_tag,
+        resolve_conflicts_tag,
+        next_action_state_tag,
+        shift_action_tag,
+        goto_tag
+    >;
+
+    static const char * TagNames[] = {
+        "add_to_closure_tag",
+        "build_closure_tag",
+        "closure_tag",
+        "token_tag",
+        "rule_tag",
+        "rule_position_tag",
+        "no_tag",
+        "typeset_tag",
+        "typeset_insert_tag",
+        "typeset_union_tag",
+        "typeset_contains_tag",
+        "typeset_size_tag",
+        "typeset_sort_tag",
+        "typeset_sorted_insert_tag",
+        "typeset_sorted_union_tag",
+        "follow_tag",
+        "first_tag",
+        "potentially_empty_symbol_tag",
+        "getnext_tag",
+        "expand_symbol_tag",
+        "build_next_token_list_tag",
+        "get_next_token_tag",
+        "build_goto_list_tag",
+        "gather_shift_states_tag",
+        "resolve_conflicts_tag",
+        "next_action_state_tag",
+        "shift_action_tag",
+        "goto_tag"
+    };
 
     template<typename Grammar>
     struct parser_diagnostics
@@ -157,41 +220,11 @@ namespace cellar
         using profile_tag = no_tag;
         using profile_types = profile_types<states, gather_states<S0>>;
 
-        using profile_tags = typeset<
-            add_to_closure_tag,
-            build_closure_tag,
-            closure_tag,
-            token_tag,
-            rule_tag,
-            rule_position_tag,
-            no_tag,
-            typeset_tag,
-            typeset_insert_tag,
-            typeset_union_tag,
-            typeset_contains_tag,
-            typeset_size_tag,
-            typeset_sort_tag,
-            typeset_sorted_insert_tag,
-            typeset_sorted_union_tag,
-            follow_tag,
-            first_tag,
-            potentially_empty_symbol_tag,
-            getnext_tag,
-            expand_symbol_tag,
-            build_next_token_list_tag,
-            get_next_token_tag,
-            build_goto_list_tag,
-            gather_shift_states_tag,
-            resolve_conflicts_tag,
-            next_action_state_tag,
-            shift_action_tag,
-            goto_tag
-        >;
 
         static void output_stats()
         {
             profile_template<parser_diagnostics>();
-            output_profiler_stats(profile_tags());
+            output_profiler_stats(profile_tags(), TagNames);
         }
     };
 }

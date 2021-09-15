@@ -26,19 +26,19 @@ public:
     
     using PrimaryExpr = symbol<
         IntToken,
-        IdToken,
-        rule<Brackets, OpenToken, Expr, CloseToken>
+        IdToken
+        //rule<Brackets, OpenToken, Expr, CloseToken>
         >;
     
     class MulExpr : public symbol<
         PrimaryExpr,
-        rule<MulNode, MulExpr, MulToken, PrimaryExpr>,
-        rule<DivNode, MulExpr, DivToken, PrimaryExpr>
+        rule<MulNode, MulExpr, MulToken, PrimaryExpr>
+        //rule<DivNode, MulExpr, DivToken, PrimaryExpr>
         > {};
 
     class Expr : public symbol<
         rule<Add, Expr, AddToken, MulExpr>,
-        rule<Minus, Expr, SubToken, MulExpr>,
+        //rule<Minus, Expr, SubToken, MulExpr>,
         MulExpr
         > {};
 
@@ -57,10 +57,9 @@ public:
 
         std::cout << diags::states() << std::endl;
 
-        EQUALS(11, diags2::states().size());
-        EQUALS(59, diags::states().size());
+//        EQUALS(11, diags2::states().size());
+//        EQUALS(59, diags::states().size());
 
-        profile_template<diags>();
         diags::output_stats();
         diags2::output_stats();
     }
