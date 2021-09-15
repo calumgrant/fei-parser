@@ -15,7 +15,7 @@ add_subdirectory(parsers/json)
 
 add_executable(lexertests tests/testLexer.cpp)
 
-add_executable(parsertests tests/testParser.cpp)
+add_executable(parsertests tests/testParser.cpp tests/testParser2.cpp)
 add_executable(typesetTests tests/testTypeset.cpp)
 
 add_executable(xmltests tests/testXML.cpp)
