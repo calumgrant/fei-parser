@@ -22,4 +22,8 @@ namespace cellar
     struct follow_tag;
     struct first_tag;
     struct potentially_empty_symbol_tag;
+    struct getnext_tag;
+    struct expand_symbol_tag;
+    struct build_next_token_list_tag;
+    struct get_next_token_tag;
 }

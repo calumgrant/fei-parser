@@ -99,6 +99,9 @@ namespace cellar
     {
         using type = Symbol;
         using type_or_lookahead = type;
+
+        using profile_tag = getnext_tag;
+        using profile_types = profile_types<rule_position<S, rule<Id, Symbol, Symbols...>, 0, Lookahead>, type>;
     };
 
     template<typename S, int Id, int Position, int Lookahead, typename Symbol, typename...Symbols>
@@ -106,12 +109,18 @@ namespace cellar
     {
         using type = typename getnext<rule_position<S, rule<Id, Symbols...>, Position-1, Lookahead>>::type;
         using type_or_lookahead = type;
+
+        using profile_tag = getnext_tag;
+        using profile_types = profile_types<rule_position<S, rule<Id, Symbol, Symbols...>, Position, Lookahead>, type>;
     };
 
     template<typename S, int Id, int Position, int Lookahead>
     struct getnext<rule_position<S, rule<Id>, Position, Lookahead>>
     {
         using type = empty;
+
+        using profile_tag = getnext_tag;
+        using profile_types = profile_types<rule_position<S, rule<Id>, Position, Lookahead>, type>;
     };
 
     template<typename S, int Id, int Lookahead>
@@ -119,18 +128,28 @@ namespace cellar
     {
         using type = empty;
         using type_or_lookahead = token<Lookahead>;
+
+        using profile_tag = getnext_tag;
+        using profile_types = profile_types<rule_position<S, rule<Id>, 0, Lookahead>, type>;
     };
 
     template<typename S, typename Follows, typename Closure>
     struct expand_symbol<S, symbol<>, Follows, Closure>
     {
         using type = Closure;
+
+        using profile_tag = expand_symbol_tag;
+        using profile_types = profile_types<S, symbol<>, Follows, Closure>;
     };
 
     template<typename S, typename Item, typename Follows, typename Closure>
     struct expand_symbol
     {
         using type = typename expand_symbol<S, typename Item::rules, Follows, Closure>::type;
+
+        using profile_tag = expand_symbol_tag;
+        using profile_types = profile_types<S, Item, Follows, Closure, 
+            expand_symbol<S, typename Item::rules, Follows, Closure>, type>;
     };
 
     
@@ -139,6 +158,13 @@ namespace cellar
     {
         using C1 = typename expand_symbol<S, Item, Follows, Closure>::type;
         using type = typename expand_symbol<S, symbol<Items...>, Follows, C1>::type;
+
+        using profile_tag = expand_symbol_tag;
+        using profile_types = profile_types<
+            S, symbol<Item, Items...>, Follows, Closure,
+            expand_symbol<S, Item, Follows, Closure>,
+            expand_symbol<S, symbol<Items...>, Follows, C1>
+         >;
     };
 
     template<typename S, int Id, typename...Rule, typename Follows, typename Closure>
@@ -146,6 +172,12 @@ namespace cellar
     {
         using T = rule<Id, token<Id, Rule...>>;
         using type = typename expand_symbol<S, T, Follows, Closure>::type;
+
+        using profile_tag = expand_symbol_tag;
+        using profile_types = profile_types<
+            S, token<Id, Rule...>, Follows, Closure,
+            expand_symbol<S, T, Follows, Closure>
+            >;
     };
 
     template<typename S, typename...Items1, typename...Items2, typename Follows, typename Closure>
@@ -153,22 +185,28 @@ namespace cellar
     {
         using T = typename expand_symbol<S, symbol<Items1...>, Follows, Closure>::type;
         using type = typename expand_symbol<S, symbol<Items2...>, Follows, T>::type;
+
+        using profile_tag = expand_symbol_tag;
+        using profile_types = profile_types<
+            S, symbol<symbol<Items1...>, Items2...>, Follows, Closure,
+            expand_symbol<S, symbol<Items1...>, Follows, Closure>,
+            expand_symbol<S, symbol<Items2...>, Follows, T>
+            >;
     };
 
-    /*
-    template<typename S, typename Rule, int Lookahead, typename...Follows, typename Closure>
-    struct expand_symbol<S, Rule, typeset<token<Lookahead>, Follows...>, Closure>
-    {
-        using Item = rule_position<S, Rule, 0, Lookahead>;
-        using type = typename add_to_closure<Item, Closure>::type;
-    };
-     */
     template<typename S, int Id, typename... Rule, typename... Follows, typename Closure, int Lookahead>
     struct expand_symbol<S, rule<Id, Rule...>, typeset<token<Lookahead>, Follows...>, Closure>
     {
         using Item = rule_position<S, rule<Id, Rule...>, 0, Lookahead>;
         using T = typename expand_symbol<S, rule<Id, Rule...>, typeset<Follows...>, Closure>::type;
         using type = typename add_to_closure<Item, T>::type;
+
+        using profile_tag = expand_symbol_tag;
+        using profile_types = profile_types<
+            S, rule<Id, Rule...>, typeset<token<Lookahead>, Follows...>, Closure,
+            expand_symbol<S, rule<Id, Rule...>, typeset<Follows...>, Closure>,
+            add_to_closure<Item, T>
+            >;
     };
 
     template<typename S, int Id, typename... Rule, typename Closure>
@@ -176,6 +214,10 @@ namespace cellar
     {
         // Empty follows set - base case
         using type = Closure;
+
+        using profile_tag = expand_symbol_tag;
+        using profile_types = profile_types<
+            S, rule<Id, Rule...>, typeset<>, Closure>;
     };
 
     template<typename Item, typename Closure>

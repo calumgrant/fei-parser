@@ -10,6 +10,8 @@ using profile_types = ...
 
 Then we need to ensure that we call
 
+- Suspect that insertion is best handled by using typeset_contains<>
+
 - YAML parser
 
 ```
