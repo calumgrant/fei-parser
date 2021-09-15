@@ -1,4 +1,5 @@
 #pragma once
+#include "tags.hpp"
 #include "accepts.hpp"
 #include "next.hpp"
 #include "linecounter.hpp"

@@ -1,9 +1,32 @@
 
 # Plan for the next week
 
+- Template profiler
+
+```
+using profile_tag = ...
+using profile_types = ...
+```
+
+Then we need to ensure that we call
+
+- YAML parser
+
+```
+void profile_types::collect_stats()
+- Iterates all members, calling profile_types::collect_stats() on all items.
+auto p = &...; This creates the function but does not call it.
+- How to avoid recursion???
+
+
+
+```
 - Think about how to reduce the sizes of things.
   - When constructing a closure, think about reusing/computing the data as much as possible
   - avoid building lists through types.
+
+- General strategy
+  - static template_counter<tag>
 
 - Think about how to represent the LALR kernel
 

@@ -805,6 +805,24 @@ public:
 
         EQUALS(11, diags2::states().size());
         EQUALS(59, diags::states().size());
+
+        profile_template<diags>();
+        diags::output_stats();
+        diags2::output_stats();
     }
 
 } diagnostics;
+
+class TemplateCounts : public Test::Fixture<TemplateCounts>
+{
+public:
+    TemplateCounts()
+    {
+        AddTest(&TemplateCounts::Report);
+    }
+
+    void Report()
+    {
+
+    }
+} tcounts;

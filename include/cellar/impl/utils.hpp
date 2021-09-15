@@ -15,5 +15,5 @@ namespace cellar
     struct type_if<false, T, F>
     {
         typedef F type;
-    };    
+    };
 }

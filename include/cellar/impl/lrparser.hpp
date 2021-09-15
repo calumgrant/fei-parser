@@ -268,7 +268,7 @@ namespace cellar
         process_token_list<State, Tokens, It>::process(state);
     }
 
-    struct WholeProgram {};
+    class WholeProgram : public symbol<> {};
 
     template<typename S>
     struct initial_state

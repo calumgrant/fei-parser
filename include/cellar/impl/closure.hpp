@@ -182,6 +182,13 @@ namespace cellar
     struct add_to_closure<Item, Closure, false>
     {
         using type = typename typeset_sorted_insert<Item, Closure>::type;
+
+        using profile_tag = add_to_closure_tag;
+        using profile_types = profile_types<
+            typeset_contains<Item, Closure>,
+            typeset_sorted_insert<Item, Closure>,
+            type
+            >;
     };
 
     template<typename Symbol>
@@ -281,14 +288,23 @@ namespace cellar
         //  C1>::type;
 
         using type = typename expand_symbol<NextSymbol, typename NextSymbol::rules, Follows, C1>::type;
+
+        using profile_tag = add_to_closure_tag;
+        using profile_types = profile_types<
+            typeset_contains<Item, Closure>,
+            typeset_sorted_insert<Item, Closure>, 
+            follow<Item>,
+            getnext<Item>,
+            expand_symbol<NextSymbol, typename NextSymbol::rules, Follows, C1>,
+            type>;
     };
-
-
 
     template<typename Closure>
     struct build_closure<typeset<>, Closure>
     {
         using type = Closure;
+        using profile_tag = build_closure_tag;
+        using profile_types = profile_types<typeset<>, Closure>;
     };
 
     template<typename Item, typename...Items, typename Closure>
@@ -296,6 +312,14 @@ namespace cellar
     {
         using C1 = typename build_closure<typeset<Items...>, Closure>::type;
         using type = typename add_to_closure<Item, C1>::type;
+
+        using profile_tag = build_closure_tag;
+        using profile_types = profile_types<
+            typeset<Item, Items...>,
+            build_closure<typeset<Items...>, Closure>,
+            Closure,
+            add_to_closure<Item, C1>,
+            type>;
     };
 
         // Helps to debug typesets
@@ -341,15 +365,13 @@ namespace cellar
 
     }
 
-
-
     /*
         Expands a "kernel" (a set of items), into its closure, where each item containing `. X` is expanded into all 
         rules. For this we need a "follows" set as well.
     */
     template<typename Kernel>
     struct closure
-    {
+    {        
         using T0 = typename impl::build_closure<Kernel, typeset<>>::type;
         // using type = T0;
         using type = typename typeset_sort<T0>::type;
@@ -360,6 +382,12 @@ namespace cellar
         static_assert(type_equals(typename Cmp::left(), typename Cmp::right()), "Closure");
         static_assert(type() == T2(), "Closure error");
         static_assert(type_equals(type(), T2()), "Closure error");
+
+        using profile_tag = closure_tag;
+        using profile_types = profile_types<
+            impl::build_closure<Kernel, typeset<>>, 
+            typeset_sort<T0>
+            >;
     };
 
 }

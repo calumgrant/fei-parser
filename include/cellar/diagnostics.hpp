@@ -80,6 +80,16 @@ namespace cellar
 
         using G1 = typename gather_shift_states<Closure, G0, Tokens>::type;
         using type = typename gather_goto_states<Closure, G1, Gotos>::type;
+
+        using profile_tag = no_tag;
+        using profile_types = profile_types<
+            typeset_insert<State, Gathered>,
+            closure<State>, 
+            build_next_token_list<Closure>,
+            build_goto_list<Closure>,
+            gather_shift_states<Closure, G0, Tokens>,
+            gather_goto_states<Closure, G1, Gotos>
+            >;
     };
 
     template<typename Grammar>
@@ -90,5 +100,16 @@ namespace cellar
 //    using debug = typename gather_states<S0>::Gotos;
 //    using debug2 = typename gather_goto_states<S0, typeset<>, debug>::NextState;
         static const int number_of_states = typeset_size<states>::value;
+
+        using profile_tag = no_tag;
+        using profile_types = profile_types<states, gather_states<S0>>;
+
+        static void output_stats()
+        {
+            profile_template<parser_diagnostics>();
+            std::cout << "typeset_tag: " << static_count<typeset_tag>() << std::endl;
+            std::cout << "closure_tag: " << static_count<closure_tag>() << std::endl;
+            // TODO: Other tags here.
+        }
     };
 }

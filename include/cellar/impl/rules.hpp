@@ -4,6 +4,10 @@
 
 #pragma once
 
+#include "utils.hpp"
+#include "template_profiler.hpp"
+#include "tags.hpp"
+
 namespace cellar
 {
     template<int Ch>
@@ -45,6 +49,8 @@ namespace cellar
     {
         static const int id = Id;
         using rules = token<Id, Rules...>;
+        using profile_tag = token_tag;
+        using profile_types = profile_types<>; // For now, don't profile lexer rules
     };
 
     template<int Id, typename... Rules>
@@ -53,11 +59,18 @@ namespace cellar
         static const int id = Id;
         using rules = rule<Id, Rules...>;
         static const int length = sizeof...(Rules);
+        using profile_tag = rule_tag;
+        using profile_types = profile_types<Rules...>;
     };
+
+    struct symbol_tag;
 
     template<typename... Rules>
     struct symbol
     {
+        using profile_tag = symbol_tag;
+        using profile_types = profile_types<Rules...>;
+
         // TODO: Validate the rules
         typedef symbol<Rules...> rules;
     };
@@ -84,5 +97,9 @@ namespace cellar
     struct notch {};
 
     template<typename Symbol, typename Rule, int Position, int Lookahead>
-    struct rule_position {};
+    struct rule_position
+    {
+        using profile_tag = rule_position_tag;
+        using profile_types = profile_types<Symbol, Rule>;
+    };
 }
