@@ -10,8 +10,18 @@
   - Convert all items to/from ints, then deal with int-sets.
     rule-id, symbol-id, position, lookahead
 
+- How to fully balance a binary tree in templates?
+  - split a tree into two equal parts?
+  - Aggregate the whole tree
+  - `push_back<tree>` - identify which node to rewrite.
+  - `build_tree<Tree, index1, index2>` - Creates a tree from the indexeses. Looks expensive as every step needs to be 
 
+- How to process a tree - visit all nodes?
 
+```
+template<typename Tree, typename Init, template<item, agg> typename Aggregate>
+class visit;
+```
 
 
 - Optimize `typeset_contains`
