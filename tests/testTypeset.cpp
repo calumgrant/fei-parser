@@ -76,11 +76,10 @@ struct tree_size<type_tree<H, L, R>>
     static const int value = 1 + tree_size<L>::value + tree_size<R>::value;
 };
 
-
-// 
 template<typename Init, int N1, int N2, template<typename Value, int Item> typename Body>
 struct loop
 {
+    static_assert(N1<N2, "Invalid bounds for loop");
     static const int Mid = (N1+N2)/2;
     using T0 = typename loop<Init, N1, Mid, Body>::type;
     using type = typename loop<T0, Mid, N2, Body>::type;
@@ -104,6 +103,7 @@ struct loop<Init, N, N+1, Body>
 template<typename Init, int N1, int N2, template<typename Value, int Item> typename Body>
 struct mixed_loop
 {
+    static_assert(N1<N2, "Invalid bounds for loop");
     static const int Mid = (N1+N2)/2;
     using T1 = typename mixed_loop<Init, Mid, Mid+1, Body>::type;
     using T0 = typename mixed_loop<T1, N1, Mid, Body>::type;
@@ -167,45 +167,6 @@ struct type_equals2<T,T>
     static const bool value = true;
 };
 
-template<typename T>
-struct rebalance
-{
-    typedef T type;
-};
-
-// Turn a tree into one tree of size N and one tree of size Size-N;
-template<typename T, int N>
-struct split_tree;
-
-// 0 nodes
-template<>
-struct split_tree<empty_tree, 0>
-{
-    using left = empty_tree;
-    using right = empty_tree;
-};
-
-template<typename T>
-struct split_tree<T, 0>
-{
-    using left = empty_tree;
-    using right = T;
-};
-
-template<typename T>
-struct split_tree<T, 1>
-{
-    using left = T;
-    using right = empty_tree;
-};
-
-template<typename H, typename L, typename R>
-struct rebalance<type_tree<H, L, R>>
-{
-    static const int nodes_to_move = tree_size<L>::value - tree_size<R>::value;
-    // Cut "N" nodes from the left
-    int size1 = tree_size<L>::value;
-};
 
 template<typename Tree, typename Init, template<typename Item, typename Aggregate> typename Visitor>
 struct visit
@@ -353,6 +314,13 @@ struct tree_insert
 };
 
 template<typename Item>
+struct tree_insert<Item, Item>
+{
+    using type = Item;
+};
+
+
+template<typename Item>
 struct tree_insert<Item, empty_tree>
 {
     using type = Item;
@@ -390,26 +358,144 @@ struct tree_insert_test
     using type = typename tree_insert<token<Item>, Tree>::type;
 };
 
+
+template<typename Item, typename T>
+struct tree_contains
+{
+    static const bool value = false;
+};
+
+template<typename Item>
+struct tree_contains<Item, empty_tree>
+{
+    static const bool value = false;
+};
+
+template<typename Item>
+struct tree_contains<Item, Item>
+{
+    static const bool value = true;
+};
+
+template<typename Item, typename L, typename R>
+struct tree_contains<Item, type_tree<Item, L, R>>
+{
+    static const bool value = true;
+};
+
+template<typename Item, typename H, typename L, typename R, bool Less = (hash<Item>::value < hash<H>::value)>
+struct tree_contains2
+{
+    // true case: Search left subtree
+    static const bool value = tree_contains<Item, L>::value;
+};
+
+template<typename Item, typename H, typename L, typename R>
+struct tree_contains2<Item, H, L, R, false>
+{
+    // false case: Search right subtree
+    static const bool value = tree_contains<Item, R>::value;
+};
+
+template<typename Item, typename H, typename L, typename R>
+struct tree_contains<Item, type_tree<H, L, R>>
+{
+    static const bool value = tree_contains2<Item, H, L, R>::value;
+};
+
+
+template<typename T1, typename T2>
+struct tree_union
+{
+    using type = typename tree_insert<T1, T2>::type;
+};
+
+template<typename T2>
+struct tree_union<empty_tree, T2>
+{
+    using type = T2;
+};
+
+template<typename H, typename L, typename R, typename T2>
+struct tree_union<type_tree<H, L, R>, T2>
+{
+    using T0 = typename tree_union<L, T2>::type;
+    using T1 = typename tree_union<R, T0>::type;
+    using type = typename tree_insert<H, T1>::type;  
+};
+
+
+template<typename Tree>
+struct typeset2
+{
+    using tree = Tree;
+
+    static const int size = tree_size<Tree>::value;
+
+    template<typename Item>
+    struct insert
+    {
+        using type = typeset2<typename tree_insert<Item, Tree>::type>;
+    };
+
+    template<typename Item>
+    struct contains
+    {
+        static const bool value = tree_contains<Item, Tree>::value;
+    };
+
+    template<typename T2>
+    struct set_union
+    {
+        using type = typename tree_union<Tree, typename T2::tree>::type;
+    };
+
+    using balanced = typeset2<typename make_balanced_tree<Tree>::type>;
+
+    template<typename Start, template<typename Value, typename Item> typename Visitor>
+    struct visit
+    {
+        using type = typename ::visit<Tree, Start, Visitor>::type;
+    };
+};
+
+using empty_typeset2 = typeset2<empty_tree>;
+
+
 template<int N>
 struct treetest
 {
     using T0 = typename mixed_loop<empty_tree, 0, N, tree_insert_test>::type;
     static_assert(tree_size<T0>::value == N, "Failed tree_insert");
 
-    using I5 = typename tree_element<T0, 5>::type;
-    static_assert(type_equals2<I5, token<5>>::value, "tree_element failed");
+    using I5 = typename tree_element<T0, 2>::type;
+    static_assert(type_equals2<I5, token<2>>::value, "tree_element failed");
 
-    using B = typename make_balanced_tree<T0>::type;
+    static_assert(tree_contains<token<2>, T0>::value, "tree contains 5");
+
+    using B0 = typename make_balanced_tree<T0>::type;
+
+    using T1 = typename mixed_loop<empty_tree, 0, N/2, tree_insert_test>::type;
+    using T2 = typename mixed_loop<empty_tree, N/2, N, tree_insert_test>::type;
+    using T3 = typename tree_union<T1,T1>::type;
+
+    static_assert(type_equals2<T1, T3>::value, "tree_union failed");
+
+    //using T4 = typename tree_union<T1,T2>::type;
+    //using B4 = typename make_balanced_tree<T4>::type;
+
+    //static_assert(type_equals2<B0, B4>::value, "tree_union failed");
+
 
     static void output()
     {
         ::output<T0>::write(std::cout);
         std::cout << "\n\nBalanced = ";
-        ::output<B>::write(std::cout);
+        ::output<B0>::write(std::cout);
     }
 };
 
-using test4 = treetest<2000>;
+using test4 = treetest<1050>;
 
 int main()
 {
