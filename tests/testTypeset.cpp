@@ -641,6 +641,13 @@ struct make_balanced_subtree<T, Index, Index>
     using type = empty_tree;
 };
 
+template<typename H, typename L, typename R, int Index>
+struct make_balanced_subtree<type_tree<H, L, R>, Index, Index>
+{
+    using type = empty_tree;
+};
+
+
 template<int From, int To>
 struct make_balanced_subtree<empty_tree, From, To>
 {
@@ -648,8 +655,8 @@ struct make_balanced_subtree<empty_tree, From, To>
 };
 
 template<typename H, typename L, typename R, int From, int To, 
-    bool InLeft = (To <= (tree_size<L>::value)), 
-    bool InRight = (From> (tree_size<L>::value))>
+    bool OnlyInLeft = (To < (tree_size<L>::value)), 
+    bool OnlyInRight = (From> (tree_size<L>::value))>
 struct make_balanced_subtree2;
 
 template<typename H, typename L, typename R, int From, int To>
@@ -664,6 +671,7 @@ struct make_balanced_subtree2<H, L, R, From, To, false, true>
     using type = typename make_balanced_subtree<R, From-tree_size<L>::value-1, To-tree_size<L>::value-1>::type;
 };
 
+
 // Extracts an element from a tree
 template<typename T, int Element>
 struct tree_element
@@ -673,7 +681,7 @@ struct tree_element
 };
 
 template<typename H, typename L, typename R, int Element, 
-    bool Inleft = (Element < tree_size<L>::value), bool Inright = (Element > tree_size<L>::value)>
+    bool OnlyInleft = (Element < tree_size<L>::value), bool OnlyInRight = (Element > tree_size<L>::value)>
 struct tree_element2;
 
 template<typename H, typename L, typename R, int Element>
@@ -705,12 +713,20 @@ struct tree_element<type_tree<H, L, R>, Element>
 template<typename H, typename L, typename R, int From, int To>
 struct make_balanced_subtree2<H, L, R, From, To, false, false>
 {
+    static_assert(From<To, "Invalid subtree");
     static const int mid = (To+From)/2;
-    using T1 = typename make_balanced_subtree<type_tree<H,L,R>, From, mid-1>::type;
+    using T1 = typename make_balanced_subtree<type_tree<H,L,R>, From, mid>::type;
     using T2 = typename make_balanced_subtree<type_tree<H, L, R>, mid+1, To>::type;
     using Item = typename tree_element<type_tree<H, L, R>, mid>::type;
     using type = type_tree<Item, T1, T2>;
 };
+
+template<typename H, typename L, typename R, int N>
+struct make_balanced_subtree2<H, L, R, N, N+1, false, false>
+{
+    using type = typename tree_element<type_tree<H, L, R>, N>::type;
+};
+
 
 template<typename H, typename L, typename R, int From, int To>
 struct make_balanced_subtree<type_tree<H, L, R>, From, To>
@@ -718,6 +734,11 @@ struct make_balanced_subtree<type_tree<H, L, R>, From, To>
     using type = typename make_balanced_subtree2<H, L, R, From, To>::type;
 };
 
+template<typename T>
+struct make_balanced_tree
+{
+    using type = typename make_balanced_subtree<T, 0, tree_size<T>::value>::type;
+};
 
 
 template<typename Item, typename H, typename L, typename R, bool Less = (hash<Item>::value < hash<H>::value)>
@@ -774,13 +795,20 @@ struct treetest
     using T0 = typename mixed_loop<empty_tree, 0, N, tree_insert_test>::type;
     static_assert(tree_size<T0>::value == N, "Failed tree_insert");
 
+    using I5 = typename tree_element<T0, 5>::type;
+    static_assert(type_equals2<I5, token<5>>::value, "tree_element failed");
+
+    using B = typename make_balanced_tree<T0>::type;
+
     static void output()
     {
         ::output<T0>::write(std::cout);
+        std::cout << "\n\nBalanced = ";
+        ::output<B>::write(std::cout);
     }
 };
 
-using test4 = treetest<10000>;
+using test4 = treetest<1000>;
 
 int main()
 {
