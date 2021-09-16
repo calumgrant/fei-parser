@@ -3,6 +3,16 @@
 
 - Experiments to try
   - use a binary tree instead (`typelist`)
+  - Is it more efficient to avoid the definition of a type
+  - How to avoid linear case - randomize how?
+  - How to make a tree into a canonical form?
+    - Hash the items...
+  - Convert all items to/from ints, then deal with int-sets.
+    rule-id, symbol-id, position, lookahead
+
+
+
+
 
 - Optimize `typeset_contains`
   - Current compilation = 3.92s
