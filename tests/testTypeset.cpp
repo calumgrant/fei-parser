@@ -23,24 +23,9 @@ struct S;
 using C1 = typeset<rule_position<S, R2, 0, 0>>;
 using C2 = typename closure<C1>::type;
 
-// Create a large set
 
-
-
-template<typename Item, typename Tl>
-struct typelist_contains;
-
-template<typename Item, typename Tl, bool Contains = typelist_contains<Item, Tl>::value>
-struct typelist_insert
+namespace cellar
 {
-    using type = Tl;
-};
-
-template<typename Tl>
-struct typelist_size;
-
-
-
 struct empty_tree;
 
 template<typename Item, typename left, typename right>
@@ -213,6 +198,12 @@ struct make_balanced_subtree<empty_tree, From, To>
     using type = empty_tree;
 };
 
+    template<>
+    struct make_balanced_subtree<empty_tree, 0, 0>
+    {
+        using type = empty_tree;
+    };
+
 template<typename H, typename L, typename R, int From, int To, 
     bool OnlyInLeft = (To < (tree_size<L>::value)), 
     bool OnlyInRight = (From> (tree_size<L>::value))>
@@ -352,13 +343,6 @@ struct tree_insert<Item, type_tree<H,L,R>>
     using type = typename tree_insert2<Item, H, L, R>::type;
 };
 
-template<typename Tree, int Item>
-struct tree_insert_test
-{
-    using type = typename tree_insert<token<Item>, Tree>::type;
-};
-
-
 template<typename Item, typename T>
 struct tree_contains
 {
@@ -447,7 +431,7 @@ struct typeset2
     template<typename T2>
     struct set_union
     {
-        using type = typename tree_union<Tree, typename T2::tree>::type;
+            using type = typeset2<typename tree_union<Tree, typename T2::tree>::type>;
     };
 
     using balanced = typeset2<typename make_balanced_tree<Tree>::type>;
@@ -457,10 +441,22 @@ struct typeset2
     {
         using type = typename ::visit<Tree, Start, Visitor>::type;
     };
+
+        template<int Element>
+        struct element
+        {
+            using type = typename tree_element<Tree, Element>::type;
+        };
+    };
+
+    using empty_typeset2 = typeset2<empty_tree>;
+}
+
+template<typename Tree, int Item>
+struct tree_insert_test
+{
+    using type = typename tree_insert<token<Item>, Tree>::type;
 };
-
-using empty_typeset2 = typeset2<empty_tree>;
-
 
 template<int N>
 struct treetest
@@ -495,7 +491,7 @@ struct treetest
     }
 };
 
-using test4 = treetest<1050>;
+using test4 = treetest<2500>;
 
 int main()
 {
