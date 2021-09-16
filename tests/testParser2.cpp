@@ -26,7 +26,7 @@ public:
     
     using PrimaryExpr = symbol<
         IntToken,
-        IdToken
+        IdToken 
         //rule<Brackets, OpenToken, Expr, CloseToken>
         >;
     
@@ -55,13 +55,12 @@ public:
     {
         auto parser = make_parser<Expr>();
 
-        std::cout << diags::states() << std::endl;
+        std::cout << diags::states() << std::endl; 
 
-//        EQUALS(11, diags2::states().size());
-//        EQUALS(59, diags::states().size());
+//        EQUALS(11, diags2::states().size());  
+//        EQUALS(59, diags::states().size()); 
 
         diags::output_stats();
-        diags2::output_stats();
     }
 
 } diagnostics;

@@ -1,7 +1,20 @@
 
 # Plan for the next week
 
+- Experiments to try
+  - use a binary tree instead (`typelist`)
+
+- Optimize `typeset_contains`
+  - Current compilation = 3.92s
+  - typesetcontains = 928 instances
+  - typeset_insert = 378
+  - typeset_sorted_insert = 321
+
+
+
 - Template profiler
+
+
 
 ```
 using profile_tag = ...

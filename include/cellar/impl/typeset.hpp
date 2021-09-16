@@ -123,21 +123,53 @@ namespace cellar
         using profile_types = profile_types<typeset<>>;
     };
 
-    template<typename Item, typename... Members>
-    struct typeset_contains<Item, typeset<Item, Members...>>
+    template<typename Item>
+    struct typeset_contains<Item, typeset<Item>>
     {
         static const bool value = true;
         using profile_tag = typeset_contains_tag;
-        using profile_types = profile_types<typeset<Item, Members...>>;
+        using profile_types = profile_types<Item, typeset<Item>>;
     };
 
-    template<typename Item1, typename Item2, typename... Members>
-    struct typeset_contains<Item1, typeset<Item2, Members...>>
+    template<typename Item, typename I0>
+    struct typeset_contains<Item, typeset<I0>>
     {
-        static const bool value = typeset_contains<Item1, typeset<Members...>>::value;
+        static const bool value = false;
         using profile_tag = typeset_contains_tag;
-        using profile_types = profile_types<typeset_contains<Item1, typeset<Members...>>>;
+        using profile_types = profile_types<Item, typeset<I0>>;
     };
+
+    template<typename Item, typename I0, typename I1, typename... Items>
+    struct typeset_contains<Item, typeset<I0, I1, Items...>>
+    {
+        static const bool value = typeset_contains<Item, typeset<Items...>>::value;
+        using profile_tag = typeset_contains_tag;
+        using profile_types = profile_types<Item, typeset<I0, I1, Items...>, typeset_contains<Item, typeset<Items...>>>;
+    };
+
+    template<typename Item, typename I1, typename... Items>
+    struct typeset_contains<Item, typeset<Item, I1, Items...>>
+    {
+        static const bool value = true;
+        using profile_tag = typeset_contains_tag;
+        using profile_types = profile_types<Item, typeset<Item, I1, Items...>>;
+    };
+
+    template<typename Item, typename I0, typename... Items>
+    struct typeset_contains<Item, typeset<I0, Item, Items...>>
+    {
+        static const bool value = true;
+        using profile_tag = typeset_contains_tag;
+        using profile_types = profile_types<Item, typeset<I0, Item, Items...>>;
+    };
+
+/*
+    template<typename Item, typename I0, typename I1, typename I2, typename...Items>
+    struct typeset_contains<Item, typeset<I0, I1, I2>>
+    {
+
+    };
+*/
 
     template<
         typename Ts, 
