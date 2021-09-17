@@ -1,5 +1,7 @@
 #pragma once
 
+#include "hash.hpp"
+
 namespace cellar
 {
     template<typename...Members>
@@ -298,16 +300,8 @@ namespace cellar
     template<typename Item, typename Left, typename Right>
     struct type_tree {};
 
-    /*
-    */
     template<typename H>
     struct hash;
-
-    template<int Id>
-    struct hash<token<Id>>
-    {
-        static const int value = Id;
-    };
 
 
     // Computes the number of nodes in a tree
@@ -379,13 +373,13 @@ namespace cellar
     struct forall
     {
         // Default tree of one item
-        using tree = typename Visitor<Tree, Init>::type;
+        using type = typename Visitor<Tree, Init>::type;
     };
 
     template<typename Init, template<typename Item, typename Aggregate> typename Visitor>
     struct forall<empty_tree, Init, Visitor>
     {
-        using tree = Init;
+        using type = Init;
     };
 
     template<typename H, typename L, typename R, typename Init, template<typename Item, typename Aggregate> typename Visitor>

@@ -5,35 +5,35 @@ namespace cellar
 {
     namespace impl
     {
-        template<typename Symbol, typename Visited, bool Recursive = typeset_contains<Symbol, Visited>::value>
+        template<typename Symbol, typename Visited, bool Recursive = tree_contains<Symbol, Visited>::value>
         struct tokens
         {
-            using V2 = typename typeset_sorted_insert<Symbol, Visited>::type;
+            using V2 = typename tree_insert<Symbol, Visited>::type;
             using type = typename tokens<typename Symbol::rules, V2>::type;
         };
 
         template<typename Symbol, typename Visited>
         struct tokens<Symbol, Visited, true>
         {
-            using type = typeset<>;
+            using type = empty_tree;
         };
 
         template<typename Visited>
         struct tokens<symbol<>, Visited, false>
         {
-            using type = typeset<>;
+            using type = empty_tree;
         };
 
         template<int Id, typename...Def, typename Visited>
         struct tokens<token<Id, Def...>, Visited, false>
         {
-            using type = typeset<token<Id, Def...>>;
+            using type = token<Id, Def...>;
         };
 
         template<int Id, typename Visited>
         struct tokens<rule<Id>, Visited, false>
         {
-            using type = typeset<>;
+            using type = empty_tree;
         };
     
         template<typename...Ss, typename Visited>
@@ -47,7 +47,7 @@ namespace cellar
         {
             using T1 = typename tokens<S, Visited>::type;
             using T2 = typename tokens<rule<Id, Ss...>, Visited>::type;
-            using type = typename typeset_sorted_union<T1, T2>::type;
+            using type = typename tree_union<T1, T2>::type;
         };
 
         template<typename S, typename...Ss, typename Visited>
@@ -55,16 +55,25 @@ namespace cellar
         {
             using T1 = typename tokens<S, Visited>::type;
             using T2 = typename tokens<symbol<Ss...>, Visited>::type;
-            using type = typename typeset_sorted_union<T1,T2>::type;
+            using type = typename tree_union<T1,T2>::type;
         };
 
-        template<typename Tokens>
-        struct make_lexer;
-
-        template<typename...Tokens>
-        struct make_lexer<typeset<Tokens...>>
+        template<typename List, typename Item>
+        struct build_token_list
         {
-            using type = alt<Tokens...>;
+            using type = alt<Item, List>;
+        };
+
+        template<typename Item>
+        struct build_token_list<alt<>, Item>
+        {
+            using type = Item;
+        };
+
+        template<typename TokenSet>
+        struct make_lexer
+        {
+            using type = typename forall<TokenSet, alt<>, build_token_list>::type;
         };
     }
 
@@ -76,7 +85,7 @@ namespace cellar
     template<typename Symbol>
     struct make_lexer_from_grammar
     {
-        using T1 = typename impl::tokens<Symbol, typeset<>>::type;
+        using T1 = typename impl::tokens<Symbol, empty_tree>::type;
         using T2 = typename impl::make_lexer<T1>::type;
         using type = typename normalize<T2>::type;
     };
