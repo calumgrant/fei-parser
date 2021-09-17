@@ -146,7 +146,7 @@ namespace cellar
     {
         using type = Action;
         using profile_tag = resolve_conflicts_tag;
-        using profile_types = profile_types<>;
+        using profile_types = profile<>;
     };
 
     template<typename Action, typename A, typename...As>
@@ -156,7 +156,7 @@ namespace cellar
         using type = typename resolve_actions<T, A>::type;
 
         using profile_tag = resolve_conflicts_tag;
-        using profile_types = profile_types<typeset<A, As...>, resolve_action_set<Action, typeset<As...>>>;
+        using profile_types = profile<typeset<A, As...>, resolve_action_set<Action, typeset<As...>>>;
     };
 
     template<typename Action>
@@ -202,7 +202,7 @@ namespace cellar
         static const bool is_reduce = cellar::is_reduce2<type>::value;
 
         using profile_tag = resolve_conflicts_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             resolve_action_set<syntax_error, typename PossibleActions::reduce_actions>,
             resolve_action_set<A1, typename PossibleActions::shift_actions>
             >;

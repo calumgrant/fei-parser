@@ -15,7 +15,7 @@ namespace cellar
     {
         using type = Gathered;
         using profile_tag = no_tag;
-        using profile_types = profile_types<State, Gathered, typeset_contains<State, Gathered>>;
+        using profile_types = profile<State, Gathered, typeset_contains<State, Gathered>>;
     };
 
     template<typename Closure, typename Gathered, typename Tokens>
@@ -27,7 +27,7 @@ namespace cellar
         using type = Gathered;
 
         using profile_tag = gather_shift_states_tag;
-        using profile_types = profile_types<Closure, Gathered, typeset<>>;
+        using profile_types = profile<Closure, Gathered, typeset<>>;
     };
 
     template<typename State, typename Gathered, typename Action>
@@ -40,7 +40,7 @@ namespace cellar
         using type = typename gather_states<NextState, Gathered>::type;
 
         using profile_tag = next_action_state_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             State, Gathered, NextState, 
             shift_action<State, Token>,
             gather_states<NextState, Gathered>
@@ -53,7 +53,7 @@ namespace cellar
         using type = Gathered;
 
         using profile_tag = next_action_state_tag;
-        using profile_types = profile_types<State, Gathered, reduce<Token, Symbol, Rule>>;
+        using profile_types = profile<State, Gathered, reduce<Token, Symbol, Rule>>;
     };
 
     template<typename Closure, typename Gathered, int Token, typename... Tokens>
@@ -66,7 +66,7 @@ namespace cellar
         using type = typename next_action_state<Closure, G0, Action>::type;
 
         using profile_tag = gather_shift_states_tag;
-        using profile_types = profile_types<Closure, Gathered, typeset<token<Token>, Tokens...>,
+        using profile_types = profile<Closure, Gathered, typeset<token<Token>, Tokens...>,
             resolve_conflicts<Closure, Token>,
             gather_shift_states<Closure, Gathered, typeset<Tokens...>>,
             next_action_state<Closure, G0, Action>
@@ -82,7 +82,7 @@ namespace cellar
     {
         using type = Gathered;
         using profile_tag = no_tag;
-        using profile_types = profile_types<Closure, Gathered>;
+        using profile_types = profile<Closure, Gathered>;
     };
 
     template<typename Closure, typename Gathered, typename Goto, typename...Gotos>
@@ -92,7 +92,7 @@ namespace cellar
         using NextState = typename goto_<Closure, Goto>::type;
         using type = typename gather_states<NextState, G0>::type;
         using profile_tag = no_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             Closure,
             Gathered,
             typeset<Goto, Gotos...>,
@@ -116,7 +116,7 @@ namespace cellar
         using type = typename gather_goto_states<Closure, G1, Gotos>::type;
 
         using profile_tag = no_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             typeset_contains<State, Gathered>,
             typeset_insert<State, Gathered>,
             closure<State>, 
@@ -218,7 +218,7 @@ namespace cellar
         static const int number_of_states = typeset_size<states>::value;
 
         using profile_tag = no_tag;
-        using profile_types = profile_types<states, gather_states<S0>>;
+        using profile_types = profile<states, gather_states<S0>>;
 
 
         static void output_stats()

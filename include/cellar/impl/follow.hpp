@@ -29,7 +29,7 @@ namespace cellar
         using type = typeset<token<Lookahead>>;
 
         using profile_tag = follow_tag;
-        using profile_types = profile_types<rule_position<S, rule<Id, Symbol>, 0, Lookahead>, type>;
+        using profile_types = profile<rule_position<S, rule<Id, Symbol>, 0, Lookahead>, type>;
     };
 
     template<typename S, int Id, typename S1, typename... Symbols, int Position, int Lookahead>
@@ -38,7 +38,7 @@ namespace cellar
         using type = typename follow<rule_position<S, rule<Id, Symbols...>, Position-1, Lookahead>>::type;
 
         using profile_tag = follow_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             rule_position<S, rule<Id, S1, Symbols...>, Position, Lookahead>,
             follow<rule_position<S, rule<Id, Symbols...>, Position-1, Lookahead>>, type>;
     };
@@ -55,7 +55,7 @@ namespace cellar
             T>::type;
 
         using profile_tag = follow_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             rule_position<S, rule<Id, S1, Symbols...>, 0, Lookahead>,
             follow<rule_position<S, rule<Id, Symbols...>, 0, Lookahead>>,
             first<rule<Id, Symbols...>>, 
@@ -69,6 +69,6 @@ namespace cellar
     {
         using type = typeset<>;
         using profile_tag = follow_tag;
-        using profile_types = profile_types<rule_position<S, rule<Id>, Position, Lookahead>, type>;
+        using profile_types = profile<rule_position<S, rule<Id>, Position, Lookahead>, type>;
     };
 }

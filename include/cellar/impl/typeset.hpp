@@ -31,7 +31,7 @@ namespace cellar
         }
 
         using profile_tag = typeset_tag;
-        using profile_types = profile_types<Members...>;
+        using profile_types = profile<Members...>;
     };
 
     template<typename Set, typename Item>
@@ -42,7 +42,7 @@ namespace cellar
     {
         typedef typeset<Item> type;
         using profile_tag = typeset_insert_tag;
-        using profile_types = profile_types<type>;
+        using profile_types = profile<type>;
     };
 
     template<typename Item, typename...Members>
@@ -51,7 +51,7 @@ namespace cellar
         typedef typeset<Item, Members...> type;
 
         using profile_tag = typeset_insert_tag;
-        using profile_types = profile_types<type>;
+        using profile_types = profile<type>;
     };
 
     template<typename Item, typename TypeSet> struct typeset_ins {};
@@ -61,7 +61,7 @@ namespace cellar
     {
         typedef typeset<Item, Members...> type;
         using profile_tag = typeset_insert_tag;
-        using profile_types = profile_types<type>;
+        using profile_types = profile<type>;
     };
 
     template<typename Item, typename Item2, typename...Members>
@@ -71,7 +71,7 @@ namespace cellar
         typedef typename typeset_ins<Item2, S>::type type;
 
         using profile_tag = typeset_insert_tag;
-        using profile_types = profile_types<typeset_insert<Item, typeset<Members...>>, typeset_ins<Item2, S>, type>;
+        using profile_types = profile<typeset_insert<Item, typeset<Members...>>, typeset_ins<Item2, S>, type>;
     };
 
     template<typename T1, typename T2>
@@ -90,7 +90,7 @@ namespace cellar
         using type = typename typeset_insert<Item, S>::type;
 
         using profile_tag = typeset_union_tag;
-        using profile_types = profile_types<type, typeset_union<typeset<Members...>, T2>, typeset_insert<Item, S>>;
+        using profile_types = profile<type, typeset_union<typeset<Members...>, T2>, typeset_insert<Item, S>>;
     };
 
     template<typename Ts>
@@ -101,7 +101,7 @@ namespace cellar
     {
         static const int value = 0;
         using profile_tag = typeset_size_tag;
-        using profile_types = profile_types<typeset<>>;
+        using profile_types = profile<typeset<>>;
     };
 
     template<typename Item, typename... Members>
@@ -109,7 +109,7 @@ namespace cellar
     {
         static const int value = 1 + typeset_size<typeset<Members...>>::value;
         using profile_tag = typeset_size_tag;
-        using profile_types = profile_types<typeset_size<typeset<Members...>>>;
+        using profile_types = profile<typeset_size<typeset<Members...>>>;
     };
 
     template<typename Item, typename Ts>
@@ -120,7 +120,7 @@ namespace cellar
     {
         static const bool value = false;
         using profile_tag = typeset_contains_tag;
-        using profile_types = profile_types<typeset<>>;
+        using profile_types = profile<typeset<>>;
     };
 
     template<typename Item>
@@ -128,7 +128,7 @@ namespace cellar
     {
         static const bool value = true;
         using profile_tag = typeset_contains_tag;
-        using profile_types = profile_types<Item, typeset<Item>>;
+        using profile_types = profile<Item, typeset<Item>>;
     };
 
     template<typename Item, typename I0>
@@ -136,7 +136,7 @@ namespace cellar
     {
         static const bool value = false;
         using profile_tag = typeset_contains_tag;
-        using profile_types = profile_types<Item, typeset<I0>>;
+        using profile_types = profile<Item, typeset<I0>>;
     };
 
     template<typename Item, typename I0, typename I1, typename... Items>
@@ -144,7 +144,7 @@ namespace cellar
     {
         static const bool value = typeset_contains<Item, typeset<Items...>>::value;
         using profile_tag = typeset_contains_tag;
-        using profile_types = profile_types<Item, typeset<I0, I1, Items...>, typeset_contains<Item, typeset<Items...>>>;
+        using profile_types = profile<Item, typeset<I0, I1, Items...>, typeset_contains<Item, typeset<Items...>>>;
     };
 
     template<typename Item, typename I1, typename... Items>
@@ -152,7 +152,7 @@ namespace cellar
     {
         static const bool value = true;
         using profile_tag = typeset_contains_tag;
-        using profile_types = profile_types<Item, typeset<Item, I1, Items...>>;
+        using profile_types = profile<Item, typeset<Item, I1, Items...>>;
     };
 
     template<typename Item, typename I0, typename... Items>
@@ -160,7 +160,7 @@ namespace cellar
     {
         static const bool value = true;
         using profile_tag = typeset_contains_tag;
-        using profile_types = profile_types<Item, typeset<I0, Item, Items...>>;
+        using profile_types = profile<Item, typeset<I0, Item, Items...>>;
     };
 
 /*
@@ -208,7 +208,7 @@ namespace cellar
     {
         static const bool value = true;
         using profile_tag = typeset_subset_tag;
-        using profile_types = profile_types<typeset<>, Ts2>;
+        using profile_types = profile<typeset<>, Ts2>;
     };
 
     template<typename Item, typename...Items, typename Ts2>
@@ -218,7 +218,7 @@ namespace cellar
             typeset_subset<typeset<Items...>, Ts2>::value;
 
         using profile_tag = typeset_subset_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             typeset<Item, Items...>,
             Ts2,
             typeset_contains<Item, Ts2>,
@@ -230,7 +230,7 @@ namespace cellar
     {
         static const bool value = typeset_subset<Ts1, Ts2>::value && typeset_subset<Ts2, Ts1>::value;
         using profile_tag = no_tag;
-        using profile_types = profile_types<Ts1, Ts2, typeset_subset<Ts1, Ts2>, typeset_subset<Ts2, Ts1>>;
+        using profile_types = profile<Ts1, Ts2, typeset_subset<Ts1, Ts2>, typeset_subset<Ts2, Ts1>>;
     };
 
     constexpr typeset<> empty_ts() { return typeset<>(); }

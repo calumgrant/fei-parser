@@ -18,7 +18,7 @@ namespace cellar
     {
         using rule = Rule;
         using profile_tag = no_tag;
-        using profile_types = profile_types<>;
+        using profile_types = profile<>;
     };
 
     template<int Lookahead, typename Symbol, typename Rule>
@@ -27,7 +27,7 @@ namespace cellar
         using symbol = Symbol;
         using rule = Rule;
         using profile_tag = no_tag;
-        using profile_types = profile_types<>;
+        using profile_types = profile<>;
     };
 
     struct accept {};
@@ -134,7 +134,7 @@ namespace cellar
     {
         static const bool value = false;
         using profile_tag = no_tag;
-        using profile_types = profile_types<>;
+        using profile_types = profile<>;
     };
 
     template<int Id, int Token, typename...Def, typename...Symbols>
@@ -142,7 +142,7 @@ namespace cellar
     {
         static const bool value = true;
         using profile_tag = no_tag;
-        using profile_types = profile_types<>;
+        using profile_types = profile<>;
     };
 
     template<int Id, int Token>
@@ -150,7 +150,7 @@ namespace cellar
     {
         static const bool value = false;
         using profile_tag = no_tag;
-        using profile_types = profile_types<>;
+        using profile_types = profile<>;
     };
 
 
@@ -159,7 +159,7 @@ namespace cellar
     {
         static const bool value = shifts<rule<Id, Symbols...>, Position-1, Token>::value;
         using profile_tag = no_tag;
-        using profile_types = profile_types<shifts<rule<Id, Symbols...>, Position-1, Token>>;
+        using profile_types = profile<shifts<rule<Id, Symbols...>, Position-1, Token>>;
     };
 
 
@@ -172,7 +172,7 @@ namespace cellar
         using type = typeset<>;
 
         using profile_tag = shift_action_tag;
-        using profile_types = profile_types<>;
+        using profile_types = profile<>;
     };
 
     template<typename S, typename Rule, int Position, int Lookahead, typename...Items, int Token>
@@ -184,7 +184,7 @@ namespace cellar
         using type = typename type_if<shiftsToken, typename typeset_sorted_insert<T1, T2>::type, T2>::type;
 
         using profile_tag = shift_action_tag;
-        using profile_types = profile_types<T1, shift_action2<typeset<Items...>, Token>, shifts<Rule, Position, Token>, typeset_sorted_insert<T1, T2>>;
+        using profile_types = profile<T1, shift_action2<typeset<Items...>, Token>, shifts<Rule, Position, Token>, typeset_sorted_insert<T1, T2>>;
     };
 
     /*
@@ -198,7 +198,7 @@ namespace cellar
         using type = typename typeset_sort<T0>::type;
 
         using profile_tag = shift_action_tag;
-        using profile_types = profile_types<State, Closure, closure<State>, shift_action2<Closure, Token>, typeset_sort<T0>>;
+        using profile_types = profile<State, Closure, closure<State>, shift_action2<Closure, Token>, typeset_sort<T0>>;
     };
 
     template<typename State, int Token, typename Action = typename shift_action<State, Token>::type>

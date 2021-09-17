@@ -50,7 +50,7 @@ namespace cellar
         static const int id = Id;
         using rules = token<Id, Rules...>;
         using profile_tag = token_tag;
-        using profile_types = profile_types<>; // For now, don't profile lexer rules
+        using profile_types = profile<>; // For now, don't profile lexer rules
     };
 
     template<int Id, typename... Rules>
@@ -60,7 +60,7 @@ namespace cellar
         using rules = rule<Id, Rules...>;
         static const int length = sizeof...(Rules);
         using profile_tag = rule_tag;
-        using profile_types = profile_types<Rules...>;
+        using profile_types = profile<Rules...>;
     };
 
     struct symbol_tag;
@@ -69,7 +69,7 @@ namespace cellar
     struct symbol
     {
         using profile_tag = symbol_tag;
-        using profile_types = profile_types<Rules...>;
+        using profile_types = profile<Rules...>;
 
         // TODO: Validate the rules
         typedef symbol<Rules...> rules;
@@ -79,7 +79,7 @@ namespace cellar
     {
         using rules = empty;
         using profile_tag = no_tag;
-        using profile_types = profile_types<>;
+        using profile_types = profile<>;
     };
 
     // Unused
@@ -102,6 +102,6 @@ namespace cellar
     struct rule_position
     {
         using profile_tag = rule_position_tag;
-        using profile_types = profile_types<Symbol, Rule>;
+        using profile_types = profile<Symbol, Rule>;
     };
 }

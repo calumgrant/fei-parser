@@ -29,10 +29,10 @@ namespace cellar
     };
 
     template<typename...Items>
-    struct profile_types;
+    struct profile;
 
     template<>
-    struct profile_types<>
+    struct profile<>
     {
         static void collect_stats()
         {
@@ -52,12 +52,12 @@ namespace cellar
     }
 
     template<typename Item, typename...Items>
-    struct profile_types<Item, Items...>
+    struct profile<Item, Items...>
     {
         static void collect_stats()
         {
             profile_template<Item>();
-            profile_types<Items...>::collect_stats();
+            profile<Items...>::collect_stats();
         }
     };    
 }

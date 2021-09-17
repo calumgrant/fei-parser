@@ -29,7 +29,7 @@ namespace cellar
     {
         using type = typeset<Item>;
         using profile_tag = typeset_sorted_insert_tag;
-        using profile_types = profile_types<Item, typeset<>>;
+        using profile_types = profile<Item, typeset<>>;
     };
 
 
@@ -47,7 +47,7 @@ namespace cellar
             typename type_if<Cmp::less, T2, T3>::type>::type; 
 
         using profile_tag = typeset_sorted_insert_tag;
-        using profile_types = profile_types<Item, typeset<Head, Tail...>, T1, T2, T3>;
+        using profile_types = profile<Item, typeset<Head, Tail...>, T1, T2, T3>;
     };
 
     template<typename Item, typename...Tail>
@@ -56,7 +56,7 @@ namespace cellar
         using type = typeset<Item, Tail...>;
 
         using profile_tag = typeset_sorted_insert_tag;
-        using profile_types = profile_types<Item, typeset<Item, Tail...>>;
+        using profile_types = profile<Item, typeset<Item, Tail...>>;
     };
 
     template<typename Typeset>
@@ -67,7 +67,7 @@ namespace cellar
     {
         using type = typeset<>;
         using profile_tag = typeset_sort_tag;
-        using profile_types = profile_types<typeset<>>;
+        using profile_types = profile<typeset<>>;
     };
 
     template<typename Item, typename...Items>
@@ -77,7 +77,7 @@ namespace cellar
         static_assert(typeset_size<type>::value == typeset_size<typeset<Item, Items...>>::value, "Failure in typeset_sort");
 
         using profile_tag = typeset_sort_tag;
-        using profile_types = profile_types<typeset_sort<typeset<Items...>>, typeset_sorted_insert<Item, typename typeset_sort<typeset<Items...>>::type>, type>;
+        using profile_types = profile<typeset_sort<typeset<Items...>>, typeset_sorted_insert<Item, typename typeset_sort<typeset<Items...>>::type>, type>;
     };
 
     template<typename T1, typename T2>
@@ -88,7 +88,7 @@ namespace cellar
     {
         typedef T2 type;
         using profile_tag = typeset_sorted_union_tag;
-        using profile_types = profile_types<typeset<>, T2>;
+        using profile_types = profile<typeset<>, T2>;
     };
 
     template<typename Item, typename...Members, typename T2>
@@ -98,7 +98,7 @@ namespace cellar
         using type = typename typeset_sorted_insert<Item, S>::type;
 
         using profile_tag = typeset_sorted_union_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             typeset<Item, Members...>,
             T2,
             typeset_sorted_union<typeset<Members...>, T2>,

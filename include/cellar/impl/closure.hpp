@@ -101,7 +101,7 @@ namespace cellar
         using type_or_lookahead = type;
 
         using profile_tag = getnext_tag;
-        using profile_types = profile_types<rule_position<S, rule<Id, Symbol, Symbols...>, 0, Lookahead>, type>;
+        using profile_types = profile<rule_position<S, rule<Id, Symbol, Symbols...>, 0, Lookahead>, type>;
     };
 
     template<typename S, int Id, int Position, int Lookahead, typename Symbol, typename...Symbols>
@@ -111,7 +111,7 @@ namespace cellar
         using type_or_lookahead = type;
 
         using profile_tag = getnext_tag;
-        using profile_types = profile_types<rule_position<S, rule<Id, Symbol, Symbols...>, Position, Lookahead>, type>;
+        using profile_types = profile<rule_position<S, rule<Id, Symbol, Symbols...>, Position, Lookahead>, type>;
     };
 
     template<typename S, int Id, int Position, int Lookahead>
@@ -120,7 +120,7 @@ namespace cellar
         using type = empty;
 
         using profile_tag = getnext_tag;
-        using profile_types = profile_types<rule_position<S, rule<Id>, Position, Lookahead>, type>;
+        using profile_types = profile<rule_position<S, rule<Id>, Position, Lookahead>, type>;
     };
 
     template<typename S, int Id, int Lookahead>
@@ -130,7 +130,7 @@ namespace cellar
         using type_or_lookahead = token<Lookahead>;
 
         using profile_tag = getnext_tag;
-        using profile_types = profile_types<rule_position<S, rule<Id>, 0, Lookahead>, type>;
+        using profile_types = profile<rule_position<S, rule<Id>, 0, Lookahead>, type>;
     };
 
     template<typename S, typename Follows, typename Closure>
@@ -139,7 +139,7 @@ namespace cellar
         using type = Closure;
 
         using profile_tag = expand_symbol_tag;
-        using profile_types = profile_types<S, symbol<>, Follows, Closure>;
+        using profile_types = profile<S, symbol<>, Follows, Closure>;
     };
 
     template<typename S, typename Item, typename Follows, typename Closure>
@@ -148,7 +148,7 @@ namespace cellar
         using type = typename expand_symbol<S, typename Item::rules, Follows, Closure>::type;
 
         using profile_tag = expand_symbol_tag;
-        using profile_types = profile_types<S, Item, Follows, Closure, 
+        using profile_types = profile<S, Item, Follows, Closure, 
             expand_symbol<S, typename Item::rules, Follows, Closure>, type>;
     };
 
@@ -160,7 +160,7 @@ namespace cellar
         using type = typename expand_symbol<S, symbol<Items...>, Follows, C1>::type;
 
         using profile_tag = expand_symbol_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             S, symbol<Item, Items...>, Follows, Closure,
             expand_symbol<S, Item, Follows, Closure>,
             expand_symbol<S, symbol<Items...>, Follows, C1>
@@ -174,7 +174,7 @@ namespace cellar
         using type = typename expand_symbol<S, T, Follows, Closure>::type;
 
         using profile_tag = expand_symbol_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             S, token<Id, Rule...>, Follows, Closure,
             expand_symbol<S, T, Follows, Closure>
             >;
@@ -187,7 +187,7 @@ namespace cellar
         using type = typename expand_symbol<S, symbol<Items2...>, Follows, T>::type;
 
         using profile_tag = expand_symbol_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             S, symbol<symbol<Items1...>, Items2...>, Follows, Closure,
             expand_symbol<S, symbol<Items1...>, Follows, Closure>,
             expand_symbol<S, symbol<Items2...>, Follows, T>
@@ -202,7 +202,7 @@ namespace cellar
         using type = typename add_to_closure<Item, T>::type;
 
         using profile_tag = expand_symbol_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             S, rule<Id, Rule...>, typeset<token<Lookahead>, Follows...>, Closure,
             expand_symbol<S, rule<Id, Rule...>, typeset<Follows...>, Closure>,
             add_to_closure<Item, T>
@@ -216,7 +216,7 @@ namespace cellar
         using type = Closure;
 
         using profile_tag = expand_symbol_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             S, rule<Id, Rule...>, typeset<>, Closure>;
     };
 
@@ -226,7 +226,7 @@ namespace cellar
         using type = typename typeset_sorted_insert<Item, Closure>::type;
 
         using profile_tag = add_to_closure_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             typeset_contains<Item, Closure>,
             typeset_sorted_insert<Item, Closure>,
             type
@@ -332,7 +332,7 @@ namespace cellar
         using type = typename expand_symbol<NextSymbol, typename NextSymbol::rules, Follows, C1>::type;
 
         using profile_tag = add_to_closure_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             typeset_contains<Item, Closure>,
             typeset_sorted_insert<Item, Closure>, 
             follow<Item>,
@@ -346,7 +346,7 @@ namespace cellar
     {
         using type = Closure;
         using profile_tag = build_closure_tag;
-        using profile_types = profile_types<typeset<>, Closure>;
+        using profile_types = profile<typeset<>, Closure>;
     };
 
     template<typename Item, typename...Items, typename Closure>
@@ -356,7 +356,7 @@ namespace cellar
         using type = typename add_to_closure<Item, C1>::type;
 
         using profile_tag = build_closure_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             typeset<Item, Items...>,
             build_closure<typeset<Items...>, Closure>,
             Closure,
@@ -426,7 +426,7 @@ namespace cellar
         static_assert(type_equals(type(), T2()), "Closure error");
 
         using profile_tag = closure_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             impl::build_closure<Kernel, typeset<>>, 
             typeset_sort<T0>
             >;

@@ -50,7 +50,7 @@ namespace cellar
         using type = typeset<token<Lookahead>>;
 
         using profile_tag = get_next_token_tag;
-        using profile_types = profile_types<rule_position<S, rule<Id>, 0, Lookahead>, type>;
+        using profile_types = profile<rule_position<S, rule<Id>, 0, Lookahead>, type>;
     };
 
     template<typename S, int Id, int Token, typename...Def, typename...Items, int Lookahead>
@@ -59,7 +59,7 @@ namespace cellar
         using type = typeset<token<Token>>;
 
         using profile_tag = get_next_token_tag;
-        using profile_types = profile_types<rule_position<S, rule<Id, token<Token, Def...>, Items...>, 0, Lookahead>, type>;
+        using profile_types = profile<rule_position<S, rule<Id, token<Token, Def...>, Items...>, 0, Lookahead>, type>;
     };
 
     template<typename S, int Id, typename Item, typename...Items, int Lookahead>
@@ -68,7 +68,7 @@ namespace cellar
         using type = typeset<>;
 
         using profile_tag = get_next_token_tag;
-        using profile_types = profile_types<rule_position<S, rule<Id, Item, Items...>, 0, Lookahead>, type>;
+        using profile_types = profile<rule_position<S, rule<Id, Item, Items...>, 0, Lookahead>, type>;
     };
 
     template<typename S, int Id, typename Item, typename...Items, int Position, int Lookahead>
@@ -77,7 +77,7 @@ namespace cellar
         using type = typename get_next_token<rule_position<S, rule<Id, Items...>, Position-1, Lookahead>>::type;
 
         using profile_tag = get_next_token_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             rule_position<S, rule<Id, Item, Items...>, Position, Lookahead>, 
             get_next_token<rule_position<S, rule<Id, Items...>, Position-1, Lookahead>>,
             type>;
@@ -154,7 +154,7 @@ namespace cellar
         using type = typeset<>;
 
         using profile_tag = build_next_token_list_tag;
-        using profile_types = profile_types<type>;
+        using profile_types = profile<type>;
     };
 
     template<typename Item, typename... Items>
@@ -165,7 +165,7 @@ namespace cellar
         using type = typename typeset_sorted_union<T0, T1>::type;
 
         using profile_tag = build_next_token_list_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             typeset<Item, Items...>,
             type,
             build_next_token_list<typeset<Items...>>,

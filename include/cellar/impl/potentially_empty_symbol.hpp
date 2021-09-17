@@ -11,7 +11,7 @@ namespace cellar
     {
         static const bool value = potentially_empty_symbol<typename Symbol::rules, typename typeset_insert<Symbol, Visited>::type>::value;
         using profile_tag = potentially_empty_symbol_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             Symbol,
             Visited,
             typeset_contains<Symbol, Visited>, typeset_insert<Symbol, Visited>, 
@@ -25,7 +25,7 @@ namespace cellar
         // Recursive case
         static const bool value = false;
         using profile_tag = potentially_empty_symbol_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             Symbol,
             Visited,
             typeset_contains<Symbol, Visited>
@@ -38,7 +38,7 @@ namespace cellar
         static const bool value = false;
 
         using profile_tag = potentially_empty_symbol_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             symbol<>,
             Visited,
             typeset_contains<symbol<>, Visited>
@@ -51,7 +51,7 @@ namespace cellar
         static const bool value = potentially_empty_symbol<Rule, Visited>::value || potentially_empty_symbol<symbol<Rules...>, Visited>::value;
 
         using profile_tag = potentially_empty_symbol_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             symbol<Rule, Rules...>,
             Visited,
             typeset_contains<symbol<Rule, Rules...>, Visited>,
@@ -67,7 +67,7 @@ namespace cellar
         static const bool value = false;
 
         using profile_tag = potentially_empty_symbol_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             token<Id, Definition...>,
             Visited,
             typeset_contains<token<Id, Definition...>, Visited>
@@ -81,7 +81,7 @@ namespace cellar
         static const bool value = true;
 
         using profile_tag = potentially_empty_symbol_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             rule<Id>,
             Visited,
             typeset_contains<rule<Id>, Visited>
@@ -95,7 +95,7 @@ namespace cellar
             potentially_empty_symbol<rule<Id, Rules...>, Visited>::value;
 
         using profile_tag = potentially_empty_symbol_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             rule<Id>,
             Visited,
             typeset_contains<rule<Id, Rule, Rules...>, Visited>,

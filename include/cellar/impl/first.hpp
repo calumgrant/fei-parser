@@ -15,7 +15,7 @@ namespace cellar
         using type = typename first<typename Symbol::rules, typename typeset_insert<Symbol, Visited>::type>::type;
 
         using profile_tag = first_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             typeset_insert<Symbol, Visited>, 
             first<typename Symbol::rules, typename typeset_insert<Symbol, Visited>::type>
             >;
@@ -27,7 +27,7 @@ namespace cellar
         using type = typeset<>;
 
         using profile_tag = first_tag;
-        using profile_types = profile_types<typeset_contains<Symbol, Visited>>;
+        using profile_types = profile<typeset_contains<Symbol, Visited>>;
     };
 
     template<typename Visited>
@@ -36,7 +36,7 @@ namespace cellar
         using type = typeset<>;
 
         using profile_tag = first_tag;
-        using profile_types = profile_types<symbol<>, typeset_contains<symbol<>, Visited>>;
+        using profile_types = profile<symbol<>, typeset_contains<symbol<>, Visited>>;
     };
 
     template<typename Rule, typename... Rules, typename Visited>
@@ -47,7 +47,7 @@ namespace cellar
         using type = typename typeset_sorted_union<S1,S2>::type;
 
         using profile_tag = first_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             typeset_contains<symbol<Rule, Rules...>, Visited>,
             first<Rule, Visited>,
             first<symbol<Rules...>, Visited>,
@@ -62,7 +62,7 @@ namespace cellar
         using type = typeset<>;    
         
         using profile_tag = first_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             typeset_contains<rule<Id>, Visited>,
             type
             >;
@@ -74,7 +74,7 @@ namespace cellar
         using type = typeset<token<Id>>;
 
         using profile_tag = first_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             typeset_contains<token<Id, Def...>, Visited>,
             type
             >;
@@ -89,7 +89,7 @@ namespace cellar
         using type = typename type_if<potentially_empty_symbol<Symbol>::value, U, S1>::type;
 
         using profile_tag = first_tag;
-        using profile_types = profile_types<
+        using profile_types = profile<
             typeset_contains<rule<Id, Symbol, Symbols...>, Visited>,
             type,
             first<Symbol, Visited>,
