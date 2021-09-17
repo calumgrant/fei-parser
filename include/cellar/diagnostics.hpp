@@ -210,23 +210,41 @@ namespace cellar
         "tree_tag"
     };
 
+    inline void output_profiler()
+    {
+        output_profiler_stats(profile_tags(), TagNames);
+    }
+
+    inline void reset_stats(typeset<>)
+    {
+    }
+
+    template<typename Tag, typename...Tags>
+    void reset_stats(typeset<Tag, Tags...>)
+    {
+        static_count<Tag>() = 0;
+        reset_stats(typeset<Tags...>());
+    }
+
+    inline void reset_profiler_stats()
+    {
+        reset_stats(profile_tags());
+    }
+
     template<typename Grammar>
     struct parser_diagnostics
     {
         using S0 = typename initial_state<Grammar>::type;
         using states = typename gather_states<S0>::type;
-//    using debug = typename gather_states<S0>::Gotos;
-//    using debug2 = typename gather_goto_states<S0, typeset<>, debug>::NextState;
         static const int number_of_states = tree_size<states>::value;
 
         using profile_tag = no_tag;
         using profile_types = profile<states, gather_states<S0>>;
 
-
         static void output_stats()
         {
             profile_template<parser_diagnostics>();
-            output_profiler_stats(profile_tags(), TagNames);
+            output_profiler();
         }
     };
 }

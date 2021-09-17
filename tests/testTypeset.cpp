@@ -66,6 +66,8 @@ template<typename Tree, int Item>
 struct tree_insert_test
 {
     using type = typename tree_insert<token<Item>, Tree>::type;
+    using profile_tag = no_tag;
+    using profile_types = profile<tree_insert<token<Item>, Tree>>;
 };
 
 template<int N>
@@ -93,7 +95,7 @@ struct treetest
     //static_assert(type_equals2<B0, B4>::value, "tree_union failed");
 
     using profile_tag = no_tag;
-    using profile_types = profile<T0, B0, T1, T2, T3>;
+    using profile_types = profile<T0, B0, T1, T2, T3, mixed_loop<empty_tree, 0, N, tree_insert_test>>;
 
     static void output()
     {
@@ -101,14 +103,16 @@ struct treetest
         std::cout << "\n\nBalanced = ";
         ::output<B0>::write(std::cout);
 
-        profile_template<treetest>();
+        // Beware - slow!
+        //profile_template<treetest>();
+
         std::cout << "\n\nNumber of tree operations = " << static_count<tree_tag>() << std::endl;
 
         auto x = B0();
     }
 };
 
-using test4 = treetest<1050>;
+using test4 = treetest<400>;
 
 int main()
 {

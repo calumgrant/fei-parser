@@ -363,18 +363,24 @@ namespace cellar
         using T1 = typename mixed_loop<Init, Mid, Mid+1, Body>::type;
         using T0 = typename mixed_loop<T1, N1, Mid, Body>::type;
         using type = typename mixed_loop<T0, Mid+1, N2, Body>::type;
+        using profile_tag = no_tag;
+        using profile_types = profile<mixed_loop<Init, Mid, Mid+1, Body>, mixed_loop<T1, N1, Mid, Body>, mixed_loop<T0, Mid+1, N2, Body>>;
     };
 
     template<typename Init, int N, template<typename Value, int Item> typename Body>
     struct mixed_loop<Init, N, N, Body>
     {
         using type = Init;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
     };
 
     template<typename Init, int N, template<typename Value, int Item> typename Body>
     struct mixed_loop<Init, N, N+1, Body>
     {
         using type = typename Body<Init, N>::type;
+        using profile_tag = no_tag;
+        using profile_types = profile<Body<Init, N>>;
     };
 
     template<typename Tree, typename Init, template<typename Item, typename Aggregate> typename Visitor>
