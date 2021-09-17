@@ -1,70 +1,15 @@
 
 # Plan for the next week
 
-- Experiments to try
-  - use a binary tree instead (`typelist`)
-  - Is it more efficient to avoid the definition of a type
-  - How to avoid linear case - randomize how?
-  - How to make a tree into a canonical form?
-    - Hash the items...
-  - Convert all items to/from ints, then deal with int-sets.
-    rule-id, symbol-id, position, lookahead
-
-- How to fully balance a binary tree in templates?
-  - split a tree into two equal parts?
-  - Aggregate the whole tree
-  - `push_back<tree>` - identify which node to rewrite.
-  - `build_tree<Tree, index1, index2>` - Creates a tree from the indexeses. Looks expensive as every step needs to be 
-
-- How to process a tree - visit all nodes?
-
-```
-template<typename Tree, typename Init, template<item, agg> typename Aggregate>
-class visit;
-```
-
-
-- Optimize `typeset_contains`
-  - Current compilation = 3.92s
-  - typesetcontains = 928 instances
-  - typeset_insert = 378
-  - typeset_sorted_insert = 321
-
-
+- Fix build errors on Linux
+- Integrate new type_tree library
 
 - Template profiler
 
-
-
-```
-using profile_tag = ...
-using profile_types = ...
-```
-
-Then we need to ensure that we call
-
 - Suspect that insertion is best handled by using typeset_contains<>
-
-- Think about an efficient "contains"
-
-```
-struct typeset_contains<A, typeset<A,B,C,D,E,F,G...>>
-{
-
-}
-```
 
 - YAML parser
 
-```
-void profile_types::collect_stats()
-- Iterates all members, calling profile_types::collect_stats() on all items.
-auto p = &...; This creates the function but does not call it.
-- How to avoid recursion???
-
-
-
-```
 - Think about how to reduce the sizes of things.
   - When constructing a closure, think about reusing/computing the data as much as possible
   - avoid building lists through types.
