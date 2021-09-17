@@ -257,12 +257,6 @@ namespace cellar
     {
         return typeset_union<typeset<Ts1...>, typeset<Ts2...>>::type();
     }
-
-    template<typename T1, typename T2>
-    constexpr bool type_equals(T1, T2) { return false; }
-
-    template<typename T>
-    constexpr bool type_equals(T a, T b) { return true; }
 }
 
 
@@ -379,18 +373,6 @@ namespace cellar
     struct mixed_loop<Init, N, N+1, Body>
     {
         using type = typename Body<Init, N>::type;
-    };
-
-    template<typename T1, typename T2>
-    struct type_equals2
-    {
-        static const bool value = false;
-    };
-
-    template<typename T>
-    struct type_equals2<T,T>
-    {
-        static const bool value = true;
     };
 
     template<typename Tree, typename Init, template<typename Item, typename Aggregate> typename Visitor>

@@ -75,7 +75,7 @@ struct treetest
     static_assert(tree_size<T0>::value == N, "Failed tree_insert");
 
     using I5 = typename tree_element<T0, 2>::type;
-    static_assert(type_equals2<I5, token<2>>::value, "tree_element failed");
+    static_assert(type_equals<I5, token<2>>::value, "tree_element failed");
 
     static_assert(tree_contains<token<2>, T0>::value, "tree contains 5");
 
@@ -85,7 +85,7 @@ struct treetest
     using T2 = typename mixed_loop<empty_tree, N/2, N, tree_insert_test>::type;
     using T3 = typename tree_union<T1,T1>::type;
 
-    static_assert(type_equals2<T1, T3>::value, "tree_union failed");
+    static_assert(type_equals<T1, T3>::value, "tree_union failed");
 
     //using T4 = typename tree_union<T1,T2>::type;
     //using B4 = typename make_balanced_tree<T4>::type;

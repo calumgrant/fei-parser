@@ -421,9 +421,9 @@ namespace cellar
         using T2 = typename closure<type>::type;
         using Cmp = impl::typeset_compare<type, T2>;
         // These might still fail - perhaps drop these tests
-        static_assert(type_equals(typename Cmp::left(), typename Cmp::right()), "Closure");
+        static_assert(type_equals<typename Cmp::left, typename Cmp::right>::value, "Closure");
         static_assert(type() == T2(), "Closure error");
-        static_assert(type_equals(type(), T2()), "Closure error");
+        static_assert(type_equals<type, T2>::value, "Closure error");
 
         using profile_tag = closure_tag;
         using profile_types = profile<
