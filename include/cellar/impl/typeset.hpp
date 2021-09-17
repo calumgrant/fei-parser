@@ -402,6 +402,24 @@ namespace cellar
         using type = typename forall<R, typename Visitor<H, typename forall<L, Init, Visitor>::type>::type, Visitor>::type;
     };
 
+    template<typename Init, template<typename Item, typename Aggregate> typename Visitor>
+    struct forall<typeset<>, Init, Visitor>
+    {
+        using type = Init;
+
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
+    };
+
+    template<typename I, typename...Is, typename Init, template<typename Item, typename Aggregate> typename Visitor>
+    struct forall<typeset<I, Is...>, Init, Visitor>
+    {
+        using T = typename Visitor<I, Init>::type;
+        using type = typename forall<typeset<Is...>, T, Visitor>::type;
+
+        using profile_tag = no_tag;
+        using profile_types = profile<Visitor<I, Init>, forall<typeset<Is...>, T, Visitor>>;
+    };
 
     // Extracts an element from a tree
     template<typename T, int Element>

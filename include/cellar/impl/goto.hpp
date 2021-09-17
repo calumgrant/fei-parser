@@ -116,35 +116,26 @@ namespace cellar
         using profile_types = profile<Item, impl::getnext<Item>, typeset<Symbol>>;
     };
 
-    template<typename State>
-    struct build_goto_list2;
 
-    template<>
-    struct build_goto_list2<typeset<>>
-    {
-        using type = typeset<>;
-        using profile_tag = build_goto_list_tag;
-        using profile_types = profile<type>;
-    };
-
-    template<typename Item, typename...Items>
-    struct build_goto_list2<typeset<Item, Items...>>
+    template<typename Item, typename T2>
+    struct build_goto_list2
     {
         using T1 = typename build_goto_item<Item>::type;
-        using T2 = typename build_goto_list2<typeset<Items...>>::type;
         using type = typename typeset_sorted_union<T1, T2>::type;
 
         using profile_tag = build_goto_list_tag;
-        using profile_types = profile<typeset<Item, Items...>, build_goto_item<Item>, typeset_sorted_union<T1, T2>, type>;
+        using profile_types = profile<build_goto_item<Item>, typeset_sorted_union<T1, T2>, type>;
     };
+
 
     template<typename State>
     struct build_goto_list
     {
         using C = typename closure<State>::type;
-        using type = typename build_goto_list2<C>::type;
+
+        using type = typename forall<C, typeset<>, build_goto_list2>::type;
 
         using profile_tag = build_goto_list_tag;
-        using profile_types = profile<State, closure<State>, C, build_goto_list2<C>, type>;
+        using profile_types = profile<State, closure<State>, C, forall<C, typeset<>, build_goto_list2>, type>;
     };
 }
