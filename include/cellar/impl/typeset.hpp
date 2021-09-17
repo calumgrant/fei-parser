@@ -267,7 +267,11 @@ namespace cellar
 
 namespace cellar
 {
-    struct empty_tree {};
+    struct empty_tree
+    {
+        using profile_tag = tree_tag;
+        using profile_types = profile<>;
+    };
 
     /*
         A binary tree of types (not values)
@@ -298,7 +302,11 @@ namespace cellar
         - Find a normal form (`make_balanced_tree`/`normalize`) to avoid duplicating identical cases with different type structure.
     */
     template<typename Item, typename Left, typename Right>
-    struct type_tree {};
+    struct type_tree
+    {
+        using profile_tag = tree_tag;
+        using profile_types = profile<Item, Left, Right>;
+    };
 
     template<typename H>
     struct hash;
@@ -510,12 +518,16 @@ namespace cellar
     struct tree_insert
     {
         using type = typename tree_insert2<Item, T, empty_tree, empty_tree>::type;
+        using profile_tag = tree_tag;
+        using profile_types = profile<Item, T, tree_insert2<Item, T, empty_tree, empty_tree>>;
     };
 
     template<typename Item>
     struct tree_insert<Item, Item>
     {
         using type = Item;
+        using profile_tag = tree_tag;
+        using profile_types = profile<Item>;
     };
 
 
@@ -523,6 +535,8 @@ namespace cellar
     struct tree_insert<Item, empty_tree>
     {
         using type = Item;
+        using profile_tag = tree_tag;
+        using profile_types = profile<Item, empty_tree>;
     };
 
     template<typename Item, typename H, typename L, typename R, bool Less>
@@ -530,6 +544,8 @@ namespace cellar
     {
         // False case - insert to the right
         using type = type_tree<H, L, typename tree_insert<Item, R>::type>;
+        using profile_tag = tree_tag;
+        using profile_types = profile<tree_insert<Item, R>>;
     };
 
     template<typename Item, typename H, typename L, typename R>
@@ -537,42 +553,56 @@ namespace cellar
     {
         // True case - insert to the left
         using type = type_tree<H, typename tree_insert<Item, L>::type, R>;
+        using profile_tag = tree_tag;
+        using profile_types = profile<tree_insert<Item, L>>;
     };
 
     template<typename Item, typename L, typename R>
     struct tree_insert<Item, type_tree<Item,L,R>>
     {
         using type = type_tree<Item,L,R>;
+        using profile_tag = tree_tag;
+        using profile_types = profile<type_tree<Item,L,R>>;
     };
 
     template<typename Item, typename H, typename L, typename R>
     struct tree_insert<Item, type_tree<H,L,R>>
     {
         using type = typename tree_insert2<Item, H, L, R>::type;
+        using profile_tag = tree_tag;
+        using profile_types = profile<Item, type_tree<H,L,R>, tree_insert2<Item, H, L, R>>;
     };
 
     template<typename Item, typename T>
     struct tree_contains
     {
         static const bool value = false;
+        using profile_tag = tree_tag;
+        using profile_types = profile<Item, T>;
     };
 
     template<typename Item>
     struct tree_contains<Item, empty_tree>
     {
         static const bool value = false;
+        using profile_tag = tree_tag;
+        using profile_types = profile<Item, empty_tree>;
     };
 
     template<typename Item>
     struct tree_contains<Item, Item>
     {
         static const bool value = true;
+        using profile_tag = tree_tag;
+        using profile_types = profile<Item>;
     };
 
     template<typename Item, typename L, typename R>
     struct tree_contains<Item, type_tree<Item, L, R>>
     {
         static const bool value = true;
+        using profile_tag = tree_tag;
+        using profile_types = profile<Item, L, R>;
     };
 
     template<typename Item, typename H, typename L, typename R, bool Less = (hash<Item>::value < hash<H>::value)>
@@ -580,6 +610,8 @@ namespace cellar
     {
         // true case: Search left subtree
         static const bool value = tree_contains<Item, L>::value;
+        using profile_tag = tree_tag;
+        using profile_types = profile<tree_contains<Item, L>>;
     };
 
     template<typename Item, typename H, typename L, typename R>
@@ -587,12 +619,16 @@ namespace cellar
     {
         // false case: Search right subtree
         static const bool value = tree_contains<Item, R>::value;
+        using profile_tag = tree_tag;
+        using profile_types = profile<tree_contains<Item, R>>;
     };
 
     template<typename Item, typename H, typename L, typename R>
     struct tree_contains<Item, type_tree<H, L, R>>
     {
         static const bool value = tree_contains2<Item, H, L, R>::value;
+        using profile_tag = tree_tag;
+        using profile_types = profile<H, Item, L, R, tree_contains2<Item, H, L, R>>;
     };
 
 

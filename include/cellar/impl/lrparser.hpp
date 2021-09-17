@@ -302,6 +302,7 @@ namespace cellar
     struct initial_state
     {
         using type = typeset<rule_position<WholeProgram, rule<0, S, token<EndOfStream>>, 0, EndOfStream>>;
+        using tree = rule_position<WholeProgram, rule<0, S, token<EndOfStream>>, 0, EndOfStream>;
     };
 
     template<typename Symbol, typename It>

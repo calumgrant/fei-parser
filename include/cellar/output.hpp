@@ -379,4 +379,50 @@ namespace cellar
         return os;
     }
 
+
+    inline std::ostream & operator<<(std::ostream & os, empty_tree)
+    {
+        return os << "{}";
+    }
+
+    namespace impl
+    {
+        template<typename H, typename L, typename R>
+        struct write_tree
+        {
+            static void write(std::ostream & os)
+            {
+                os << "  " << L() << ",\n  " << H() << ",\n  " << R();
+            }
+        };
+
+        template<typename H, typename R>
+        struct write_tree<H, empty_tree, R>
+        {
+            static void write(std::ostream & os)
+            {
+                os << "\n  " << H() << ",\n  " << R();
+            }
+        };
+
+        template<typename H, typename L>
+        struct write_tree<H, L, empty_tree>
+        {
+            static void write(std::ostream & os)
+            {
+                os << "  " << L() << ",\n  " << H();
+            }
+        };
+
+
+    }
+
+    template<typename I1, typename I2, typename I3>
+    std::ostream & operator<<(std::ostream & os, type_tree<I1, I2, I3>)
+    {
+        os << "{\n";
+        impl::write_tree<I1, I2, I3>::write(os);
+        return os << "}\n";
+    }
+
 }

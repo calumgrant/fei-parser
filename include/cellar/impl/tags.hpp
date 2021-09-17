@@ -32,4 +32,5 @@ namespace cellar
     struct next_action_state_tag;
     struct shift_action_tag;
     struct goto_tag;
+    struct tree_tag;
 }

@@ -7,7 +7,7 @@
 
 namespace cellar
 {
-    template<typename State, typename Gathered = typeset<>, bool Exists = typeset_contains<State, Gathered>::value>
+    template<typename State, typename Gathered = empty_tree, bool Exists = tree_contains<State, Gathered>::value>
     struct gather_states;
 
     template<typename State, typename Gathered>
@@ -15,7 +15,7 @@ namespace cellar
     {
         using type = Gathered;
         using profile_tag = no_tag;
-        using profile_types = profile<State, Gathered, typeset_contains<State, Gathered>>;
+        using profile_types = profile<State, Gathered, tree_contains<State, Gathered>>;
     };
 
     template<typename Closure, typename Gathered, typename Tokens>
@@ -106,7 +106,7 @@ namespace cellar
     template<typename State, typename Gathered>
     struct gather_states<State, Gathered, false>
     {
-        using G0 = typename typeset_insert<State, Gathered>::type;
+        using G0 = typename tree_insert<State, Gathered>::type;
 
         using Closure = typename closure<State>::type;
         using Tokens = typename build_next_token_list<Closure>::type;
@@ -117,8 +117,8 @@ namespace cellar
 
         using profile_tag = no_tag;
         using profile_types = profile<
-            typeset_contains<State, Gathered>,
-            typeset_insert<State, Gathered>,
+            tree_contains<State, Gathered>,
+            tree_insert<State, Gathered>,
             closure<State>, 
             build_next_token_list<Closure>,
             build_goto_list<Closure>,
@@ -174,7 +174,8 @@ namespace cellar
         resolve_conflicts_tag,
         next_action_state_tag,
         shift_action_tag,
-        goto_tag
+        goto_tag,
+        tree_tag
     >;
 
     static const char * TagNames[] = {
@@ -205,7 +206,8 @@ namespace cellar
         "resolve_conflicts_tag",
         "next_action_state_tag",
         "shift_action_tag",
-        "goto_tag"
+        "goto_tag",
+        "tree_tag"
     };
 
     template<typename Grammar>
@@ -215,7 +217,7 @@ namespace cellar
         using states = typename gather_states<S0>::type;
 //    using debug = typename gather_states<S0>::Gotos;
 //    using debug2 = typename gather_goto_states<S0, typeset<>, debug>::NextState;
-        static const int number_of_states = typeset_size<states>::value;
+        static const int number_of_states = tree_size<states>::value;
 
         using profile_tag = no_tag;
         using profile_types = profile<states, gather_states<S0>>;

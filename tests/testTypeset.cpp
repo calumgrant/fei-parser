@@ -92,6 +92,8 @@ struct treetest
 
     //static_assert(type_equals2<B0, B4>::value, "tree_union failed");
 
+    using profile_tag = no_tag;
+    using profile_types = profile<T0, B0, T1, T2, T3>;
 
     static void output()
     {
@@ -99,11 +101,14 @@ struct treetest
         std::cout << "\n\nBalanced = ";
         ::output<B0>::write(std::cout);
 
+        profile_template<treetest>();
+        std::cout << "\n\nNumber of tree operations = " << static_count<tree_tag>() << std::endl;
+
         auto x = B0();
     }
 };
 
-using test4 = treetest<2500>;
+using test4 = treetest<1050>;
 
 int main()
 {
