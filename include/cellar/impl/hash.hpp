@@ -42,7 +42,7 @@ namespace cellar
     template<typename Rule, typename...Rules>
     struct hash<symbol<Rule, Rules...>>
     {
-        static const int value = 17 * hash<symbol<Rules...>>::value + hash<Rule>::value;
+        static const int value = hash_combine<hash<symbol<Rules...>>::value, hash<Rule>::value>::value;
     };
 
     template<typename Symbol, typename Rule, int Pos, int Lookahead>

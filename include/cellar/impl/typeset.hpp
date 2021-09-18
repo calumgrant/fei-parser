@@ -388,18 +388,25 @@ namespace cellar
     {
         // Default tree of one item
         using type = typename Visitor<Tree, Init>::type;
+        using profile_tag = no_tag;
+        using profile_types = profile<Tree, Init, Visitor<Tree, Init>>;
     };
 
     template<typename Init, template<typename Item, typename Aggregate> typename Visitor>
     struct forall<empty_tree, Init, Visitor>
     {
         using type = Init;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
     };
 
     template<typename H, typename L, typename R, typename Init, template<typename Item, typename Aggregate> typename Visitor>
     struct forall<type_tree<H, L, R>, Init, Visitor>
     {
         using type = typename forall<R, typename Visitor<H, typename forall<L, Init, Visitor>::type>::type, Visitor>::type;
+
+        using profile_tag = no_tag;
+        using profile_types = profile<type_tree<H, L, R>, Init, forall<R, typename Visitor<H, typename forall<L, Init, Visitor>::type>::type, Visitor>>;
     };
 
     template<typename Init, template<typename Item, typename Aggregate> typename Visitor>
@@ -408,7 +415,7 @@ namespace cellar
         using type = Init;
 
         using profile_tag = no_tag;
-        using profile_types = profile<>;
+        using profile_types = profile<Init>;
     };
 
     template<typename I, typename...Is, typename Init, template<typename Item, typename Aggregate> typename Visitor>
@@ -418,7 +425,7 @@ namespace cellar
         using type = typename forall<typeset<Is...>, T, Visitor>::type;
 
         using profile_tag = no_tag;
-        using profile_types = profile<Visitor<I, Init>, forall<typeset<Is...>, T, Visitor>>;
+        using profile_types = profile<Visitor<I, Init>, Init, forall<typeset<Is...>, T, Visitor>>;
     };
 
     // Extracts an element from a tree
@@ -660,12 +667,16 @@ namespace cellar
     struct tree_union
     {
         using type = typename tree_insert<T1, T2>::type;
+        using profile_tag = tree_tag;
+        using profile_types = profile<tree_insert<T1, T2>, type>;
     };
 
     template<typename T2>
     struct tree_union<empty_tree, T2>
     {
         using type = T2;
+        using profile_tag = tree_tag;
+        using profile_types = profile<type>;
     };
 
     template<typename H, typename L, typename R, typename T2>
@@ -674,6 +685,9 @@ namespace cellar
         using T0 = typename tree_union<L, T2>::type;
         using T1 = typename tree_union<R, T0>::type;
         using type = typename tree_insert<H, T1>::type;  
+
+        using profile_tag = tree_tag;
+        using profile_types = profile<H, L, R, tree_union<L, T2>, tree_union<R, T0>, type>;
     };
 
 

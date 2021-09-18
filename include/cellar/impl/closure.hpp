@@ -133,92 +133,86 @@ namespace cellar
         using profile_types = profile<rule_position<S, rule<Id>, 0, Lookahead>, type>;
     };
 
-    template<typename S, typename Follows, typename Closure>
-    struct expand_symbol<S, symbol<>, Follows, Closure>
+    // Expands a symbol in the context of just one lookahead token
+    template<typename S, typename Rules, int Follows, typename Closure>
+    struct expand_symbol2;
+
+    template<typename S, int Follows, typename Closure>
+    struct expand_symbol2<S, symbol<>, Follows, Closure>
     {
         using type = Closure;
 
         using profile_tag = expand_symbol_tag;
-        using profile_types = profile<S, symbol<>, Follows, Closure>;
+        using profile_types = profile<S, symbol<>, Closure>;
     };
-
-    template<typename S, typename Item, typename Follows, typename Closure>
-    struct expand_symbol
-    {
-        using type = typename expand_symbol<S, typename Item::rules, Follows, Closure>::type;
-
-        using profile_tag = expand_symbol_tag;
-        using profile_types = profile<S, Item, Follows, Closure, 
-            expand_symbol<S, typename Item::rules, Follows, Closure>, type>;
-    };
-
     
-    template<typename S, typename Item, typename...Items, typename Follows, typename Closure>
-    struct expand_symbol<S, symbol<Item, Items...>, Follows, Closure>
+    template<typename S, typename Item, typename...Items, int Follows, typename Closure>
+    struct expand_symbol2<S, symbol<Item, Items...>, Follows, Closure>
     {
-        using C1 = typename expand_symbol<S, Item, Follows, Closure>::type;
-        using type = typename expand_symbol<S, symbol<Items...>, Follows, C1>::type;
+        using C1 = typename expand_symbol2<S, typename Item::rules, Follows, Closure>::type;
+        using type = typename expand_symbol2<S, symbol<Items...>, Follows, C1>::type;
 
         using profile_tag = expand_symbol_tag;
         using profile_types = profile<
-            S, symbol<Item, Items...>, Follows, Closure,
-            expand_symbol<S, Item, Follows, Closure>,
-            expand_symbol<S, symbol<Items...>, Follows, C1>
+            S, symbol<Item, Items...>, Closure,
+            expand_symbol2<S, typename Item::rules, Follows, Closure>,
+            expand_symbol2<S, symbol<Items...>, Follows, C1>
          >;
     };
 
-    template<typename S, int Id, typename...Rule, typename Follows, typename Closure>
-    struct expand_symbol<S, token<Id, Rule...>, Follows, Closure>
+    template<typename S, int Id, typename...Rule, int Follows, typename Closure>
+    struct expand_symbol2<S, token<Id, Rule...>, Follows, Closure>
     {
         using T = rule<Id, token<Id, Rule...>>;
-        using type = typename expand_symbol<S, T, Follows, Closure>::type;
+        using type = typename expand_symbol2<S, T, Follows, Closure>::type;
 
         using profile_tag = expand_symbol_tag;
         using profile_types = profile<
-            S, token<Id, Rule...>, Follows, Closure,
-            expand_symbol<S, T, Follows, Closure>
+            S, token<Id, Rule...>, Closure,
+            expand_symbol2<S, T, Follows, Closure>
             >;
     };
 
-    template<typename S, typename...Items1, typename...Items2, typename Follows, typename Closure>
-    struct expand_symbol<S, symbol<symbol<Items1...>, Items2...>, Follows, Closure>
+    template<typename S, int Id, typename... Rule, int Follow, typename Closure>
+    struct expand_symbol2<S, rule<Id, Rule...>, Follow, Closure>
     {
-        using T = typename expand_symbol<S, symbol<Items1...>, Follows, Closure>::type;
-        using type = typename expand_symbol<S, symbol<Items2...>, Follows, T>::type;
+        using Item = rule_position<S, rule<Id, Rule...>, 0, Follow>;
+        using type = typename add_to_closure<Item, Closure>::type;
 
         using profile_tag = expand_symbol_tag;
         using profile_types = profile<
-            S, symbol<symbol<Items1...>, Items2...>, Follows, Closure,
-            expand_symbol<S, symbol<Items1...>, Follows, Closure>,
-            expand_symbol<S, symbol<Items2...>, Follows, T>
+            S, rule<Id, Rule...>,
+            Closure,
+            add_to_closure<Item, Closure>
             >;
     };
 
-    template<typename S, int Id, typename... Rule, typename... Follows, typename Closure, int Lookahead>
-    struct expand_symbol<S, rule<Id, Rule...>, typeset<token<Lookahead>, Follows...>, Closure>
+
+    // Expands a symbol into a closure, meaning that all of the rules in the symbol needs to 
+    // be added into the closure with all of the lookahead tokens in Follows.
+    // The first step is to unpack `Follows` (which is a type_tree) and iterate over
+    // all of the items in `Follows`.
+    // Gut feeling: We need to remove "Closure" from this
+    template<typename S, typename Symbol, typename Follows, typename Closure>
+    struct expand_symbol
     {
-        using Item = rule_position<S, rule<Id, Rule...>, 0, Lookahead>;
-        using T = typename expand_symbol<S, rule<Id, Rule...>, typeset<Follows...>, Closure>::type;
-        using type = typename add_to_closure<Item, T>::type;
+        // Can't we inline Loop definition here?? Would be much easier
+
+        template<typename Follow, typename Closure2>
+        struct expand_symbol_loop
+        {
+            using type = typename expand_symbol2<S, Symbol, Follow::id, Closure2>::type;
+            using profile_tag = no_tag;
+            using profile_types = profile<expand_symbol2<S, Symbol, Follow::id, Closure2>>;
+        };
+
+        using type = typename forall<Follows, Closure, expand_symbol_loop>::type;
 
         using profile_tag = expand_symbol_tag;
-        using profile_types = profile<
-            S, rule<Id, Rule...>, typeset<token<Lookahead>, Follows...>, Closure,
-            expand_symbol<S, rule<Id, Rule...>, typeset<Follows...>, Closure>,
-            add_to_closure<Item, T>
-            >;
+        using profile_types = profile<S, Symbol, Follows, Closure, 
+            forall<Follows, Closure, expand_symbol_loop>, type>;
     };
 
-    template<typename S, int Id, typename... Rule, typename Closure>
-    struct expand_symbol<S, rule<Id, Rule...>, typeset<>, Closure>
-    {
-        // Empty follows set - base case
-        using type = Closure;
-
-        using profile_tag = expand_symbol_tag;
-        using profile_types = profile<
-            S, rule<Id, Rule...>, typeset<>, Closure>;
-    };
 
     template<typename Item, typename Closure>
     struct add_to_closure<Item, Closure, false>

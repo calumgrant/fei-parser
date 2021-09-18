@@ -8,35 +8,35 @@ namespace cellar
         Constructs a typeset of the "first" terminal/token symbol in a symbol.
         It needs to guard against recursion.
     */
-    template<typename Symbol, typename Visited = typeset<>, bool Recursive = typeset_contains<Symbol, Visited>::value>
+    template<typename Symbol, typename Visited = empty_tree, bool Recursive = tree_contains<Symbol, Visited>::value>
     struct first
     {
         // Base case is to look at the "rules" member of a user-defined type.
-        using type = typename first<typename Symbol::rules, typename typeset_insert<Symbol, Visited>::type>::type;
+        using type = typename first<typename Symbol::rules, typename tree_insert<Symbol, Visited>::type>::type;
 
         using profile_tag = first_tag;
         using profile_types = profile<
-            typeset_insert<Symbol, Visited>, 
-            first<typename Symbol::rules, typename typeset_insert<Symbol, Visited>::type>
+            tree_insert<Symbol, Visited>, 
+            first<typename Symbol::rules, typename tree_insert<Symbol, Visited>::type>
             >;
     };
 
     template<typename Symbol, typename Visited>
     struct first<Symbol, Visited, true>
     {
-        using type = typeset<>;
+        using type = empty_tree;
 
         using profile_tag = first_tag;
-        using profile_types = profile<typeset_contains<Symbol, Visited>>;
+        using profile_types = profile<tree_contains<Symbol, Visited>>;
     };
 
     template<typename Visited>
     struct first<symbol<>, Visited, false>
     {
-        using type = typeset<>;
+        using type = empty_tree;
 
         using profile_tag = first_tag;
-        using profile_types = profile<symbol<>, typeset_contains<symbol<>, Visited>>;
+        using profile_types = profile<symbol<>, tree_contains<symbol<>, Visited>>;
     };
 
     template<typename Rule, typename... Rules, typename Visited>
@@ -44,14 +44,14 @@ namespace cellar
     {
         using S1 = typename first<Rule, Visited>::type;
         using S2 = typename first<symbol<Rules...>, Visited>::type;
-        using type = typename typeset_sorted_union<S1,S2>::type;
+        using type = typename tree_union<S1,S2>::type;
 
         using profile_tag = first_tag;
         using profile_types = profile<
-            typeset_contains<symbol<Rule, Rules...>, Visited>,
+            tree_contains<symbol<Rule, Rules...>, Visited>,
             first<Rule, Visited>,
             first<symbol<Rules...>, Visited>,
-            typeset_sorted_union<S1,S2>,
+            tree_union<S1,S2>,
             type
             >;
     };
@@ -59,11 +59,11 @@ namespace cellar
     template<int Id, typename Visited>
     struct first<rule<Id>, Visited, false>
     {
-        using type = typeset<>;    
+        using type = empty_tree;    
         
         using profile_tag = first_tag;
         using profile_types = profile<
-            typeset_contains<rule<Id>, Visited>,
+            tree_contains<rule<Id>, Visited>,
             type
             >;
     };
@@ -71,11 +71,11 @@ namespace cellar
     template<int Id, typename...Def, typename Visited>
     struct first<token<Id, Def...>, Visited, false>
     {
-        using type = typeset<token<Id>>;
+        using type = token<Id>;
 
         using profile_tag = first_tag;
         using profile_types = profile<
-            typeset_contains<token<Id, Def...>, Visited>,
+            tree_contains<token<Id, Def...>, Visited>,
             type
             >;
     };
@@ -85,16 +85,16 @@ namespace cellar
     {
         using S1 = typename first<Symbol, Visited>::type;
         using S2 = typename first<rule<Id, Symbols...>, Visited>::type;
-        using U = typename typeset_sorted_union<S1,S2>::type;
+        using U = typename tree_union<S1,S2>::type;
         using type = typename type_if<potentially_empty_symbol<Symbol>::value, U, S1>::type;
 
         using profile_tag = first_tag;
         using profile_types = profile<
-            typeset_contains<rule<Id, Symbol, Symbols...>, Visited>,
+            tree_contains<rule<Id, Symbol, Symbols...>, Visited>,
             type,
             first<Symbol, Visited>,
             first<rule<Id, Symbols...>, Visited>,
-            typeset_sorted_union<S1,S2>,
+            tree_union<S1,S2>,
             potentially_empty_symbol<Symbol>
             >;
     };

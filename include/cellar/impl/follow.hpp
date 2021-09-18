@@ -26,7 +26,7 @@ namespace cellar
     template<typename S, int Id, typename Symbol, int Lookahead>
     struct follow<rule_position<S, rule<Id, Symbol>, 0, Lookahead>>
     {
-        using type = typeset<token<Lookahead>>;
+        using type = token<Lookahead>;
 
         using profile_tag = follow_tag;
         using profile_types = profile<rule_position<S, rule<Id, Symbol>, 0, Lookahead>, type>;
@@ -51,7 +51,7 @@ namespace cellar
         using T = typename first<rule<Id, Symbols...>>::type;
         using type = typename type_if<
             potentially_empty_symbol<rule<Id, Symbols...>>::value, 
-            typename typeset_sorted_insert<token<Lookahead>, T>::type,
+            typename tree_insert<token<Lookahead>, T>::type,
             T>::type;
 
         using profile_tag = follow_tag;
@@ -60,14 +60,14 @@ namespace cellar
             follow<rule_position<S, rule<Id, Symbols...>, 0, Lookahead>>,
             first<rule<Id, Symbols...>>, 
             potentially_empty_symbol<rule<Id, Symbols...>>,
-            typeset_sorted_insert<token<Lookahead>, T>
+            tree_insert<token<Lookahead>, T>
             >;
     };
 
     template<typename S, int Id, int Position, int Lookahead>
     struct follow<rule_position<S, rule<Id>, Position, Lookahead>>
     {
-        using type = typeset<>;
+        using type = empty_tree;
         using profile_tag = follow_tag;
         using profile_types = profile<rule_position<S, rule<Id>, Position, Lookahead>, type>;
     };

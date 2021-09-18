@@ -56,7 +56,7 @@ namespace cellar
     {
         static void collect_stats()
         {
-            profile_template<Item>();
+            profile_template<Item, typename Item::profile_tag /* Explicit for better error messages*/>();
             profile<Items...>::collect_stats();
         }
     };    

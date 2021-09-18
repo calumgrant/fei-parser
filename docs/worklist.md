@@ -1,6 +1,9 @@
 
 # Plan for the next week
 
+- Remove `Closure` from `expand symbol` so that each symbol has its own expansion. Then we'll use `tree_union` to complete the closure.
+
+
 - Fix build errors on Linux
 - Integrate new type_tree library
 
