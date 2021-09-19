@@ -32,7 +32,11 @@ namespace cellar
 
     struct accept {};
 
-    struct syntax_error {};
+    struct syntax_error
+    {
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
+    };
 
     template<typename S, typename Rule, int Position, int Lookahead, int Token, typename OriginalRule>
     struct item_action2;
@@ -112,8 +116,8 @@ namespace cellar
     struct action
     {
         using Closure = typename closure<State>::type;
-        using shift_actions = typename forall<State, empty_tree, action2_loop<Token>::template shift_action_loop>::type;
-        using reduce_actions = typename forall<State, empty_tree, action2_loop<Token>::template reduce_action_loop>::type;
+        using shift_actions = typename forall<Closure, empty_tree, action2_loop<Token>::template shift_action_loop>::type;
+        using reduce_actions = typename forall<Closure, empty_tree, action2_loop<Token>::template reduce_action_loop>::type;
         using actions = typename tree_union<shift_actions, reduce_actions>::type;
 
         static const bool shifts = !type_equals<empty_tree, shift_actions>::value;
@@ -194,7 +198,7 @@ namespace cellar
     template<typename State, int Token, typename Action = typename shift_action<State, Token>::type>
     struct is_shift
     {
-        static const bool value = typeset_equals<Action, typeset<>>::value;
+        static const bool value = type_equals<Action, empty_tree>::value;
     };
 
     /*
@@ -209,7 +213,7 @@ namespace cellar
     template<typename State, int Token, typename Action = typename reduce_action<State, Token>::type>
     struct is_reduce
     {
-        static const bool value = typeset_equals<Action, typeset<>>::value;
+        static const bool value = type_equals<Action, empty_tree>::value;
     };
 
 }

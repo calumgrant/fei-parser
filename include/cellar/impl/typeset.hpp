@@ -434,6 +434,8 @@ namespace cellar
     {
         // Case where the tree consists of one element
         using type = T;
+        using profile_tag = tree_tag;
+        using profile_types = profile<>;
     };
 
     // Extracts an element from a type_tree.
@@ -449,43 +451,57 @@ namespace cellar
     struct tree_element2<H,L,R,Element,true,false>
     {
         using type = typename tree_element<L, Element>::type;
+        using profile_tag = tree_tag;
+        using profile_types = profile<tree_element<L, Element>>;
     };
 
     template<typename H, typename L, typename R, int Element>
     struct tree_element2<H,L,R,Element,false,true>
     {
         using type = typename tree_element<R, Element - tree_size<L>::value-1>::type;
+        using profile_tag = tree_tag;
+        using profile_types = profile<tree_element<R, Element - tree_size<L>::value-1>>;
     };
 
     template<typename H, typename L, typename R, int Element>
     struct tree_element2<H,L,R,Element,false,false>
     {
         using type = H;
+        using profile_tag = tree_tag;
+        using profile_types = profile<>;
     };
 
     template<typename H, typename L, typename R, int Element>
     struct tree_element<type_tree<H, L, R>, Element>
     {
         using type = typename tree_element2<H, L, R, Element>::type;
+        using profile_tag = tree_tag;
+        using profile_types = profile<tree_element2<H, L, R, Element>>;
     };
 
     template<typename T, int From, int To>
     struct make_balanced_subtree
     {
         // Default case - T is an element
-        using type = T;    
+        using type = T;
+        using profile_tag = tree_tag;
+        using profile_types = profile<>;    
     };
 
     template<typename T, int Index>
     struct make_balanced_subtree<T, Index, Index>
     {
         using type = empty_tree;
+        using profile_tag = tree_tag;
+        using profile_types = profile<>;
     };
 
     template<typename H, typename L, typename R, int Index>
     struct make_balanced_subtree<type_tree<H, L, R>, Index, Index>
     {
         using type = empty_tree;
+        using profile_tag = tree_tag;
+        using profile_types = profile<>;
     };
 
     template<typename H, typename L, typename R, int From, int To, 
@@ -497,12 +513,20 @@ namespace cellar
     struct make_balanced_subtree2<H, L, R, From, To, true, false>
     {
         using type = typename make_balanced_subtree<L, From, To>::type;
+        using profile_tag = tree_tag;
+        using profile_types = profile<
+            make_balanced_subtree<L, From, To>
+            >;
     };
 
     template<typename H, typename L, typename R, int From, int To>
     struct make_balanced_subtree2<H, L, R, From, To, false, true>
     {
         using type = typename make_balanced_subtree<R, From-tree_size<L>::value-1, To-tree_size<L>::value-1>::type;
+        using profile_tag = tree_tag;
+        using profile_types = profile<
+            make_balanced_subtree<R, From-tree_size<L>::value-1, To-tree_size<L>::value-1>
+            >;
     };
 
 
@@ -515,19 +539,29 @@ namespace cellar
         using T2 = typename make_balanced_subtree<type_tree<H, L, R>, mid+1, To>::type;
         using Item = typename tree_element<type_tree<H, L, R>, mid>::type;
         using type = type_tree<Item, T1, T2>;
+        using profile_tag = tree_tag;
+        using profile_types = profile<
+            make_balanced_subtree<type_tree<H,L,R>, From, mid>,
+            make_balanced_subtree<type_tree<H, L, R>, mid+1, To>,
+            tree_element<type_tree<H, L, R>, mid>,
+            type
+            >;
     };
 
     template<typename H, typename L, typename R, int N>
     struct make_balanced_subtree2<H, L, R, N, N+1, false, false>
     {
         using type = typename tree_element<type_tree<H, L, R>, N>::type;
+        using profile_tag = tree_tag;
+        using profile_types = profile<tree_element<type_tree<H, L, R>, N>>;
     };
-
 
     template<typename H, typename L, typename R, int From, int To>
     struct make_balanced_subtree<type_tree<H, L, R>, From, To>
     {
         using type = typename make_balanced_subtree2<H, L, R, From, To>::type;
+        using profile_tag = tree_tag;
+        using profile_types = profile<make_balanced_subtree2<H, L, R, From, To>>;
     };
 
     /*
@@ -538,6 +572,8 @@ namespace cellar
     struct make_balanced_tree
     {
         using type = typename make_balanced_subtree<T, 0, tree_size<T>::value>::type;
+        using profile_tag = tree_tag;
+        using profile_types = profile<make_balanced_subtree<T, 0, tree_size<T>::value>>;
     };
 
 
@@ -567,6 +603,8 @@ namespace cellar
         // This special case is when you store a tree in a tree: The values nodes could get
         // confused with subtrees if we don't do this.
         using type = type_tree<type_tree<H,L,R>, empty_tree, empty_tree>;
+        using profile_tag = tree_tag;
+        using profile_types = profile<type>;
     };
 
 
@@ -741,4 +779,10 @@ namespace cellar
     };
 
     using empty_typeset2 = typeset2<empty_tree>;
+
+    template<typename T1, typename T2>
+    struct tree_equals
+    {
+        static const bool value = type_equals<typename make_balanced_tree<T1>::type, typename make_balanced_tree<T2>::type>::value;
+    };
 }

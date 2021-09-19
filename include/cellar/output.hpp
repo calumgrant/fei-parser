@@ -414,6 +414,14 @@ namespace cellar
             }
         };
 
+        template<typename H>
+        struct write_tree<H, empty_tree, empty_tree>
+        {
+            static void write(std::ostream & os)
+            {
+                os << "  " << H();
+            }
+        };
 
     }
 

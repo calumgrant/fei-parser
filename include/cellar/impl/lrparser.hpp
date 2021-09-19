@@ -237,7 +237,7 @@ namespace cellar
     struct process_token_list;
 
     template<typename State, typename It>
-    struct process_token_list<State, typeset<>, It>
+    struct process_token_list<State, empty_tree, It>
     {
         static void process(parse_state<It> & state)
         {
@@ -254,19 +254,63 @@ namespace cellar
         }
     };
 
-    template<typename State, int Id, typename...Tokens, typename It>
-    struct process_token_list<State, typeset<token<Id>, Tokens...>, It>
+    template<typename State, int Id, typename L, typename R, typename It>
+    struct process_token_list<State, type_tree<token<Id>, L, R>, It>
     {
         static void process(parse_state<It> & state)
         {
             if(state.tokens.token() == Id)
-            {
                 process_token<State, Id, It>::process(state);
-            }
+            else if(state.tokens.token() < Id)
+                process_token_list<State, L, It>::process(state);
             else
-            {
-                process_token_list<State, typeset<Tokens...>, It>::process(state);
-            }
+                process_token_list<State, R, It>::process(state);
+        }
+    };
+
+    template<typename State, int Id, typename It>
+    struct process_token_list<State, token<Id>, It>
+    {
+        static void process(parse_state<It> & state)
+        {
+            if(state.tokens.token() == Id)
+                process_token<State, Id, It>::process(state);
+            else
+                process_token_list<State, empty_tree, It>::process(state);
+        }
+    };
+
+
+
+    // DELETEME
+    template<typename Tree, typename Visitor>
+    struct visit_tree
+    {
+        template<typename...Args>
+        static void visit(Args&&... args)
+        {
+            Visitor::template visit<Tree>(std::forward<Args&&...>(args...));
+        }
+    };
+
+    template<typename Visitor>
+    struct visit_tree<empty_tree, Visitor>
+    {
+        template<typename...Args>
+        static void visit(Args&&... args)
+        {
+        }
+    };
+
+    template<typename H, typename L, typename R, typename Visitor>
+    struct visit_tree<type_tree<H, L, R>, Visitor>
+    {
+        template<typename...Args>
+        static void visit(Args&&... args)
+        {
+            Visitor::template visit<H>(std::forward<Args&&...>(args...));
+            visit_tree<L, Visitor>::visit(std::forward<Args&&...>(args...));
+            visit_tree<R, Visitor>::visit(std::forward<Args&&...>(args...));
         }
     };
 

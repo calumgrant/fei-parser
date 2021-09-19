@@ -118,12 +118,16 @@ namespace cellar
     struct resolve_actions<syntax_error, Action>
     {
         using type = Action;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
     };
 
     template<typename Action>
     struct resolve_actions<Action, syntax_error>
     {
         using type = Action;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
     };
 
 
@@ -131,18 +135,33 @@ namespace cellar
     struct resolve_actions<reduce<Id1, S1, Rule1>, reduce<Id2, S2, Rule2>>
     {
         using type = typename reduce_reduce_conflict<reduce<Id1, S1, Rule1>, reduce<Id2, S2, Rule2>>::resolution;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
     };
 
     template<int Id1, typename S1, typename Rule1, int Id2, typename Rule2>
     struct resolve_actions<reduce<Id1, S1, Rule1>, shift<Id2, Rule2>>
     {
         using type = typename shift_reduce_conflict<shift<Id2, Rule2>, reduce<Id1, S1, Rule1>>::resolution;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
     };
+
+    template<int Id1, typename S2, typename Rule1, int Id2, typename Rule2>
+    struct resolve_actions<shift<Id1, Rule1>, reduce<Id2, S2, Rule2>>
+    {
+        using type = typename shift_reduce_conflict<shift<Id1, Rule1>, reduce<Id2, S2, Rule2>>::resolution;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
+    };
+
 
     template<int Id1, typename Rule1, int Id2, typename Rule2>
     struct resolve_actions<shift<Id1, Rule1>, shift<Id2, Rule2>>
     {
         using type = shift<Id1, Rule1>;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
     };
 
 
@@ -179,6 +198,11 @@ namespace cellar
         static const bool value = true;
     };
 
+    template<typename T>
+    struct view_type
+    {
+        static const bool value = false;
+    };
 
     /*
         Where there are several possible actions,
@@ -196,6 +220,7 @@ namespace cellar
 
         static const bool is_shift = cellar::is_shift2<type>::value;
         static const bool is_reduce = cellar::is_reduce2<type>::value;
+        static_assert(is_shift || is_reduce || view_type<typename closure<State>::type>::value, "Must be at least one action");
 
         using profile_tag = resolve_conflicts_tag;
         using profile_types = profile<

@@ -1,5 +1,6 @@
 namespace cellar
 {
+    // TODO: Turn into T::hash and remove this type completely.
     template<typename T>
     struct hash;
 
@@ -13,6 +14,9 @@ namespace cellar
 
     template<int Token, typename Rule>
     struct shift;
+
+    template<int Lookahead, typename Symbol, typename Rule>
+    struct reduce;
 
     template<int Id, typename ... Body>
     struct hash<token<Id, Body...>>
@@ -90,4 +94,11 @@ namespace cellar
     {
         static const int value = hash_combine<Token, hash<Rule>::value>::value;
     };
+
+    template<int Lookahead, typename Symbol, typename Rule>
+    struct hash<reduce<Lookahead, Symbol, Rule>>
+    {
+        static const int value = hash_combine<Lookahead, hash_combine<hash<Symbol>::value, hash<Rule>::value>::value>::value;
+    };
+
 }

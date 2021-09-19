@@ -327,6 +327,8 @@ namespace cellar
         struct add_to_closure_loop
         {
             using type = typename add_to_closure<Item, Closure>::type;
+            using profile_tag = add_to_closure_tag;
+            using profile_types = profile<add_to_closure<Item, Closure>>;
         };
 
     }

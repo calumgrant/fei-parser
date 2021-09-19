@@ -128,15 +128,22 @@ void outputAction()
     std::cout << "Action on " << Token << " = " << typename action<State, Token>::actions() << " -> " << typename shift_action<State,Token>::type() << std::endl;
 }
 
-template<typename State>
-void outputActions(typeset<>) {}
-
-
-template<typename State, int Token, typename... T>
-void outputActions(typeset<token<Token>, T...>)
+template<typename State, int Token>
+void outputActions(token<Token>)
 {
     outputAction<State, Token>();
-    outputActions<State>(typeset<T...>());
+}
+
+template<typename State>
+void outputActions(empty_tree) {}
+
+
+template<typename State, int Token, typename L, typename R>
+void outputActions(type_tree<token<Token>, L, R>)
+{
+    outputActions<State>(L());
+    outputAction<State, Token>();
+    outputActions<State>(R());
 }
 
 template<typename State, typename Symbol>
@@ -210,7 +217,7 @@ class Closure1 : public Test::Fixture<Closure1>
 
     class Expr : public symbol<rule<10,A>, rule<11, Expr, A>> {};
     
-    struct S {};
+    struct S : public symbol<> {};
 
     using S0 = typeset<rule_position<S, A, 0, 1>, rule_position<S, rule<123, A, B>,0,2>>;
     using S1 = typeset<rule_position<S, A, 0, 1>, rule_position<S, rule<123, A, B>,0,2>, rule_position<S, rule<123, A, B>,2,2>>;
@@ -241,24 +248,24 @@ class Grammar2 : public Test::Fixture<Grammar2>
 
     class E : public symbol<rule<10, a, b>, rule<11, a, E, b>> {};
     
-    struct S {};
+    struct S : public symbol<> {};
 
-    using S0 = typeset<rule_position<S, rule<12, E, token<EndOfStream>>, 0, EndOfStream>>;
+    using S0 = rule_position<S, rule<12, E, token<EndOfStream>>, 0, EndOfStream>;
 
     using C0 = closure<S0>::type;
 
     using A0a = action<S0, 0>::shift_actions;
     using A0b = action<S0, 1>::shift_actions;
-    using Error = typeset<>;
+    using Error = empty_tree;
 
-    using simpletest = typeset<rule_position<S, rule<10, a, b>, 0, -4>>;
+    using simpletest = rule_position<S, rule<10, a, b>, 0, -4>;
     using Sa = action<simpletest, 0>::actions;
     using Error1 = action<simpletest, 1>::actions;
-    static_assert(Error() == Error1(), "");
+    static_assert(tree_equals<Error, Error1>::value, "");
 
     using S1 = shift_action<S0, 0>::type;
     using Error2 = shift_action<S0, 1>::type;
-    static_assert(Error() == Error2(), "");
+    static_assert(tree_equals<Error, Error2>::value, "");
     using C1 = closure<S1>::type;
 
     using S2 = goto_<S0, E>::type;
@@ -271,7 +278,7 @@ class Grammar2 : public Test::Fixture<Grammar2>
 
     using S5 = shift_action<S1, 1>::type;
     using S3a = shift_action<S3, 0>::type;
-    static_assert(S3() == S3a(), "");
+    static_assert(tree_equals<S3, S3a>::value, "");
 
     using C5 = closure<S5>::type;
     using S6 = goto_<S1, E>::type;
