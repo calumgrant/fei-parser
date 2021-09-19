@@ -6,6 +6,14 @@ namespace cellar
     template<typename...>
     struct typeset;
 
+    template<typename H, typename L, typename R>
+    struct type_tree;
+
+    struct empty_tree;
+
+    template<int Token, typename Rule>
+    struct shift;
+
     template<int Id, typename ... Body>
     struct hash<token<Id, Body...>>
     {
@@ -20,7 +28,6 @@ namespace cellar
         static const int value = H1 + 17 * (H2&0x00ffffff);
     };
 
-    // !! Move to hash.hpp
     template<typename T>
     struct hash
     {
@@ -62,5 +69,25 @@ namespace cellar
     struct hash<typeset<Item, Items...>>
     {
         static const int value = hash_combine<hash<Item>::value, hash<typeset<Items...>>::value>::value;
+    };
+
+    template<typename H, typename L, typename R>
+    struct hash<type_tree<H,L,R>>
+    {
+        static const int value = hash_combine<
+            hash<H>::value, 
+            hash_combine<hash<L>::value, hash<R>::value>::value>::value;
+    };
+
+    template<>
+    struct hash<empty_tree>
+    {
+        static const int value = 0;
+    };
+
+    template<int Token, typename Rule>
+    struct hash<shift<Token, Rule>>
+    {
+        static const int value = hash_combine<Token, hash<Rule>::value>::value;
     };
 }

@@ -31,29 +31,25 @@ namespace cellar
         };
 
 
-        template<typename State, typename Symbol>
-        struct goto_;
-
         template<typename Symbol>
-        struct goto_<typeset<>, Symbol>
+        struct goto_loop
         {
-            using type = typeset<>;
-            using profile_tag = goto_tag;
-            using profile_types = profile<Symbol>;
-        };
+            template<typename Item, typename NewState> struct loop;
 
-        template<typename S, typename Rule, int Position, int Lookahead, typename...Items, typename Symbol>
-        struct goto_<typeset<rule_position<S, Rule, Position, Lookahead>, Items...>, Symbol>
-        {
-            using T1 = rule_position<S, Rule, Position+1, Lookahead>;
-            using T2 = typename goto_<typeset<Items...>, Symbol>::type;
-            static const bool shiftsSymbol = shifts_symbol<Rule, Position, Symbol>::value;
-            using type = typename type_if<shiftsSymbol, typename typeset_sorted_insert<T1, T2>::type, T2>::type;
-            using profile_tag = goto_tag;
-            using profile_types = profile<
-                typeset<rule_position<S, Rule, Position, Lookahead>, Items...>,
-                Symbol, T1, goto_<typeset<Items...>, Symbol>, /* shifts_symbol<Rule, Position, Symbol>, */
-                typeset_sorted_insert<T1, T2> >;
+            template<typename S, typename Rule, int Position, int Lookahead, typename T2>
+            struct loop<rule_position<S, Rule, Position, Lookahead>, T2>
+            {
+                using T1 = rule_position<S, Rule, Position+1, Lookahead>;
+                static const bool shiftsSymbol = shifts_symbol<Rule, Position, Symbol>::value;
+                // TODO: Avoid type_if if possible
+                using type = typename type_if<shiftsSymbol, typename tree_insert<T1, T2>::type, T2>::type;
+                using profile_tag = goto_tag;
+                using profile_types = profile<
+                    rule_position<S, Rule, Position, Lookahead>,
+                    Symbol, T1, /* shifts_symbol<Rule, Position, Symbol>, */
+                    tree_insert<T1, T2> >;
+            };
+
         };
     }
     /*
@@ -65,11 +61,11 @@ namespace cellar
     struct goto_
     {
         using C = typename closure<State>::type;
-        using T0 = typename impl::goto_<C, Symbol>::type;
-        using type = typename typeset_sort<T0>::type;
-        using profile_tag = goto_tag;
-        using profile_types = profile<closure<State>, State, C, impl::goto_<C, Symbol>, typeset_sort<T0>>;
+        using T0 = typename forall<C, empty_tree, impl::goto_loop<Symbol>::template loop>::type;
+        using type = typename make_balanced_tree<T0>::type;
 
+        using profile_tag = goto_tag;
+        using profile_types = profile<closure<State>, State, C, forall<C, empty_tree, impl::goto_loop<Symbol>::template loop>, make_balanced_tree<T0>>;
     };
 
     // TODO: Consolidate with is_symbol

@@ -21,15 +21,6 @@ namespace cellar
     template<typename Closure, typename Gathered, typename Tokens>
     struct gather_shift_states;
 
-    template<typename Closure, typename Gathered>
-    struct gather_shift_states<Closure, Gathered, typeset<>>
-    {
-        using type = Gathered;
-
-        using profile_tag = gather_shift_states_tag;
-        using profile_types = profile<Closure, Gathered, typeset<>>;
-    };
-
     template<typename State, typename Gathered, typename Action>
     struct next_action_state;
 
@@ -56,22 +47,26 @@ namespace cellar
         using profile_types = profile<State, Gathered, reduce<Token, Symbol, Rule>>;
     };
 
-    template<typename Closure, typename Gathered, int Token, typename... Tokens>
-    struct gather_shift_states<Closure, Gathered, typeset<token<Token>, Tokens...>>
+    template<typename Closure>
+    struct gather_shift_states2
     {
-        using Action = typename resolve_conflicts<Closure, Token>::type;
+        template<typename Item, typename Gathered>
+        struct loop
+        {
+            using Action = typename resolve_conflicts<Closure, Item::id>::type;
+            using type = typename next_action_state<Closure, Gathered, Action>::type;
+            using profile_tag = gather_shift_states_tag;
+            using profile_types = profile<resolve_conflicts<Closure, Item::id>, next_action_state<Closure, Gathered, Action>>;
+        };
+    };
 
-        using G0 = typename gather_shift_states<Closure, Gathered, typeset<Tokens...>>::type;
-
-        using type = typename next_action_state<Closure, G0, Action>::type;
+    template<typename Closure, typename Gathered, typename Tokens>
+    struct gather_shift_states
+    {
+        using type = typename forall<Tokens, Gathered, gather_shift_states2<Closure>::template loop>::type;
 
         using profile_tag = gather_shift_states_tag;
-        using profile_types = profile<Closure, Gathered, typeset<token<Token>, Tokens...>,
-            resolve_conflicts<Closure, Token>,
-            gather_shift_states<Closure, Gathered, typeset<Tokens...>>,
-            next_action_state<Closure, G0, Action>
-            >;
-
+        using profile_types = profile<forall<Tokens, Gathered, gather_shift_states2<Closure>::template loop>>;
     };
 
     template<typename Closure, typename Gathered, typename Gotos>

@@ -120,6 +120,13 @@ namespace cellar
         using type = Action;
     };
 
+    template<typename Action>
+    struct resolve_actions<Action, syntax_error>
+    {
+        using type = Action;
+    };
+
+
     template<int Id1, typename S1, typename Rule1, int Id2, typename S2, typename Rule2>
     struct resolve_actions<reduce<Id1, S1, Rule1>, reduce<Id2, S2, Rule2>>
     {
@@ -138,25 +145,14 @@ namespace cellar
         using type = shift<Id1, Rule1>;
     };
 
+
     template<typename Action, typename Actions>
-    struct resolve_action_set;
-
-    template<typename Action>
-    struct resolve_action_set<Action, typeset<>>
+    struct resolve_action_set
     {
-        using type = Action;
-        using profile_tag = resolve_conflicts_tag;
-        using profile_types = profile<>;
-    };
-
-    template<typename Action, typename A, typename...As>
-    struct resolve_action_set<Action, typeset<A, As...>>
-    {
-        using T = typename resolve_action_set<Action, typeset<As...>>::type;
-        using type = typename resolve_actions<T, A>::type;
+        using type = typename forall<Actions, Action, resolve_actions>::type;
 
         using profile_tag = resolve_conflicts_tag;
-        using profile_types = profile<typeset<A, As...>, resolve_action_set<Action, typeset<As...>>>;
+        using profile_types = profile<forall<Actions, Action, resolve_actions>>;
     };
 
     template<typename Action>

@@ -76,7 +76,7 @@ namespace cellar
         /*
             Adds and item `Item` to `Closure`, returning the new closure in `type`.
          */
-        template<typename Item, typename Closure, bool NeedToExpand = !typeset_contains<Item, Closure>::value && item<Item>::reads_symbol>
+        template<typename Item, typename Closure, bool NeedToExpand = !tree_contains<Item, Closure>::value && item<Item>::reads_symbol>
         struct add_to_closure;
 
 
@@ -85,12 +85,6 @@ namespace cellar
          */
         template<typename Symbol>
         struct is_symbol;
-
-
-
-
-
-
 
 
 
@@ -217,12 +211,12 @@ namespace cellar
     template<typename Item, typename Closure>
     struct add_to_closure<Item, Closure, false>
     {
-        using type = typename typeset_sorted_insert<Item, Closure>::type;
+        using type = typename tree_insert<Item, Closure>::type;
 
         using profile_tag = add_to_closure_tag;
         using profile_types = profile<
-            typeset_contains<Item, Closure>,
-            typeset_sorted_insert<Item, Closure>,
+            tree_contains<Item, Closure>,
+            tree_insert<Item, Closure>,
             type
             >;
     };
@@ -311,92 +305,28 @@ namespace cellar
     template<typename Item, typename Closure>
     struct add_to_closure<Item, Closure, true>
     {
-        // Insert Item into Closure
-        using C1 = typename typeset_sorted_insert<Item, Closure>::type;
+        using C1 = typename tree_insert<Item, Closure>::type;
 
         using Follows = typename follow<Item>::type;
 
         using NextSymbol= typename getnext<Item>::type;
 
-        //using C2 = typename type_if<
-        //    potentially_empty_symbol<NextSymbol>::value,
-        //    typename add_to_closure<typename skip_symbol<Item>::type, C1>::type,
-        //  C1>::type;
-
         using type = typename expand_symbol<NextSymbol, typename NextSymbol::rules, Follows, C1>::type;
 
         using profile_tag = add_to_closure_tag;
         using profile_types = profile<
-            typeset_contains<Item, Closure>,
-            typeset_sorted_insert<Item, Closure>, 
+            tree_contains<Item, Closure>,
+            tree_insert<Item, Closure>, 
             follow<Item>,
             getnext<Item>,
             expand_symbol<NextSymbol, typename NextSymbol::rules, Follows, C1>,
             type>;
     };
 
-    template<typename Closure>
-    struct build_closure<typeset<>, Closure>
-    {
-        using type = Closure;
-        using profile_tag = build_closure_tag;
-        using profile_types = profile<typeset<>, Closure>;
-    };
-
-    template<typename Item, typename...Items, typename Closure>
-    struct build_closure<typeset<Item, Items...>, Closure>
-    {
-        using C1 = typename build_closure<typeset<Items...>, Closure>::type;
-        using type = typename add_to_closure<Item, C1>::type;
-
-        using profile_tag = build_closure_tag;
-        using profile_types = profile<
-            typeset<Item, Items...>,
-            build_closure<typeset<Items...>, Closure>,
-            Closure,
-            add_to_closure<Item, C1>,
-            type>;
-    };
-
-        // Helps to debug typesets
-        template<typename T1, typename T2>
-        struct typeset_compare;
-
-        template<>
-        struct typeset_compare<typeset<>, typeset<>>
+        template<typename Item, typename Closure>
+        struct add_to_closure_loop
         {
-            using left = typeset<>;
-            using right = typeset<>;
-        };
-
-        template<typename L, typename...Ls>
-        struct typeset_compare<typeset<L, Ls...>, typeset<>>
-        {
-            using left = typeset<L, Ls...>;
-            using right = typeset<>;
-        };
-
-        template<typename R, typename...Rs>
-        struct typeset_compare<typeset<>, typeset<R, Rs...>>
-        {
-            using left = typeset<>;
-            using right = typeset<R, Rs...>;
-        };
-
-        template<typename I, typename... Ls, typename... Rs>
-        struct typeset_compare<typeset<I, Ls...>, typeset<I, Rs...>>
-        {
-            using C = typeset_compare<typeset<Ls...>, typeset<Rs...>>;
-            using left = typename C::left;
-            using right = typename C::right;
-        };
-
-        template<typename L, typename... Ls, typename R, typename... Rs>
-        struct typeset_compare<typeset<L, Ls...>, typeset<R, Rs...>>
-        {
-            using C = typeset_compare<typeset<Ls...>, typeset<Rs...>>;
-            using left = typename typeset_ins<L, typename C::left>::type;
-            using right = typename typeset_ins<R, typename C::right>::type;
+            using type = typename add_to_closure<Item, Closure>::type;
         };
 
     }
@@ -408,21 +338,23 @@ namespace cellar
     template<typename Kernel>
     struct closure
     {        
-        using T0 = typename impl::build_closure<Kernel, typeset<>>::type;
+        using T0 = typename forall<Kernel, empty_tree, impl::add_to_closure_loop>::type;
         // using type = T0;
-        using type = typename typeset_sort<T0>::type;
+
+        // Rebalance in order to make equal closures have equal types
+        // as this is important for efficiency and to reduce the number of overall
+        // states.
+        using type = typename make_balanced_tree<T0>::type;
 
         using T2 = typename closure<type>::type;
-        using Cmp = impl::typeset_compare<type, T2>;
-        // These might still fail - perhaps drop these tests
-        static_assert(type_equals<typename Cmp::left, typename Cmp::right>::value, "Closure");
-        static_assert(type() == T2(), "Closure error");
-        static_assert(type_equals<type, T2>::value, "Closure error");
+        using C2 = typename make_balanced_tree<T2>::type;
+
+        static_assert(type_equals<type, C2>::value, "Closure");
 
         using profile_tag = closure_tag;
         using profile_types = profile<
-            impl::build_closure<Kernel, typeset<>>, 
-            typeset_sort<T0>
+            forall<Kernel, empty_tree, impl::add_to_closure_loop>,
+            make_balanced_tree<T0>
             >;
     };
 

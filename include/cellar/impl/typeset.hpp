@@ -561,6 +561,14 @@ namespace cellar
         using profile_types = profile<Item>;
     };
 
+    template<typename H, typename L, typename R>
+    struct tree_insert<type_tree<H, L, R>, empty_tree>
+    {
+        // This special case is when you store a tree in a tree: The values nodes could get
+        // confused with subtrees if we don't do this.
+        using type = type_tree<type_tree<H,L,R>, empty_tree, empty_tree>;
+    };
+
 
     template<typename Item>
     struct tree_insert<Item, empty_tree>

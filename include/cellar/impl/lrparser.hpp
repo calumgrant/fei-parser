@@ -47,7 +47,7 @@ namespace cellar
     template<typename S, int Id, int Lookahead>
     struct get_next_token<rule_position<S, rule<Id>, 0, Lookahead>>
     {
-        using type = typeset<token<Lookahead>>;
+        using type = token<Lookahead>;
 
         using profile_tag = get_next_token_tag;
         using profile_types = profile<rule_position<S, rule<Id>, 0, Lookahead>, type>;
@@ -56,7 +56,7 @@ namespace cellar
     template<typename S, int Id, int Token, typename...Def, typename...Items, int Lookahead>
     struct get_next_token<rule_position<S, rule<Id, token<Token, Def...>, Items...>, 0, Lookahead>>
     {
-        using type = typeset<token<Token>>;
+        using type = token<Token>;
 
         using profile_tag = get_next_token_tag;
         using profile_types = profile<rule_position<S, rule<Id, token<Token, Def...>, Items...>, 0, Lookahead>, type>;
@@ -65,7 +65,7 @@ namespace cellar
     template<typename S, int Id, typename Item, typename...Items, int Lookahead>
     struct get_next_token<rule_position<S, rule<Id, Item, Items...>, 0, Lookahead>>
     {
-        using type = typeset<>;
+        using type = empty_tree;
 
         using profile_tag = get_next_token_tag;
         using profile_types = profile<rule_position<S, rule<Id, Item, Items...>, 0, Lookahead>, type>;
@@ -145,34 +145,28 @@ namespace cellar
 
     // Compute the list of tokens that this state is able to process
     // Anything else is a syntax error
-    template<typename State>
-    struct build_next_token_list;
-
-    template<>
-    struct build_next_token_list<typeset<>>
+    template<typename Item, typename List>
+    struct build_next_token_loop
     {
-        using type = typeset<>;
-
-        using profile_tag = build_next_token_list_tag;
-        using profile_types = profile<type>;
-    };
-
-    template<typename Item, typename... Items>
-    struct build_next_token_list<typeset<Item, Items...>>
-    {
-        using T0 = typename build_next_token_list<typeset<Items...>>::type;
         using T1 = typename get_next_token<Item>::type;
-        using type = typename typeset_sorted_union<T0, T1>::type;
+        using type = typename tree_union<List, T1>::type;
 
         using profile_tag = build_next_token_list_tag;
         using profile_types = profile<
-            typeset<Item, Items...>,
-            type,
-            build_next_token_list<typeset<Items...>>,
+            Item,
+            List,
             get_next_token<Item>,
-            typeset_sorted_union<T0, T1>
+            tree_union<List, T1>
             >;
+    };
 
+    template<typename Closure>
+    struct build_next_token_list
+    {
+        using type = typename forall<Closure, empty_tree, build_next_token_loop>::type;
+
+        using profile_tag = build_next_token_list_tag;
+        using profile_types = profile<forall<Closure, empty_tree, build_next_token_loop>>;
     };
 
     template<typename State, int Token, typename It, 
@@ -301,8 +295,7 @@ namespace cellar
     template<typename S>
     struct initial_state
     {
-        using type = typeset<rule_position<WholeProgram, rule<0, S, token<EndOfStream>>, 0, EndOfStream>>;
-        using tree = rule_position<WholeProgram, rule<0, S, token<EndOfStream>>, 0, EndOfStream>;
+        using type = rule_position<WholeProgram, rule<0, S, token<EndOfStream>>, 0, EndOfStream>;
     };
 
     template<typename Symbol, typename It>
