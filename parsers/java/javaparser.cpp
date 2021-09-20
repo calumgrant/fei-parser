@@ -73,7 +73,7 @@ class Modifier : public symbol<
     token<java::Default>,
     token<java::Static>,
     token<java::Strictfp>,
-    token<java::Final> 
+    token<java::Final>
     */
     > {};
 
@@ -311,8 +311,9 @@ template<> struct ignore_shift_reduce_conflict<41, 121> : public true_value {};
 
 char_parser java::parser()
 {
-    // using Diagnostics = parser_diagnostics<::CompilationUnit>;
-    // std::cout << Diagnostics::number_of_states << std::endl << Diagnostics::states(); 
+
+    using Diagnostics = parser_diagnostics<::CompilationUnit>;
+    std::cout << Diagnostics::number_of_states << std::endl << Diagnostics::states(); 
 
     // Diagnostics::output_stats();
 

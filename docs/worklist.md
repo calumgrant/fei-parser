@@ -6,6 +6,9 @@ Baseline memory usage
 Down to 4.96 seconds - with modifier = public/private/protected.
   - 10.9 seconds with all modifiers
 
+Down to 3.91 seconds by caching closures. Why not faster!!
+  - 12.78 seconds with all modifiers. Slower.
+
 Experiments to try:
 1. Look at the diagnostic counts for javabench
   - Fix up potentially_empty_symbol
@@ -17,6 +20,37 @@ Experiments to try:
 4. Visit whole grammar and cache it as a list of all reachable symbols and tokens
 
 - goto_list is still a sequence: How will this work in the `reduce` function??
+
+add_to_closure_tag = 395
+build_closure_tag = 0
+closure_tag = 142
+token_tag = 19
+rule_tag = 106
+rule_position_tag = 1152
+no_tag = 2517
+typeset_tag = 84
+typeset_insert_tag = 0
+typeset_union_tag = 0
+typeset_contains_tag = 0
+typeset_size_tag = 0
+typeset_sort_tag = 0
+typeset_sorted_insert_tag = 16
+typeset_sorted_union_tag = 35
+follow_tag = 183
+first_tag = 40
+potentially_empty_symbol_tag = 0
+getnext_tag = 102
+expand_symbol_tag = 599
+build_next_token_list_tag = 154
+get_next_token_tag = 145
+build_goto_list_tag = 206
+gather_shift_states_tag = 166
+resolve_conflicts_tag = 142
+next_action_state_tag = 71
+shift_action_tag = 66
+goto_tag = 142
+tree_tag = 36024
+
 
 Latest profile info:
 ```

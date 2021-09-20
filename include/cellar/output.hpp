@@ -387,50 +387,62 @@ namespace cellar
 
     namespace impl
     {
-        template<typename H, typename L, typename R>
+        template<typename Node>
         struct write_tree
         {
             static void write(std::ostream & os)
             {
-                os << "  " << L() << ",\n  " << H() << ",\n  " << R();
+                os << "  " << Node();
+            }
+        };
+
+        template<typename H, typename L, typename R>
+        struct write_tree<type_tree<H, L, R>>
+        {
+            static void write(std::ostream & os)
+            {
+                write_tree<L>::write(os);
+                os << ",\n  " << H() << ",\n";
+                write_tree<R>::write(os);
             }
         };
 
         template<typename H, typename R>
-        struct write_tree<H, empty_tree, R>
+        struct write_tree<type_tree<H, empty_tree, R>>
         {
             static void write(std::ostream & os)
             {
-                os << "\n  " << H() << ",\n  " << R();
+                os << "  " << H() << ",\n";
+                write_tree<R>::write(os);
             }
         };
 
         template<typename H, typename L>
-        struct write_tree<H, L, empty_tree>
+        struct write_tree<type_tree<H, L, empty_tree>>
         {
             static void write(std::ostream & os)
             {
-                os << "  " << L() << ",\n  " << H();
+                write_tree<L>::write(os);
+                os << ",\n  " << H();
             }
         };
 
         template<typename H>
-        struct write_tree<H, empty_tree, empty_tree>
+        struct write_tree<type_tree<H, empty_tree, empty_tree>>
         {
             static void write(std::ostream & os)
             {
                 os << "  " << H();
             }
         };
-
     }
 
     template<typename I1, typename I2, typename I3>
     std::ostream & operator<<(std::ostream & os, type_tree<I1, I2, I3>)
     {
         os << "{\n";
-        impl::write_tree<I1, I2, I3>::write(os);
-        return os << "}\n";
+        impl::write_tree<type_tree<I1, I2, I3>>::write(os);
+        return os << "\n}";
     }
 
 }

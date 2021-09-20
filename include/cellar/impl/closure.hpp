@@ -323,12 +323,22 @@ namespace cellar
             type>;
     };
 
+        // Cached - we construct the "closure" for each item, then
+        // perform a set-union in add_to_closure_loop.
+        template<typename Item>
+        struct item_closure
+        {
+            using type = typename add_to_closure<Item, empty_tree>::type;
+            using profile_tag = add_to_closure_tag;
+            using profile_types = profile<add_to_closure<Item, empty_tree>>;
+        };
+
         template<typename Item, typename Closure>
         struct add_to_closure_loop
         {
-            using type = typename add_to_closure<Item, Closure>::type;
+            using type = typename tree_union<typename item_closure<Item>::type, Closure>::type;
             using profile_tag = add_to_closure_tag;
-            using profile_types = profile<add_to_closure<Item, Closure>>;
+            using profile_types = profile<item_closure<Item>, tree_union<Closure, typename item_closure<Item>::type>>;
         };
 
     }
@@ -351,7 +361,7 @@ namespace cellar
         using T2 = typename closure<type>::type;
         using C2 = typename make_balanced_tree<T2>::type;
 
-        static_assert(type_equals<type, C2>::value, "Closure");
+//        static_assert(type_equals<type, C2>::value, "Closure");
 
         using profile_tag = closure_tag;
         using profile_types = profile<
@@ -359,5 +369,6 @@ namespace cellar
             make_balanced_tree<T0>
             >;
     };
+
 
 }
