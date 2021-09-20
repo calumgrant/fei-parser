@@ -1,6 +1,59 @@
 
 # Plan for the next week
 
+Baseline memory usage
+11s compilation, 2.69GB of memory
+
+Experiments to try:
+1. Look at the diagnostic counts for javabench
+  - Fix up potentially_empty_symbol
+2. Remove final vestiges of typesets
+  - Problem with recursive hashes of symbols.
+2. Remove `hash` and always use `Class::hash`
+3. Compute the closure without building it up.
+4. Visit whole grammar and cache it as a list of all reachable symbols and tokens
+
+
+Latest profile info:
+```
+add_to_closure_tag = 261
+build_closure_tag = 0
+closure_tag = 141
+token_tag = 19
+rule_tag = 113
+rule_position_tag = 1126
+no_tag = 2374
+typeset_tag = 350
+typeset_insert_tag = 540
+typeset_union_tag = 0
+typeset_contains_tag = 2354
+typeset_size_tag = 0
+typeset_sort_tag = 0
+typeset_sorted_insert_tag = 16
+typeset_sorted_union_tag = 35
+follow_tag = 142
+first_tag = 1243
+potentially_empty_symbol_tag = 2001
+getnext_tag = 87
+expand_symbol_tag = 332
+build_next_token_list_tag = 153
+get_next_token_tag = 147
+build_goto_list_tag = 205
+gather_shift_states_tag = 162
+resolve_conflicts_tag = 137
+next_action_state_tag = 68
+shift_action_tag = 64
+goto_tag = 142
+tree_tag = 36821
+```
+
+- Validator for
+  - grammar
+  - parser
+  - lexer
+
+
+
 - Remove `Closure` from `expand symbol` so that each symbol has its own expansion. Then we'll use `tree_union` to complete the closure.
 
 

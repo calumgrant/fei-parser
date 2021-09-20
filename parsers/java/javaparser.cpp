@@ -64,17 +64,17 @@ class Annotation : public symbol<NormalAnnotation /*, MarkerAnnotation, SingleEl
 */
 class Modifier : public symbol<
     // Annotation,
-    token<java::Public>,
+    //token<java::Public>,
     token<java::Private>,
-    token<java::Protected>
-    //token<java::Abstract>,
-    //token<java::Default>,
-    //token<java::Static>,
-    //token<java::Strictfp>,
-    //token<java::Final>
+    token<java::Protected> /*,
+    token<java::Abstract>,
+    token<java::Default>,
+    token<java::Static>,
+    token<java::Strictfp>,
+    token<java::Final> */ 
     > {};
 
-class OptionalModifiers : public OptionalList<java::ModifierList, Modifier> {};
+class OptionalModifiers : public OptionalList<java::ModifierList, Modifier> {}; 
 
 using PackageModifier = symbol<Annotation>;
 
@@ -303,12 +303,15 @@ class InterfaceMethodDeclaration : public symbol<
 template<> struct ignore_shift_reduce_conflict<57, 140> : public true_value {};
 template<> struct ignore_shift_reduce_conflict<-6, 140> : public true_value {};
 template<> struct ignore_shift_reduce_conflict<42, 121> : public true_value {};
-template<> struct ignore_shift_reduce_conflict<41, 121> : public true_value {};
+template<> struct ignore_shift_reduce_conflict<41, 121> : public true_value {}; 
 
 
 char_parser java::parser()
 {
     using Diagnostics = parser_diagnostics<::CompilationUnit>;
     std::cout << Diagnostics::number_of_states << std::endl << Diagnostics::states();
+
+    Diagnostics::output_stats();
+
     return make_parser<::CompilationUnit>(lexer());
 }

@@ -53,8 +53,27 @@ namespace cellar
     template<typename Rule, typename...Rules>
     struct hash<symbol<Rule, Rules...>>
     {
-        static const int value = hash_combine<hash<symbol<Rules...>>::value, hash<Rule>::value>::value;
+        static const int value = hash_combine<hash<symbol<Rules...>>::value, 127>::value;
     };
+
+    template<int Id, typename...Def, typename...Rules>
+    struct hash<symbol<token<Id, Def...>, Rules...>>
+    {
+        static const int value = hash_combine<hash<symbol<Rules...>>::value, hash<token<Id, Def...>>::value>::value;
+    };
+
+    template<int Id, typename...Def, typename...Rules>
+    struct hash<symbol<rule<Id, Def...>, Rules...>>
+    {
+        static const int value = hash_combine<hash<symbol<Rules...>>::value, hash<rule<Id, Def...>>::value>::value;
+    };
+
+    template<typename...Def, typename...Rules>
+    struct hash<symbol<symbol<Def...>, Rules...>>
+    {
+        static const int value = hash_combine<hash<symbol<Rules...>>::value, hash<symbol<Def...>>::value>::value;
+    };
+
 
     template<typename Symbol, typename Rule, int Pos, int Lookahead>
     struct hash<rule_position<Symbol, Rule, Pos, Lookahead>>

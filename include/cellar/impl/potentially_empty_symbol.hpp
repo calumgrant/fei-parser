@@ -6,16 +6,16 @@ namespace cellar
         Determines whether a grammar symbol can be empty.
         It needs to guard against recursion. 
     */
-    template<typename Symbol, typename Visited = typeset<>, bool Recursive = typeset_contains<Symbol, Visited>::value>
+    template<typename Symbol, typename Visited = empty_tree, bool Recursive = tree_contains<Symbol, Visited>::value>
     struct potentially_empty_symbol
     {
-        static const bool value = potentially_empty_symbol<typename Symbol::rules, typename typeset_insert<Symbol, Visited>::type>::value;
+        static const bool value = potentially_empty_symbol<typename Symbol::rules, typename tree_insert<Symbol, Visited>::type>::value;
         using profile_tag = potentially_empty_symbol_tag;
         using profile_types = profile<
             Symbol,
             Visited,
-            typeset_contains<Symbol, Visited>, typeset_insert<Symbol, Visited>, 
-            potentially_empty_symbol<typename Symbol::rules, typename typeset_insert<Symbol, Visited>::type>
+            tree_contains<Symbol, Visited>, tree_insert<Symbol, Visited>, 
+            potentially_empty_symbol<typename Symbol::rules, typename tree_insert<Symbol, Visited>::type>
             >;
     };
 
@@ -28,7 +28,7 @@ namespace cellar
         using profile_types = profile<
             Symbol,
             Visited,
-            typeset_contains<Symbol, Visited>
+            tree_contains<Symbol, Visited>
             >; 
     };
 
@@ -41,7 +41,7 @@ namespace cellar
         using profile_types = profile<
             symbol<>,
             Visited,
-            typeset_contains<symbol<>, Visited>
+            tree_contains<symbol<>, Visited>
             >; 
     };
 
@@ -54,7 +54,7 @@ namespace cellar
         using profile_types = profile<
             symbol<Rule, Rules...>,
             Visited,
-            typeset_contains<symbol<Rule, Rules...>, Visited>,
+            tree_contains<symbol<Rule, Rules...>, Visited>,
             potentially_empty_symbol<Rule, Visited>,
             potentially_empty_symbol<symbol<Rules...>, Visited>            
             >; 
@@ -70,7 +70,7 @@ namespace cellar
         using profile_types = profile<
             token<Id, Definition...>,
             Visited,
-            typeset_contains<token<Id, Definition...>, Visited>
+            tree_contains<token<Id, Definition...>, Visited>
             >;
 
     };
@@ -84,7 +84,7 @@ namespace cellar
         using profile_types = profile<
             rule<Id>,
             Visited,
-            typeset_contains<rule<Id>, Visited>
+            tree_contains<rule<Id>, Visited>
             >;
     };
 
@@ -98,7 +98,7 @@ namespace cellar
         using profile_types = profile<
             rule<Id>,
             Visited,
-            typeset_contains<rule<Id, Rule, Rules...>, Visited>,
+            tree_contains<rule<Id, Rule, Rules...>, Visited>,
             potentially_empty_symbol<Rule, Visited>,
             potentially_empty_symbol<rule<Id, Rules...>, Visited>
             >;
