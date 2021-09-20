@@ -3,16 +3,20 @@
 
 Baseline memory usage
 11s compilation, 2.69GB of memory
+Down to 4.96 seconds - with modifier = public/private/protected.
+  - 10.9 seconds with all modifiers
 
 Experiments to try:
 1. Look at the diagnostic counts for javabench
   - Fix up potentially_empty_symbol
+  - first tag is horrible
 2. Remove final vestiges of typesets
   - Problem with recursive hashes of symbols.
 2. Remove `hash` and always use `Class::hash`
 3. Compute the closure without building it up.
 4. Visit whole grammar and cache it as a list of all reachable symbols and tokens
 
+- goto_list is still a sequence: How will this work in the `reduce` function??
 
 Latest profile info:
 ```
@@ -46,6 +50,10 @@ shift_action_tag = 64
 goto_tag = 142
 tree_tag = 36821
 ```
+
+Think about `maybe_empty` in terms of iteration.
+
+
 
 - Validator for
   - grammar
