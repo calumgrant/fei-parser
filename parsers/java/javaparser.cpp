@@ -30,20 +30,20 @@ using StaticImportOnDemandDeclaration =
 // ImportDeclaration
 // https://docs.oracle.com/javase/specs/jls/se8/html/jls-7.html#jls-ImportDeclaration
 
-using ImportDeclaration = symbol<
+class ImportDeclaration : public symbol<
     SingleTypeImportDeclaration,
     TypeImportOnDemandDeclaration,
     SingleStaticImportDeclaration,
     StaticImportOnDemandDeclaration
-    >;
+    > {};
 
 class Annotation;
 
-using ElementValue = symbol<
+class ElementValue : public symbol<
     /* ConditionalExpression, */
     /* ElementValueArrayInitializer, */
     Annotation
-    >;
+    > {};
 
 using ElementValuePair = rule<java::ElementValuePair, 
     Identifier, Tok<java::Eq>, ElementValue>;
@@ -67,14 +67,14 @@ class Modifier : public symbol<
     token<java::Public>,
     token<java::Private>,
     token<java::Protected>
-    /*
+    
     ,
     token<java::Abstract>,
     token<java::Default>,
     token<java::Static>,
     token<java::Strictfp>,
     token<java::Final>
-    */
+    
     > {};
 
 class OptionalModifiers : public OptionalList<java::ModifierList, Modifier> {}; 
@@ -84,7 +84,7 @@ using PackageModifier = symbol<Annotation>;
 // https://docs.oracle.com/javase/specs/jls/se8/html/jls-7.html#jls-PackageDeclaration
 class PackageDeclaration : public symbol<
     rule<java::Package, 
-    // OptionalModifiers,
+ OptionalModifiers,
     // Optional<java::PackageModifierList, List<PackageModifier>>,
         Tok<java::Package>,
         Sequence<Identifier, Tok<java::Dot>>,
@@ -96,9 +96,10 @@ class PackageDeclaration : public symbol<
 
 // https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-ClassModifier
 
-using TypeVariable = symbol<
-    OptionalList<java::AnnotationList, Annotation>, Identifier
-    >;
+class TypeVariable : public symbol<
+    rule< java::TypeVariable, List<Annotation>, Identifier>,
+    rule< java::TypeVariable, Identifier>
+    > {};
 
 class ClassType;
 
@@ -159,12 +160,14 @@ using TypeArguments = rule<java::TypeArgumentList,
 class ClassType : public symbol <
     rule<java::ClassType, 
         OptionalList<java::AnnotationList, Annotation>,
-        Identifier
-        /*Optional<java::TypeArgumentList, TypeArguments>*/>,
+        Identifier//,
+        //Optional<java::TypeArgumentList, TypeArguments>>,
+        >,
     rule<java::ClassType,
         ClassOrInterfaceType, Tok<java::Dot>, OptionalList<java::AnnotationList, Annotation>, 
-        Identifier
-        /*Optional<java::TypeArgumentList, TypeArguments>*/>
+        Identifier //,
+        //Optional<java::TypeArgumentList, TypeArguments>>
+        >
     > {};
 
 using InterfaceType = ClassType;
@@ -237,9 +240,13 @@ class TypeDeclaration : public symbol<ClassDeclaration, /* InterfaceDeclaration,
 
 class CompilationUnit : public symbol<
     rule<java::CompilationUnit, 
-        Optional<java::PackageDeclaration, PackageDeclaration>, 
+        PackageDeclaration, 
         OptionalList<java::ImportDeclarationList, ImportDeclaration>,
         OptionalList<java::TypeDeclarationList, TypeDeclaration>
+        >,
+    rule<java::CompilationUnit, 
+        List<ImportDeclaration>,
+        OptionalList<java::TypeDeclarationList, TypeDeclaration>        
         >> {};
 
 
@@ -301,21 +308,16 @@ class InterfaceMethodDeclaration : public symbol<
     > {};
     */
 
-// Conflicts detected so far
-
-template<> struct ignore_shift_reduce_conflict<57, 140> : public true_value {};
-template<> struct ignore_shift_reduce_conflict<-6, 140> : public true_value {};
-template<> struct ignore_shift_reduce_conflict<42, 121> : public true_value {};
-template<> struct ignore_shift_reduce_conflict<41, 121> : public true_value {}; 
-
-
 char_parser java::parser()
 {
-
+#if 1
     using Diagnostics = parser_diagnostics<::CompilationUnit>;
-    std::cout << Diagnostics::number_of_states << std::endl << Diagnostics::states(); 
 
-    // Diagnostics::output_stats();
+    std::cout << "Here are the states:\n" << Diagnostics::states() << std::endl;
+    std::cout << "There are " << Diagnostics::number_of_states << " states in the state machine " << std::endl;   
+#endif
+    // std::cout << "Here are the template instantiation stats:\n";
+    // Diagnostics::output_stats(); 
 
     return make_parser<::CompilationUnit>(lexer());
 }

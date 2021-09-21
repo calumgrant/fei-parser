@@ -159,7 +159,8 @@ namespace cellar::java
         InterfaceBodyDeclaration,
         InterfaceBody,
         InterfaceMethodDeclaration,
-        ModifierList
+        ModifierList,
+        TypeVariable
     };
 
     extern cellar::char_lexer lexer();
