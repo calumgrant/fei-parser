@@ -112,9 +112,168 @@ struct treetest
     }
 };
 
-using test4 = treetest<400>;
+using test4 = treetest<400>; 
+
+namespace IntSet
+{
+    template<int H, typename L, typename R>
+    struct intset;
+
+    struct empty_intset
+    {
+        static const int size = 0;
+
+        template<int I>
+        struct insert
+        {
+            using type = intset<I, empty_intset, empty_intset>;
+            using profile_tag = ints_tag;
+            using profile_types = profile<type>;
+        };
+
+        template<typename S2>
+        struct Union
+        {
+            using type = S2;
+            using profile_tag = ints_tag;
+            using profile_types = profile<type>;
+        };
+
+        using rebalance = empty_intset;
+        using profile_tag = ints_tag;
+        using profile_types = profile<>;
+    };
+
+    template<int H, typename L, typename R>
+    struct intset
+    {
+        using profile_tag = ints_tag;
+        using profile_types = profile<L, R>;
+
+        static const int size = 1 + L::size + R::size;
+
+        template<int I, bool Less = (I<H)>
+        struct insert
+        {
+            using type = intset<H, typename L::template insert<I>::type, R>;
+            using profile_tag = ints_tag;
+            using profile_types = profile<L, R>;
+        };
+
+        template<int I>
+        struct insert<I, false>
+        {
+            using type = intset<H, L, typename R::template insert<I>::type>;
+            using profile_tag = ints_tag;
+            using profile_types = profile<typename R::template insert<I>>;
+        };
+
+        template<>
+        struct insert<H, false>
+        {
+            using type = intset;
+            using profile_tag = ints_tag;
+            using profile_types = profile<>;
+        };
+
+        template<typename Is>
+        struct Union
+        {
+            using U1 = typename L::template Union<Is>::type;
+            using U2 = typename R::template Union<U1>::type;
+            using type = typename U2::template insert<H>::type;
+
+            using profile_tag = ints_tag;
+            using profile_types = profile<typename L::template Union<Is>, typename R::template Union<U1>, typename U2::template insert<H>>;
+        };
+
+        template<int I, bool InLeft = (I<L::size), bool InMiddle = (I==L::size)>
+        struct element;
+
+        template<int I>
+        struct element<I, true, false>
+        {
+            static const int value = L::template element<I>::value;
+            using profile_tag = ints_tag;
+            using profile_types = profile<typename L::template element<I>>;
+        };
+
+        template<int I>
+        struct element<I, false, true>
+        {
+            static const int value = H; 
+            using profile_tag = ints_tag;
+            using profile_types = profile<>;
+        };
+
+        template<int I>
+        struct element<I, false, false>
+        {
+            static const int value = R::template element<I - L::size - 1>::value;
+            using profile_tag = ints_tag;
+            using profile_types = profile<typename R::template element<I - L::size - 1>>;
+        };
+    };
+
+    template<typename T>
+    struct output_ints;
+
+    template<>
+    struct output_ints<empty_intset>
+    {
+        static void write()
+        {
+            std::cout << "()";
+        }
+    };
+
+    template<int H, typename L, typename R>
+    struct output_ints<intset<H,L,R>>
+    {
+        static void write()
+        {
+            std::cout << "(";
+            output_ints<L>::write();
+            std::cout << " " << H << " ";
+            output_ints<R>::write();
+            std::cout << ")";
+        }
+    };
+
+
+    template<typename Tree, int Item>
+    struct int_insert_test
+    {
+        using type = typename Tree::template insert<Item>::type;
+        using profile_tag = no_tag;
+        using profile_types = profile<typename Tree::template insert<Item>, Tree>;
+
+    };
+
+    template<int N>
+    struct inttest
+    {
+        using T0 = typename mixed_loop<empty_intset, 0, N, int_insert_test>::type;
+
+        using U0 = typename T0::template Union<T0>::type;
+
+        static void output()
+        {
+            output_ints<T0>::write();
+
+            // profile_template<inttest>();
+            // std::cout << "\nNumber of intset operations = " << static_count<ints_tag>() << std::endl;
+        }
+
+        using profile_tag = ints_tag;
+        using profile_types = profile<mixed_loop<empty_intset, 0, N, int_insert_test>>;
+    };
+}
+
+using bigints = IntSet::inttest<400>; 
 
 int main()
 {
     test4::output();
+    bigints::output();
 }

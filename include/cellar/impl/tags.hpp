@@ -33,4 +33,5 @@ namespace cellar
     struct shift_action_tag;
     struct goto_tag;
     struct tree_tag;
+    struct ints_tag;
 }

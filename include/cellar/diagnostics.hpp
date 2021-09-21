@@ -170,7 +170,8 @@ namespace cellar
         next_action_state_tag,
         shift_action_tag,
         goto_tag,
-        tree_tag
+        tree_tag,
+        ints_tag
     >;
 
     static const char * TagNames[] = {
@@ -202,7 +203,8 @@ namespace cellar
         "next_action_state_tag",
         "shift_action_tag",
         "goto_tag",
-        "tree_tag"
+        "tree_tag",
+        "ints_tag"
     };
 
     inline void output_profiler()
