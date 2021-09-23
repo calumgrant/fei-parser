@@ -1,5 +1,4 @@
 #include <cellar/cellar.hpp>
-
 #include <simpletest.hpp>
 
 using namespace cellar;
