@@ -272,6 +272,91 @@ namespace IntSet
 
 using bigints = IntSet::inttest<400>; 
 
+namespace Ints
+{
+    template<int... Is> struct ints;
+
+    template<int I, typename Ints>
+    struct ints_insert;
+
+    template<int I, typename Ints>
+    struct ints_contains;
+
+    template<int I>
+    struct ints_contains<I, ints<>>
+    {
+        static const bool value = false;
+    };
+
+    template<int I, int... Is>
+    struct ints_contains<I, ints<I, Is...>>
+    {
+        static const bool value = true;
+    };
+
+    template<int I, int J, int... Is>
+    struct ints_contains<I, ints<J, Is...>>
+    {
+        static const bool value = ints_contains<I, ints<Is...>>::value;
+    };
+
+    template<typename A, typename B>
+    struct concat;
+
+    template<int...As, int...Bs>
+    struct concat<ints<As...>, ints<Bs...>>
+    {
+        using type = ints<As..., Bs...>;
+    };
+
+    template<int I, int A0, int A1, int A2, int A3, int A4, int A5, int A6, int A7, int A8, int A9, int...Is>
+    struct ints_contains<I, ints<A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, Is...>>
+    {
+        static const bool value = I==A0 | I==A1 || I==A2 || I==A3 || I==A4 || I==A5 || I==A6 || I==A7 || I==A8 || I==A9 || 
+            ints_contains<I, ints<Is...>>::value;
+    };
+
+    // Locates a position in a list; 
+    template<int I, typename Ints>
+    struct search;
+
+    template<int I, int A0, int A1, int A2, int A3, int A4, int A5, int A6, int A7, int A8, int A9, int...Is>
+    struct ints_insert<I, ints<A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, Is...>>
+    {
+        using type = ints< 
+            I<A0 ? I : A0,
+            I<A0 ? A0 : I<A1 ? I : A1,
+            I<A1 ? A1 : I<A2 ? I : A2,
+            // etc
+            
+            Is...>;
+    };
+
+    template<int I, typename Is>
+    struct ints_insert;
+
+    template<int I, int... Is>
+    struct ints_insert<I, ints<Is...>>
+    {
+        // Wrong but ok.
+        using type = ints<I, Is...>;
+    };
+
+
+    struct empty_list {};
+
+    template<int I, typename T>
+    struct int_list
+    {
+    };
+
+    template<int I, typename T>
+    struct int_insert
+    {
+
+    };    
+}
+
 int main()
 {
     test4::output();

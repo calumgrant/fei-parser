@@ -1,7 +1,44 @@
 
 # Plan for the next week
 
+- Containers
+  - `range`
+  - `unordered_range`
+  - `list`
+  - `tree`
+  - `tuple` - slow and bad
+- Operations
+  - `make_tree<>::type`
+  - `make_list<>::type`
+  - `make_range`
+  - `insert`
+  - `contains`
+  - `size`
+  - `merge`
+  - `balance`
+
+- Subproject: Data structures
+  - IntList
+  - IntTree
+  - TypeList
+  - TypeTree
+  - Sorted/unsorted
+  - Union
+  - Visitor (including static methods!)
+  - Intersection
+  - push_back
+  - push_front
+  - sorted
+- Algorithms: Work on a range of data structures
+  - forall
+  - visit
+  - insert - with comparator
+  - union - with comparator
+  - rebalance
+
+
 - Look at shift-reduce conflicts in Java.
+  - Report them better
 
 Baseline memory usage
 11s compilation, 2.69GB of memory
@@ -20,8 +57,8 @@ Experiments to try:
 3. Compute the closure without building it up.
 4. Visit whole grammar and cache it as a list of all reachable symbols and tokens
 5. Think about int_sets, where each item is encoded as an int: rule number, position, lookahead.
-
-item::action is either: reduce<Symbol, Rule>, or accept<>
+  - Does not seem any faster to be honest.
+`item::action` is either: `reduce<Token, Symbol, Rule>`, or `shift<Token>`
 
 - Think about the closure of a *rule* not a state?
 
