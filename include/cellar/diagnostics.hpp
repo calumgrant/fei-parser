@@ -69,34 +69,17 @@ namespace cellar
         using profile_types = profile<forall<Tokens, Gathered, gather_shift_states2<Closure>::template loop>>;
     };
 
-    template<typename Closure, typename Gathered, typename Gotos>
-    struct gather_goto_states;
-
-    template<typename Closure, typename Gathered>
-    struct gather_goto_states<Closure, Gathered, typeset<>>
+    template<typename Closure>
+    struct gather_goto_states2
     {
-        using type = Gathered;
-        using profile_tag = no_tag;
-        using profile_types = profile<Closure, Gathered>;
-    };
+        template<typename Goto, typename Gathered>
+        struct visit
+        {
+            using NextState = typename goto_<Closure, Goto>::type;
+            using type = typename gather_states<NextState, Gathered>::type;
+        };
 
-    template<typename Closure, typename Gathered, typename Goto, typename...Gotos>
-    struct gather_goto_states<Closure, Gathered, typeset<Goto, Gotos...>>
-    {
-        using G0 = typename gather_goto_states<Closure, Gathered, typeset<Gotos...>>::type;
-        using NextState = typename goto_<Closure, Goto>::type;
-        using type = typename gather_states<NextState, G0>::type;
-        using profile_tag = no_tag;
-        using profile_types = profile<
-            Closure,
-            Gathered,
-            typeset<Goto, Gotos...>,
-            gather_goto_states<Closure, Gathered, typeset<Gotos...>>,
-            goto_<Closure, Goto>,
-            gather_states<NextState, G0>
-            >;
     };
-
 
     template<typename State, typename Gathered>
     struct gather_states<State, Gathered, false>
@@ -108,7 +91,7 @@ namespace cellar
         using Gotos = typename build_goto_list<Closure>::type;
 
         using G1 = typename gather_shift_states<Closure, G0, Tokens>::type;
-        using type = typename gather_goto_states<Closure, G1, Gotos>::type;
+        using type = typename forall<Gotos, G1, gather_goto_states2<Closure>::template visit>::type;
 
         using profile_tag = no_tag;
         using profile_types = profile<
@@ -117,8 +100,7 @@ namespace cellar
             closure<State>, 
             build_next_token_list<Closure>,
             build_goto_list<Closure>,
-            gather_shift_states<Closure, G0, Tokens>,
-            gather_goto_states<Closure, G1, Gotos>
+            gather_shift_states<Closure, G0, Tokens>
             >;
     };
 

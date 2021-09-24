@@ -100,16 +100,14 @@ namespace cellar
         static const bool value = true;
     };
 
-
-
     template<typename Item>
     struct build_goto_item
     {
         using Symbol = typename impl::getnext<Item>::type;
-        using type = typename type_if<is_symbol2<Symbol>::value, typeset<Symbol>, typeset<>>::type;
+        using type = typename type_if<is_symbol2<Symbol>::value, typename make_list<Symbol>::type, make_list<>::type>::type;
 
         using profile_tag = build_goto_list_tag;
-        using profile_types = profile<Item, impl::getnext<Item>, typeset<Symbol>>;
+        using profile_types = profile<Item, impl::getnext<Item>>;
     };
 
 
@@ -117,10 +115,10 @@ namespace cellar
     struct build_goto_list2
     {
         using T1 = typename build_goto_item<Item>::type;
-        using type = typename typeset_sorted_union<T1, T2>::type;
+        using type = typename merge<T1, T2>::type;
 
         using profile_tag = build_goto_list_tag;
-        using profile_types = profile<build_goto_item<Item>, typeset_sorted_union<T1, T2>, type>;
+        using profile_types = profile<build_goto_item<Item>, type>;
     };
 
 
@@ -129,9 +127,9 @@ namespace cellar
     {
         using C = typename closure<State>::type;
 
-        using type = typename forall<C, typeset<>, build_goto_list2>::type;
+        using type = typename forall<C, make_list<>::type, build_goto_list2>::type;
 
         using profile_tag = build_goto_list_tag;
-        using profile_types = profile<State, closure<State>, C, forall<C, typeset<>, build_goto_list2>, type>;
+        using profile_types = profile<State, closure<State>, C, type>;
     };
 }

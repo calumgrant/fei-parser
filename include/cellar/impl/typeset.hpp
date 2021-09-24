@@ -768,10 +768,18 @@ namespace cellar
         using type = range<Min, Max>;
     };
 
-    struct empty_node;
+    struct empty_node
+    {
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
+    };
 
     template<typename H, typename T>
-    struct list_node;
+    struct list_node
+    {
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
+    };
 
     template<typename...Ts>
     struct make_list;
@@ -857,7 +865,7 @@ namespace cellar
         template<typename Visitor, typename...Args>
         static void visit(Args&&...args)
         {
-            Visitor::template visit<H, T>(std::forward<Args&&...>(args...));
+            Visitor::template visit<H, T>(std::forward<Args&&>(args)...);
         }
     };
 
@@ -945,5 +953,18 @@ namespace cellar
     struct contains<Item, list_node<H, T>>
     {
         static const bool value = list_contains<Item, H, T>::value;
+    };
+
+    template<typename Init, template<typename Item, typename Aggregate> typename Visitor>
+    struct forall<empty_node, Init, Visitor>
+    {
+        using type = Init;
+    };
+
+    template<typename H, typename T, typename Init, template<typename Item, typename Aggregate> typename Visitor>
+    struct forall<list_node<H, T>, Init, Visitor>
+    {
+        using T0 = typename Visitor<H, Init>::type;
+        using type = typename forall<T, T0, Visitor>::type;
     };
 }

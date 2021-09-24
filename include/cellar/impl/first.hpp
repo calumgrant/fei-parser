@@ -1,6 +1,5 @@
 #pragma once
 #include "utils.hpp"
-#include "sorted_insert.hpp"
 
 namespace cellar
 {

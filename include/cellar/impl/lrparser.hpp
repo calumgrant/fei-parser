@@ -83,6 +83,7 @@ namespace cellar
             type>;
     };
 
+#if 0
     template<typename State, typename Symbols, typename Iterator>
     struct process_goto;
 
@@ -125,7 +126,42 @@ namespace cellar
             parse<NextState>(state);
         }
     };
+#endif
 
+    template<typename State, typename It>
+    struct process_goto
+    {
+        // This function is called to implement the GOTO part of the table.
+        // We need to compare the `type` of the symbol that was reduced
+        // against the possible symbols `Symbol` in the GOTO table.
+        // If the symbol matches (by comparing type info), then jump to that state `NextState`
+        // and continue parsing 
+        template<typename Symbol, typename Next>
+        static void visit(parse_state<It> & state, const std::type_info & type)
+        {
+            if(size<Next>::value)
+            {
+                if(typeid(Symbol) == type)
+                {
+                    using NextState = typename goto_<State, Symbol>::type;
+                    parse<NextState>(state);
+                }
+                else
+                {
+                    visitor<Next>::template visit<process_goto>(state, type);
+                }
+            }
+            else
+            {
+                // End of the list
+                // There is one possible symbol, so we don't need to test it.
+                // If this fails, something has gone badly wrong in the parser construction algorithm.
+                assert(typeid(Symbol) == type);
+                using NextState = typename goto_<State, Symbol>::type;
+                parse<NextState>(state);
+            }
+        }
+    };
 
     /*
         This function has been called when a rule has been reduced.
@@ -140,7 +176,8 @@ namespace cellar
 #if CELLAR_TRACE_PARSER
         std::cout << "Reduced to state " << C() << " with gotos = " << Gotos() << std::endl;
 #endif
-        process_goto<State, Gotos, It>::process(ps, rule);
+        visitor<Gotos>::template visit<process_goto<State, It>>(ps, rule);
+        // process_goto<State, Gotos, It>::process(ps, rule);
     }
 
     // Compute the list of tokens that this state is able to process

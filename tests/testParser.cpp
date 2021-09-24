@@ -153,15 +153,15 @@ void outputGoto()
 }
 
 template<typename State>
-void outputGotos(typeset<>)
+struct outputGotos
 {
-}
-
-template<typename State, typename Sym, typename...Syms>
-void outputGotos(typeset<Sym, Syms...>)
-{
-    outputGoto<State, Sym>();
-}
+    template<typename Symbol, typename Next>
+    static void visit()
+    {
+        outputGoto<State, Symbol>();
+        visitor<Next>::template visit<outputGotos>();
+    }
+};
 
 template<typename State>
 void outputState()
@@ -175,7 +175,7 @@ void outputState()
     outputActions<State>(Tokens());
 
     using Gotos = typename build_goto_list<C>::type;
-    outputGotos<State>(Gotos());
+    visitor<Gotos>::template visit<outputGotos<State>>();
 }
 
 

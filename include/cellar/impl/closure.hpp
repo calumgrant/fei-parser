@@ -12,27 +12,9 @@
 #include "typeset.hpp"
 #include "potentially_empty_symbol.hpp"
 #include "follow.hpp"
-#include "sorted_insert.hpp"
 
 namespace cellar
 {
-    template<typename L, typename...Ls, typename R, typename...Rs>
-    struct compare<typeset<L, Ls...>, typeset<R, Rs...>>
-    {
-        using C1 = compare<L,R>;
-        using C2 = compare<typeset<Ls...>, typeset<Rs...>>;
-
-        static const bool equal = C1::equal && C2::equal;
-        static const bool less = C1::less || (C1::equal && C2::less);
-    };
-
-    template<typename S1, int Id1, typename... R1, int P1, int L1, typename S2, int Id2, typename... R2, int P2, int L2>
-    struct compare<rule_position<S1, rule<Id1, R1...>, P1, L1>, rule_position<S2, rule<Id2,R2...>, P2, L2>>
-    {
-        static const bool equal = false; // Would have been matched by previous case
-        static const bool less = Id1<Id2 || (Id1==Id2 && (P1<P2 || (P1==P2 && (L1<L2 || (L1==L2 && compare<typeset<R1...>, typeset<R2...>>::less)))));
-    };
-
     namespace impl
     {
         /*
