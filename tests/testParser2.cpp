@@ -79,6 +79,7 @@ public:
     }
 } tcounts;
 
+#if 0
 namespace MaybeEmptyTest
 {
     class N1 : public symbol<token<12>> {};
@@ -100,6 +101,7 @@ namespace MaybeEmptyTest
     class N4 : public symbol<N4, E3, E3> {};
     static_assert(impl::maybe_empty<N4, 10>::value, "Maybe empty");
 }
+#endif
 
 namespace ValidateParsers
 {

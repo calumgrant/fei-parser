@@ -17,25 +17,7 @@
 - All output is done via std::cout << write<T>;
 
 
-- Subproject: Data structures
-  - IntList
-  - IntTree
-  - TypeList
-  - TypeTree
-  - Sorted/unsorted
-  - Union
-  - Visitor (including static methods!)
-  - Intersection
-  - push_back
-  - push_front
-  - sorted
-- Algorithms: Work on a range of data structures
-  - forall
-  - visit
-  - insert - with comparator
-  - union - with comparator
-  - rebalance
-
+- potentially_empty_symbol is slightly faster
 
 - Look at shift-reduce conflicts in Java.
   - Report them better

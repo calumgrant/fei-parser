@@ -1,8 +1,10 @@
 #pragma once
 
 
-namespace cellar
+namespace cellar_deleteme
 {
+    using namespace cellar;
+
     namespace impl
     {
         template<typename Symbol, int Iteration>
@@ -83,14 +85,18 @@ namespace cellar
 }
 
 
-namespace cellar_deleteme
+namespace cellar
 {
     using namespace cellar;
+
+    namespace impl
+    {
+
     /*
         Determines whether a grammar symbol can be empty.
         It needs to guard against recursion. 
     */
-    template<typename Symbol, typename Visited = empty_tree, bool Recursive = contains<Symbol, Visited>::value>
+    template<typename Symbol, typename Visited = make_list<>::type, bool Recursive = contains<Symbol, Visited>::value>
     struct potentially_empty_symbol
     {
         static const bool value = potentially_empty_symbol<typename Symbol::rules, typename insert<Symbol, Visited>::type>::value;
@@ -186,5 +192,14 @@ namespace cellar_deleteme
             potentially_empty_symbol<Rule, Visited>,
             potentially_empty_symbol<rule<Id, Rules...>, Visited>
             >;
-    };    
+    };
+    }
+
+    template<typename S>
+    struct potentially_empty_symbol
+    {
+        static const bool value = impl::potentially_empty_symbol<S>::value;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
+    };
 }

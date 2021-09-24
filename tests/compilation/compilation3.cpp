@@ -3,7 +3,8 @@
 
 int main()
 {
-    using S = empty_symbols_in_grammar<::CompilationUnit>::type;
+    using S = empty_symbols_in_grammar2<::CompilationUnit>::type;
     std::cout << write<S> << std::endl;
-    std::cout << "There are " << size<S>::value << " empty symbols in the grammar\n";
+    std::cout << "There are " << size<S>::value << " potentially empty symbols in the grammar\n";
+    static_assert(size<S>::value == 7);
 }

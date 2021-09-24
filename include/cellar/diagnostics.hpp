@@ -320,4 +320,12 @@ namespace cellar
         using Symbols = typename find_all_symbols<Symbol>::type;
         using type = typename filter<Symbols, potentially_empty_symbol>::type;
     };
+
+    template<typename Symbol>
+    struct empty_symbols_in_grammar2
+    {
+        using Symbols = typename find_all_symbols<Symbol>::type;
+        using type = typename filter<Symbols, cellar_deleteme::potentially_empty_symbol>::type;
+    };
+
 }
