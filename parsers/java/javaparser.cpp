@@ -313,7 +313,8 @@ char_parser java::parser()
 #if 1
     using Diagnostics = parser_diagnostics<::CompilationUnit>;
 
-    std::cout << "Here are the states:\n" << Diagnostics::states() << std::endl;
+    std::cout << "Here are the states:\n" << write<Diagnostics::states> << std::endl;
+
     std::cout << "There are " << Diagnostics::number_of_states << " states in the state machine " << std::endl;   
 #endif
     // std::cout << "Here are the template instantiation stats:\n";

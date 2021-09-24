@@ -126,7 +126,8 @@ public:
 
         using Diagnostics = parser_diagnostics<CalculatorGrammar>;
 
-        std::cout << Diagnostics::number_of_states << std::endl << Diagnostics::states();
+        std::cout << Diagnostics::number_of_states << std::endl;
+        write<Diagnostics::states>(std::cout);
     }
 
     // Return `false` to exit.

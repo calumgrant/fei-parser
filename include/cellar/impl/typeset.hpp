@@ -797,12 +797,16 @@ namespace cellar
     struct insert<Item, empty_node>
     {
         using type = list_node<Item, empty_node>;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
     };
 
     template<typename Item, typename T>
     struct insert<Item, list_node<Item, T>>
     {
         using type = list_node<Item, T>;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
     };
 
     template<typename Item, typename H, typename T, bool Less = (hash<Item>::value < hash<H>::value)>
@@ -823,6 +827,8 @@ namespace cellar
     struct insert<Item, list_node<H, T>>
     {
         using type = typename list_insert<Item, H, T>::type;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
     };
 
 
@@ -843,8 +849,6 @@ namespace cellar
     {
         static const int value = 1 + size<T>::value;
     };
-
-
 
     template<typename T>
     struct visitor;
@@ -869,7 +873,6 @@ namespace cellar
         }
     };
 
-
     template<typename T1, typename T2>
     struct merge;
 
@@ -877,18 +880,24 @@ namespace cellar
     struct merge<empty_node, empty_node>
     {
         using type = empty_node;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
     };
 
     template<typename T>
     struct merge<empty_node, T>
     {
         using type = T;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
     };
 
     template<typename T>
     struct merge<T, empty_node>
     {
         using type = T;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
     };
 
     template<typename H1, typename T1, typename H2, typename T2, bool Less = (hash<H1>::value < hash<H2>::value)>
@@ -927,6 +936,8 @@ namespace cellar
     struct contains<Item, empty_node>
     {
         static const bool value = false;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
     };
 
     template<typename Item, typename H, typename T, bool Less = (hash<Item>::value < hash<H>::value)>
@@ -953,12 +964,16 @@ namespace cellar
     struct contains<Item, list_node<H, T>>
     {
         static const bool value = list_contains<Item, H, T>::value;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
     };
 
     template<typename Init, template<typename Item, typename Aggregate> typename Visitor>
     struct forall<empty_node, Init, Visitor>
     {
         using type = Init;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
     };
 
     template<typename H, typename T, typename Init, template<typename Item, typename Aggregate> typename Visitor>
@@ -966,5 +981,7 @@ namespace cellar
     {
         using T0 = typename Visitor<H, Init>::type;
         using type = typename forall<T, T0, Visitor>::type;
+        using profile_tag = no_tag;
+        using profile_types = profile<>;
     };
 }

@@ -7,7 +7,7 @@
 
 namespace cellar
 {
-    template<typename State, typename Gathered = empty_tree, bool Exists = contains<State, Gathered>::value>
+    template<typename State, typename Gathered = make_list<>::type, bool Exists = contains<State, Gathered>::value>
     struct gather_states;
 
     template<typename State, typename Gathered>

@@ -474,14 +474,14 @@ namespace cellar
         {
             os << "{";
             visitor<list_node<H,T>>::template visit<output_visitor>(os);
-            os << "}";
+            os << "}\n";
         }
     };
 
-    template<typename T> void write(std::ostream &os)
+    template<typename T> std::ostream & write(std::ostream &os)
     {
         output<T>::write(os);
-        std::cout << std::endl;
+        return os;
     }
 
 

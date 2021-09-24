@@ -83,51 +83,6 @@ namespace cellar
             type>;
     };
 
-#if 0
-    template<typename State, typename Symbols, typename Iterator>
-    struct process_goto;
-
-    template<typename State, typename It>
-    struct process_goto<State, typeset<>, It>
-    {
-        static void process(parse_state<It> & state, const std::type_info & type)
-        {
-            assert(!"Something has gone terribly wrong - unhandled symbol being reduced");
-        }
-    };
-
-    template<typename State, typename Symbol, typename... Symbols, typename It>
-    struct process_goto<State, typeset<Symbol, Symbols...>, It>
-    {
-        static void process(parse_state<It> & state, const std::type_info & type)
-        {
-            if(typeid(Symbol) == type)
-            {
-                // Shift this token
-                using NextState = typename goto_<State, Symbol>::type;
-                parse<NextState>(state);
-            }
-            else
-            {
-                process_goto<State, typeset<Symbols...>, It>::process(state, type);
-            }
-        }
-    };
-
-    template<typename State, typename Symbol, typename It>
-    struct process_goto<State, typeset<Symbol>, It>
-    {
-        // Optimization when there is only one shift type
-        // - there is no need to check the type as this should always be true.
-        static void process(parse_state<It> & state, const std::type_info & type)
-        {
-            assert(typeid(Symbol) == type);
-            using NextState = typename goto_<State, Symbol>::type;
-            parse<NextState>(state);
-        }
-    };
-#endif
-
     template<typename State, typename It>
     struct process_goto
     {
@@ -200,10 +155,10 @@ namespace cellar
     template<typename Closure>
     struct build_next_token_list
     {
-        using type = typename forall<Closure, empty_tree, build_next_token_loop>::type;
+        using type = typename forall<Closure, make_list<>::type, build_next_token_loop>::type;
 
         using profile_tag = build_next_token_list_tag;
-        using profile_types = profile<forall<Closure, empty_tree, build_next_token_loop>>;
+        using profile_types = profile<forall<Closure, make_list<>::type, build_next_token_loop>>;
     };
 
     template<typename State, int Token, typename It, 

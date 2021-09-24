@@ -21,6 +21,10 @@
 - Create a "parser" front-end that works like flex/bison
   - 
 
+- Remove body og
+- All output is done via std::cout << write<T>;
+
+
 - Subproject: Data structures
   - IntList
   - IntTree
