@@ -445,4 +445,44 @@ namespace cellar
         return os << "\n}";
     }
 
+    template<typename T>
+    struct output;
+
+    template<>
+    struct output<empty_node>
+    {
+        static void write(std::ostream & os)
+        {
+            os << "{}";
+        }
+    };
+
+        struct output_visitor
+    {
+        template<typename Item, typename Next> static void visit(std::ostream & os)
+        {
+            os << Item();
+            if(size<Next>::value!=0) os << ",";
+            visitor<Next>::template visit<output_visitor>(os);
+        }
+    };
+
+    template<typename H, typename T>
+    struct output<list_node<H,T>>
+    {
+        static void write(std::ostream & os)
+        {
+            os << "{";
+            visitor<list_node<H,T>>::template visit<output_visitor>(os);
+            os << "}";
+        }
+    };
+
+    template<typename T> void write(std::ostream &os)
+    {
+        output<T>::write(os);
+        std::cout << std::endl;
+    }
+
+
 }

@@ -33,19 +33,19 @@ template<typename T>
 struct output;
 
 template<int Id>
-struct output<token<Id>>
+struct ::output<token<Id>>
 {
     static void write(std::ostream & os) { os << Id; }
 };
 
 template<>
-struct output<empty_tree>
+struct ::output<empty_tree>
 {
     static void write(std::ostream & os) { os << "()"; }
 };
 
 template<typename H, typename L, typename R>
-struct output<type_tree<H, L, R>>
+struct ::output<type_tree<H, L, R>>
 {
     static void write(std::ostream & os)
     {
