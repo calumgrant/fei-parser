@@ -47,7 +47,7 @@ namespace cellar
     template<typename S, int Id, int Lookahead>
     struct get_next_token<rule_position<S, rule<Id>, 0, Lookahead>>
     {
-        using type = token<Lookahead>;
+        using type = typename make_list<token<Lookahead>>::type;
 
         using profile_tag = get_next_token_tag;
         using profile_types = profile<rule_position<S, rule<Id>, 0, Lookahead>, type>;
@@ -56,7 +56,7 @@ namespace cellar
     template<typename S, int Id, int Token, typename...Def, typename...Items, int Lookahead>
     struct get_next_token<rule_position<S, rule<Id, token<Token, Def...>, Items...>, 0, Lookahead>>
     {
-        using type = token<Token>;
+        using type = typename make_list<token<Token>>::type;
 
         using profile_tag = get_next_token_tag;
         using profile_types = profile<rule_position<S, rule<Id, token<Token, Def...>, Items...>, 0, Lookahead>, type>;
@@ -65,7 +65,7 @@ namespace cellar
     template<typename S, int Id, typename Item, typename...Items, int Lookahead>
     struct get_next_token<rule_position<S, rule<Id, Item, Items...>, 0, Lookahead>>
     {
-        using type = empty_tree;
+        using type = make_list<>::type;
 
         using profile_tag = get_next_token_tag;
         using profile_types = profile<rule_position<S, rule<Id, Item, Items...>, 0, Lookahead>, type>;
@@ -225,86 +225,40 @@ namespace cellar
         }
     };
 
-    template<typename Closure, typename Tokens, typename It>
-    struct process_token_list;
-
     template<typename State, typename It>
-    struct process_token_list<State, empty_tree, It>
+    struct process_token_list
     {
-        static void process(parse_state<It> & state)
+        template<typename Token, typename Next>
+        static void visit(parse_state<It> & state)
         {
-            // Shift the error token onto the tree for debugging purposes
-            auto node = state.parse_tree.shift(state.tokens.token(), state.tokens.begin().location, state.tokens.size());
-
-            // Write the token into the parse tree
-            auto p = node.c_str();
-            for(auto ch : state.tokens)
-                *p++ = ch;
-
-            // TODO: Report list of possible tokens
-            state.parse_tree.SyntaxError(state.tokens.begin().location);
-        }
-    };
-
-    template<typename State, int Id, typename L, typename R, typename It>
-    struct process_token_list<State, type_tree<token<Id>, L, R>, It>
-    {
-        static void process(parse_state<It> & state)
-        {
-            if(state.tokens.token() == Id)
-                process_token<State, Id, It>::process(state);
-            else if(state.tokens.token() < Id)
-                process_token_list<State, L, It>::process(state);
+            if(state.tokens.token() == Token::id)
+            {
+                process_token<State, Token::id, It>::process(state);
+            }
+            else if(size<Next>::value != 0)
+            {
+                visitor<Next>::template visit<process_token_list>(state);
+            }
             else
-                process_token_list<State, R, It>::process(state);
+            {
+                // This is the very last token
+                // syntax error
+                // Shift the error token onto the tree for debugging purposes
+                auto node = state.parse_tree.shift(state.tokens.token(), state.tokens.begin().location, state.tokens.size());
+
+                // Write the token into the parse tree
+                auto p = node.c_str();
+                for(auto ch : state.tokens)
+                    *p++ = ch;
+
+                // TODO: Report list of possible tokens
+                state.parse_tree.SyntaxError(state.tokens.begin().location);
+
+            }
+
         }
     };
 
-    template<typename State, int Id, typename It>
-    struct process_token_list<State, token<Id>, It>
-    {
-        static void process(parse_state<It> & state)
-        {
-            if(state.tokens.token() == Id)
-                process_token<State, Id, It>::process(state);
-            else
-                process_token_list<State, empty_tree, It>::process(state);
-        }
-    };
-
-
-
-    // DELETEME
-    template<typename Tree, typename Visitor>
-    struct visit_tree
-    {
-        template<typename...Args>
-        static void visit(Args&&... args)
-        {
-            Visitor::template visit<Tree>(std::forward<Args&&...>(args...));
-        }
-    };
-
-    template<typename Visitor>
-    struct visit_tree<empty_tree, Visitor>
-    {
-        template<typename...Args>
-        static void visit(Args&&... args)
-        {
-        }
-    };
-
-    template<typename H, typename L, typename R, typename Visitor>
-    struct visit_tree<type_tree<H, L, R>, Visitor>
-    {
-        template<typename...Args>
-        static void visit(Args&&... args)
-        {
-            Visitor::template visit<H>(std::forward<Args&&...>(args...));
-            visit_tree<L, Visitor>::visit(std::forward<Args&&...>(args...));
-            visit_tree<R, Visitor>::visit(std::forward<Args&&...>(args...));
-        }
-    };
 
     template<typename State, typename It>
     void parse(parse_state<It> & state)
@@ -323,7 +277,8 @@ namespace cellar
         std::cout << "Possible tokens = " << Tokens() << std::endl;
 #endif
 
-        process_token_list<State, Tokens, It>::process(state);
+        static_assert(size<Tokens>::value != 0);
+        visitor<Tokens>::template visit<process_token_list<State, It>>(state);
     }
 
     class WholeProgram : public symbol<> {};

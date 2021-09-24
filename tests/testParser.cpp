@@ -130,23 +130,16 @@ void outputAction()
         write<typename shift_action<State,Token>::type> << std::endl;
 }
 
-template<typename State, int Token>
-void outputActions(token<Token>)
-{
-    outputAction<State, Token>();
-}
-
 template<typename State>
-void outputActions(empty_tree) {}
-
-
-template<typename State, int Token, typename L, typename R>
-void outputActions(type_tree<token<Token>, L, R>)
+struct outputActions
 {
-    outputActions<State>(L());
-    outputAction<State, Token>();
-    outputActions<State>(R());
-}
+    template<typename Token, typename Next>
+    static void visit()
+    {
+        outputAction<State, Token::id>();
+        visitor<Next>::template visit<outputActions>();
+    }
+};
 
 template<typename State, typename Symbol>
 void outputGoto()
@@ -174,7 +167,7 @@ void outputState()
 
     // Show the transitions
     using Tokens = typename build_next_token_list<C>::type;
-    outputActions<State>(Tokens());
+    visitor<Tokens>::template visit<outputActions<State>>();
 
     using Gotos = typename build_goto_list<C>::type;
     visitor<Gotos>::template visit<outputGotos<State>>();
