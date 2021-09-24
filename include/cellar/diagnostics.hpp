@@ -233,7 +233,7 @@ namespace cellar
     {
         using S0 = typename initial_state<Grammar>::type;
         using states = typename gather_states<S0>::type;
-        static const int number_of_states = tree_size<states>::value;
+        static const int number_of_states = size<states>::value;
 
         using profile_tag = no_tag;
         using profile_types = profile<states, gather_states<S0>>;

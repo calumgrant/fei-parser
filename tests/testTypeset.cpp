@@ -73,7 +73,7 @@ template<int N>
 struct treetest
 {
     using T0 = typename mixed_loop<empty_tree, 0, N, tree_insert_test>::type;
-    static_assert(tree_size<T0>::value == N, "Failed tree_insert");
+    static_assert(size<T0>::value == N, "Failed tree_insert");
 
     using I5 = typename tree_element<T0, 2>::type;
     static_assert(type_equals<I5, token<2>>::value, "tree_element failed");

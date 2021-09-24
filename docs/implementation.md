@@ -224,10 +224,10 @@ You can also do the same thing using `constexpr`, for example
 
 ```
 template<typename I>
-constexpr int tree_size(leaf<I>) { return 1; }
+constexpr int size(leaf<I>) { return 1; }
 
 template<typename L, typename R>
-constexpr int tree_size(node<L,R>) { return 1 + tree_size(L()) + tree_size(R()); }
+constexpr int size(node<L,R>) { return 1 + size(L()) + size(R()); }
 ```
 
 C++ templates have all of the necessary machinery to write type-functions, using pattern-matching to select the correct function based on matching the structure of a type.

@@ -298,21 +298,21 @@ namespace cellar
 
     // Computes the number of nodes in a tree
     template<typename T>
-    struct tree_size
+    struct size
     {
         // Default case - the tree is a single item.
         static const int value = 1;
     };
 
-    template<> struct tree_size<empty_tree>
+    template<> struct size<empty_tree>
     {
         static const int value = 0;
     };
 
     template<typename H, typename L, typename R>
-    struct tree_size<type_tree<H, L, R>>
+    struct size<type_tree<H, L, R>>
     {
-        static const int value = 1 + tree_size<L>::value + tree_size<R>::value;
+        static const int value = 1 + size<L>::value + size<R>::value;
     };
 
     template<typename Init, int N1, int N2, template<typename Value, int Item> typename Body>
@@ -428,7 +428,7 @@ namespace cellar
     //   - element is in the right (`InRight=true`) or
     //   - element is at the root
     template<typename H, typename L, typename R, int Element, 
-        bool InLeft = (Element < tree_size<L>::value), bool InRight = (Element > tree_size<L>::value)>
+        bool InLeft = (Element < size<L>::value), bool InRight = (Element > size<L>::value)>
     struct tree_element2;
 
     template<typename H, typename L, typename R, int Element>
@@ -442,9 +442,9 @@ namespace cellar
     template<typename H, typename L, typename R, int Element>
     struct tree_element2<H,L,R,Element,false,true>
     {
-        using type = typename tree_element<R, Element - tree_size<L>::value-1>::type;
+        using type = typename tree_element<R, Element - size<L>::value-1>::type;
         using profile_tag = tree_tag;
-        using profile_types = profile<tree_element<R, Element - tree_size<L>::value-1>>;
+        using profile_types = profile<tree_element<R, Element - size<L>::value-1>>;
     };
 
     template<typename H, typename L, typename R, int Element>
@@ -489,8 +489,8 @@ namespace cellar
     };
 
     template<typename H, typename L, typename R, int From, int To, 
-        bool OnlyInLeft = (To < (tree_size<L>::value)), 
-        bool OnlyInRight = (From> (tree_size<L>::value))>
+        bool OnlyInLeft = (To < (size<L>::value)), 
+        bool OnlyInRight = (From> (size<L>::value))>
     struct make_balanced_subtree2;
 
     template<typename H, typename L, typename R, int From, int To>
@@ -506,10 +506,10 @@ namespace cellar
     template<typename H, typename L, typename R, int From, int To>
     struct make_balanced_subtree2<H, L, R, From, To, false, true>
     {
-        using type = typename make_balanced_subtree<R, From-tree_size<L>::value-1, To-tree_size<L>::value-1>::type;
+        using type = typename make_balanced_subtree<R, From-size<L>::value-1, To-size<L>::value-1>::type;
         using profile_tag = tree_tag;
         using profile_types = profile<
-            make_balanced_subtree<R, From-tree_size<L>::value-1, To-tree_size<L>::value-1>
+            make_balanced_subtree<R, From-size<L>::value-1, To-size<L>::value-1>
             >;
     };
 
@@ -555,9 +555,9 @@ namespace cellar
     template<typename T>
     struct make_balanced_tree
     {
-        using type = typename make_balanced_subtree<T, 0, tree_size<T>::value>::type;
+        using type = typename make_balanced_subtree<T, 0, size<T>::value>::type;
         using profile_tag = tree_tag;
-        using profile_types = profile<make_balanced_subtree<T, 0, tree_size<T>::value>>;
+        using profile_types = profile<make_balanced_subtree<T, 0, size<T>::value>>;
     };
 
 
@@ -719,50 +719,6 @@ namespace cellar
         using profile_tag = tree_tag;
         using profile_types = profile<H, L, R, tree_union<L, T2>, tree_union<R, T0>, type>;
     };
-
-
-    // Maybe delete
-    template<typename Tree>
-    struct typeset2
-    {
-        using tree = Tree;
-
-        static const int size = tree_size<Tree>::value;
-
-        template<typename Item>
-        struct insert
-        {
-            using type = typeset2<typename tree_insert<Item, Tree>::type>;
-        };
-
-        template<typename Item>
-        struct contains
-        {
-            static const bool value = tree_contains<Item, Tree>::value;
-        };
-
-        template<typename T2>
-        struct set_union
-        {
-            using type = typeset2<typename tree_union<Tree, typename T2::tree>::type>;
-        };
-
-        using balanced = typeset2<typename make_balanced_tree<Tree>::type>;
-
-        template<typename Start, template<typename Value, typename Item> typename Visitor>
-        struct forall
-        {
-            using type = typename cellar::forall<Tree, Start, Visitor>::type;
-        };
-
-        template<int Element>
-        struct element
-        {
-            using type = typename tree_element<Tree, Element>::type;
-        };
-    };
-
-    using empty_typeset2 = typeset2<empty_tree>;
 
     template<typename T1, typename T2>
     struct tree_equals
