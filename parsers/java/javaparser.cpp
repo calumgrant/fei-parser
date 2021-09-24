@@ -67,13 +67,14 @@ class Modifier : public symbol<
     token<java::Public>,
     token<java::Private>,
     token<java::Protected>
-    
+    /*
     ,
     token<java::Abstract>,
     token<java::Default>,
     token<java::Static>,
     token<java::Strictfp>,
     token<java::Final>
+    */
     
     > {};
 
@@ -310,7 +311,7 @@ class InterfaceMethodDeclaration : public symbol<
 
 char_parser java::parser()
 {
-#if 1
+#if 0
     using Diagnostics = parser_diagnostics<::CompilationUnit>;
 
     std::cout << "Here are the states:\n" << write<Diagnostics::states> << std::endl;
