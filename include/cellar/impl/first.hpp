@@ -25,7 +25,7 @@ namespace cellar
         template<int I>
         struct first2<symbol<>, I>
         {
-            using type = empty_tree;
+            using type = make_list<>::type;
 
             using profile_tag = first_tag;
             using profile_types = profile<symbol<>>;
@@ -46,7 +46,7 @@ namespace cellar
         template<int Id, int I>
         struct first2<rule<Id>, I>
         {
-            using type = empty_tree;    
+            using type = make_list<>::type;    
             
             using profile_tag = first_tag;
             using profile_types = profile<
@@ -56,7 +56,7 @@ namespace cellar
         template<int Id, typename...Def, int I>
         struct first2<token<Id, Def...>, I>
         {
-            using type = token<Id>;
+            using type = typename make_list<token<Id>>::type;
 
             using profile_tag = first_tag;
             using profile_types = profile<
@@ -85,7 +85,7 @@ namespace cellar
         template<typename Symbol>
         struct first<Symbol, 0>
         {
-            using type = empty_tree;
+            using type = make_list<>::type;
         };
     }
 

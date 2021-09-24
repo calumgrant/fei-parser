@@ -62,13 +62,13 @@ namespace Grammar1
 
 namespace FirstTests
 {
-    using None = empty_tree;
+    using None = make_list<>::type;
     using None = first<symbol<>>::type;
-    using z = token<0>;
+    using z = make_list<token<0>>::type;
 
     using z = first<symbol<token<0>>>::type;
     using z = first<symbol<token<0>, token<0>>>::type;
-    using z2 = insert<token<0>, token<1>>::type; // typeset<token<0>, token<1>>;
+    using z2 = make_list<token<0>, token<1>>::type; // typeset<token<0>, token<1>>;
     using z2 = first<symbol<token<0>, token<1>>>::type;
 
     class Empty1 : public rule<0> {};
@@ -98,7 +98,7 @@ namespace TestFollow
     using F0 = follow<G0>::type;
     using F1 = follow<G1>::type;
 
-    static_assert(type_equals<F0, token<1>>::value, "");
+    static_assert(type_equals<F0, make_list<token<1>>::type>::value, "");
     static_assert(type_equals<F1, token<2>>::value, "");
 
     using maybe0 = symbol< rule<1>, token<0> >;
