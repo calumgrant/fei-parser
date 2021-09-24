@@ -99,7 +99,7 @@ namespace TestFollow
     using F1 = follow<G1>::type;
 
     static_assert(type_equals<F0, make_list<token<1>>::type>::value, "");
-    static_assert(type_equals<F1, token<2>>::value, "");
+    static_assert(type_equals<F1, make_list<token<2>>::type>::value, "");
 
     using maybe0 = symbol< rule<1>, token<0> >;
     using maybe1 = symbol< rule<2>, token<1> >;

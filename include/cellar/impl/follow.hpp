@@ -18,7 +18,7 @@ namespace cellar
     template<typename S, int Id, typename Symbol, int Lookahead>
     struct follow<rule_position<S, rule<Id, Symbol>, 0, Lookahead>>
     {
-        using type = token<Lookahead>;
+        using type = typename make_list<token<Lookahead>>::type;
 
         using profile_tag = follow_tag;
         using profile_types = profile<rule_position<S, rule<Id, Symbol>, 0, Lookahead>, type>;
@@ -59,7 +59,7 @@ namespace cellar
     template<typename S, int Id, int Position, int Lookahead>
     struct follow<rule_position<S, rule<Id>, Position, Lookahead>>
     {
-        using type = empty_tree;
+        using type = make_list<>::type;
         using profile_tag = follow_tag;
         using profile_types = profile<rule_position<S, rule<Id>, Position, Lookahead>, type>;
     };
