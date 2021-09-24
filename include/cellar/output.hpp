@@ -243,6 +243,18 @@ namespace cellar
         os << name;
     }
 
+    template<typename T>
+    struct output
+    {
+        // Default output action
+        static void write(std::ostream & os)
+        {
+            auto name = typeid(T).name();
+            while(std::isdigit(*name)) ++name; 
+            os << name;
+        }
+    };
+
     template<int Token, typename...Rules>
     void writeSymbol(std::ostream & os, token<Token, Rules...>)
     {

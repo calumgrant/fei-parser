@@ -34,6 +34,9 @@ add_executable(listtest tests/listtest.cpp tests/typeset_test.hpp)
 
 add_executable(compilation1 tests/compilation/compilation1.cpp tests/compilation/grammar.hpp)
 target_link_libraries(compilation1 cellar-java)
+add_executable(compilation2 tests/compilation/compilation2.cpp tests/compilation/grammar.hpp)
+add_executable(compilation3 tests/compilation/compilation3.cpp tests/compilation/grammar.hpp)
+
 
 add_test(NAME lexertests COMMAND lexertests)
 add_test(NAME javaparse COMMAND javabench tokenize ${CMAKE_CURRENT_SOURCE_DIR}/data/AllInOne8.java)
@@ -44,6 +47,8 @@ add_test(NAME typelist COMMAND treetest)
 add_test(NAME xml COMMAND xmltests)
 add_test(NAME json COMMAND jsontests)
 add_test(NAME compilation1 COMMAND compilation1)
+add_test(NAME compilation2 COMMAND compilation2)
+add_test(NAME compilation3 COMMAND compilation3)
 
 add_executable(ugen unicode/generator.cpp)
 

@@ -226,4 +226,98 @@ namespace cellar
             output_profiler();
         }
     };
+
+
+    template<typename Symbol, typename Visited = make_list<>::type, bool Recursive = contains<Symbol, Visited>::value>
+    struct find_all_symbols
+    {
+        using type = Visited;
+    };
+
+    namespace impl
+    {
+        template<typename Symbol, typename Symbols>
+        struct find_all_symbols2;
+
+        template<typename Symbols>
+        struct find_all_symbols2<symbol<>, Symbols>
+        {
+            using type = Symbols;
+        };
+
+        template<typename H, typename... T, typename Symbols>
+        struct find_all_symbols2<symbol<H, T...>, Symbols>
+        {
+            using type = typename find_all_symbols<H, typename find_all_symbols2<symbol<T...>, Symbols>::type>::type;
+        };
+
+
+        template<int Id, typename...Def, typename Symbols>
+        struct find_all_symbols2<token<Id, Def...>, Symbols>
+        {
+            using type = typename insert<token<Id>, Symbols>::type;
+        };
+
+        template<int Id, typename Symbols>
+        struct find_all_symbols2<rule<Id>, Symbols>
+        {
+            using type = Symbols;
+        };
+
+        template<int Id, typename H, typename...T, typename Symbols>
+        struct find_all_symbols2<rule<Id, H, T...>, Symbols>
+        {
+            using type = typename find_all_symbols2<rule<Id, T...>, typename find_all_symbols<H, Symbols>::type>::type;
+        };
+    }
+
+    template<typename Symbol, typename Visited>
+    struct find_all_symbols<Symbol, Visited, false>
+    {
+        using type = typename impl::find_all_symbols2<typename Symbol::rules, typename insert<Symbol, Visited>::type>::type;
+    };
+
+    template<int Id, typename...Symbols, typename Visited>
+    struct find_all_symbols<rule<Id, Symbols...>, Visited, false>
+    {
+        using type = typename impl::find_all_symbols2<rule<Id, Symbols...>, Visited>::type;
+    };
+
+    // !! Move to typesets
+    template<typename Collection, template<typename Item> typename Predicate>
+    struct filter;
+
+    template<template<typename Item> typename Predicate>
+    struct filter<empty_node, Predicate>
+    {
+        using type = empty_node;
+    };
+
+    template<typename H, typename T, template<typename Item> typename Predicate, bool Matches = Predicate<H>::value>
+    struct filter_list
+    {
+        // False case
+        using type = typename filter<T, Predicate>::type;
+    };
+
+    template<typename H, typename T, template<typename Item> typename Predicate>
+    struct filter_list<H, T, Predicate, true>
+    {
+        // True case
+        using type = list_node<H, typename filter<T, Predicate>::type>;
+    };
+
+
+    template<typename H, typename T, template<typename Item> typename Predicate>
+    struct filter<list_node<H, T>, Predicate>
+    {
+        using type = typename filter_list<H, T, Predicate>::type;
+    };
+
+    template<typename Symbol>
+    struct empty_symbols_in_grammar
+    {
+        using Symbols = typename find_all_symbols<Symbol>::type;
+        using type = typename filter<Symbols, potentially_empty_symbol>::type;
+    };
 }

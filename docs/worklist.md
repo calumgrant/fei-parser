@@ -13,7 +13,7 @@
 - Create a "parser" front-end that works like flex/bison
   - 
 
-- Remove body og
+- Remove body of structs
 - All output is done via std::cout << write<T>;
 
 
