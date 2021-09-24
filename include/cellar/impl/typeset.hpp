@@ -315,6 +315,7 @@ namespace cellar
         static const int value = 1 + size<L>::value + size<R>::value;
     };
 
+#if 0
     template<typename Init, int N1, int N2, template<typename Value, int Item> typename Body>
     struct loop
     {
@@ -335,8 +336,9 @@ namespace cellar
     {
         using type = typename Body<Init, N>::type;
     };
+#endif
 
-
+#if 0
     // Loops all elements in a non-linear order
     // Used for creating tree test-cases that aren't too linear.
     template<typename Init, int N1, int N2, template<typename Value, int Item> typename Body>
@@ -366,6 +368,7 @@ namespace cellar
         using profile_tag = no_tag;
         using profile_types = profile<Body<Init, N>>;
     };
+#endif
 
     template<typename Tree, typename Init, template<typename Item, typename Aggregate> typename Visitor>
     struct forall
