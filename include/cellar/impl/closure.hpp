@@ -310,9 +310,9 @@ namespace cellar
         template<typename Item>
         struct item_closure
         {
-            using type = typename add_to_closure<Item, empty_tree>::type;
+            using type = typename add_to_closure<Item, make_list<>::type>::type;
             using profile_tag = add_to_closure_tag;
-            using profile_types = profile<add_to_closure<Item, empty_tree>>;
+            using profile_types = profile<add_to_closure<Item, make_list<>::type>>;
         };
 
         template<typename Item, typename Closure>
@@ -332,25 +332,11 @@ namespace cellar
     template<typename Kernel>
     struct closure
     {        
-        using T0 = typename forall<Kernel, empty_tree, impl::add_to_closure_loop>::type;
-        // using type = T0;
-
-        // Rebalance in order to make equal closures have equal types
-        // as this is important for efficiency and to reduce the number of overall
-        // states.
-        using type = typename make_balanced_tree<T0>::type;
-
-        using T2 = typename closure<type>::type;
-        using C2 = typename make_balanced_tree<T2>::type;
-
-//        static_assert(type_equals<type, C2>::value, "Closure");
+        using type = typename forall<Kernel, make_list<>::type, impl::add_to_closure_loop>::type;
 
         using profile_tag = closure_tag;
         using profile_types = profile<
-            forall<Kernel, empty_tree, impl::add_to_closure_loop>,
-            make_balanced_tree<T0>
+            forall<Kernel, make_list<>::type, impl::add_to_closure_loop>
             >;
     };
-
-
 }

@@ -163,7 +163,7 @@ void outputState()
 {
     using C = typename closure<State>::type;
     std::cout << "State kernel: " << write<State>;
-    std::cout << "\nClosure: " << C() << std::endl;;
+    std::cout << "\nClosure: " << write<C> << std::endl;;
 
     // Show the transitions
     using Tokens = typename build_next_token_list<C>::type;
@@ -232,7 +232,7 @@ public:
         ss << S0() << std::endl;
         ss << S1() << std::endl;
         ss << S2() << std::endl;
-        ss << Gclosure() << std::endl;
+        ss << write<Gclosure> << std::endl;
     }
 } c1;
 
@@ -290,13 +290,13 @@ public:
 
     void Test()
     {
-        std::cout << "C0: " << Grammar2::C0() << std::endl;
+        std::cout << "C0: " << write<Grammar2::C0> << std::endl;
         std::cout << "action(S0, 0): " << write<Grammar2::A0a> << std::endl;
         std::cout << write<Grammar2::Sa> << std::endl;
-        std::cout << "C1: " << Grammar2::C1() << std::endl;
-        std::cout << "C3: " << Grammar2::C3() << std::endl;
-        std::cout << "C4: " << Grammar2::C4() << std::endl;
-        std::cout << "C5: " << Grammar2::C5() << std::endl;
+        std::cout << "C1: " << write<Grammar2::C1> << std::endl;
+        std::cout << "C3: " << write<Grammar2::C3> << std::endl;
+        std::cout << "C4: " << write<Grammar2::C4> << std::endl;
+        std::cout << "C5: " << write<Grammar2::C5> << std::endl;
         outputState<Grammar2::S0>();
         outputState<Grammar2::S1>();
         outputState<Grammar2::S3>();
