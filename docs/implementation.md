@@ -237,7 +237,7 @@ Since C++ templates are Turing-complete, there is no guarantee of termination. T
 ## Useful parser classes
 
 `typeset<...>` contains a set of types.
-- `typeset_insert<Item, Set>::type` inserts one item into a typeset, with the resulting set in `type`.
+- `insert<Item, Set>::type` inserts one item into a typeset, with the resulting set in `type`.
 - `typeset_union<S1,S2>::type` performs a set union of two sets.
 
 `closure<Kernel>::type` computes the LALR "closure" of a state.

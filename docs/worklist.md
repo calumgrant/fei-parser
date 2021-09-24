@@ -18,7 +18,7 @@
   - `balance`
 
 
-- Create a "parser" for grammar files, that parses
+- Create a "parser" front-end that works like flex/bison
   - 
 
 - Subproject: Data structures
@@ -80,9 +80,9 @@ rule_tag = 106
 rule_position_tag = 1152
 no_tag = 2517
 typeset_tag = 84
-typeset_insert_tag = 0
+insert_tag = 0
 typeset_union_tag = 0
-typeset_contains_tag = 0
+contains_tag = 0
 typeset_size_tag = 0
 typeset_sort_tag = 0
 typeset_sorted_insert_tag = 16
@@ -110,9 +110,9 @@ rule_tag = 106
 rule_position_tag = 1152
 no_tag = 2517
 typeset_tag = 84
-typeset_insert_tag = 0
+insert_tag = 0
 typeset_union_tag = 0
-typeset_contains_tag = 0
+contains_tag = 0
 typeset_size_tag = 0
 typeset_sort_tag = 0
 typeset_sorted_insert_tag = 16
@@ -143,9 +143,9 @@ rule_tag = 113
 rule_position_tag = 1126
 no_tag = 2374
 typeset_tag = 350
-typeset_insert_tag = 540
+insert_tag = 540
 typeset_union_tag = 0
-typeset_contains_tag = 2354
+contains_tag = 2354
 typeset_size_tag = 0
 typeset_sort_tag = 0
 typeset_sorted_insert_tag = 16
@@ -185,7 +185,7 @@ Think about `maybe_empty` in terms of iteration.
 
 - Template profiler
 
-- Suspect that insertion is best handled by using typeset_contains<>
+- Suspect that insertion is best handled by using contains<>
 
 - YAML parser
 

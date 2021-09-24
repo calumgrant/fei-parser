@@ -12,9 +12,9 @@ namespace cellar
     struct rule_position_tag;
     struct no_tag;
     struct typeset_tag;
-    struct typeset_insert_tag;
+    struct insert_tag;
     struct typeset_union_tag;
-    struct typeset_contains_tag;
+    struct contains_tag;
     struct typeset_size_tag;
     struct typeset_sort_tag;
     struct typeset_sorted_insert_tag;
