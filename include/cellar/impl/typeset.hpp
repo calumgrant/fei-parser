@@ -61,41 +61,41 @@ namespace cellar
     };
 
     template<typename T1, typename T2>
-    struct typeset_union;
+    struct merge;
 
     template<typename T2>
-    struct typeset_union<typeset<>, T2>
+    struct merge<typeset<>, T2>
     {
         typedef T2 type;
     };
 
     template<typename Item, typename...Members, typename T2>
-    struct typeset_union<typeset<Item, Members...>, T2>
+    struct merge<typeset<Item, Members...>, T2>
     {
-        using S = typename typeset_union<typeset<Members...>, T2>::type;
+        using S = typename merge<typeset<Members...>, T2>::type;
         using type = typename insert<Item, S>::type;
 
-        using profile_tag = typeset_union_tag;
-        using profile_types = profile<type, typeset_union<typeset<Members...>, T2>, insert<Item, S>>;
+        using profile_tag = merge_tag;
+        using profile_types = profile<type, merge<typeset<Members...>, T2>, insert<Item, S>>;
     };
 
     template<typename Ts>
-    struct typeset_size;
+    struct size;
 
     template<>
-    struct typeset_size<typeset<>>
+    struct size<typeset<>>
     {
         static const int value = 0;
-        using profile_tag = typeset_size_tag;
+        using profile_tag = size_tag;
         using profile_types = profile<typeset<>>;
     };
 
     template<typename Item, typename... Members>
-    struct typeset_size<typeset<Item, Members...>>
+    struct size<typeset<Item, Members...>>
     {
-        static const int value = 1 + typeset_size<typeset<Members...>>::value;
-        using profile_tag = typeset_size_tag;
-        using profile_types = profile<typeset_size<typeset<Members...>>>;
+        static const int value = 1 + size<typeset<Members...>>::value;
+        using profile_tag = size_tag;
+        using profile_types = profile<size<typeset<Members...>>>;
     };
 
     template<typename Item, typename Ts>
@@ -241,7 +241,7 @@ namespace cellar
     template<typename... Ts1, typename... Ts2>
     constexpr auto operator+(typeset<Ts1...> t1, typeset<Ts2...> t2)
     {
-        return typeset_union<typeset<Ts1...>, typeset<Ts2...>>::type();
+        return merge<typeset<Ts1...>, typeset<Ts2...>>::type();
     }
 }
 

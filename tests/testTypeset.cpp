@@ -13,8 +13,8 @@ using E12 = typename insert<Int<2>, E1>::type;
 using E12 = typename insert<Int<1>, E12>::type;
 using E12 = typename insert<Int<2>, E12>::type;
 
-using E12 = typename typeset_union<E12, E12>::type;
-using E12 = typename typeset_union<E1, E12>::type;
+using E12 = typename merge<E12, E12>::type;
+using E12 = typename merge<E1, E12>::type;
 
 using R1 = rule<100>;
 using R2 = rule<101, token<1>, token<2>>;

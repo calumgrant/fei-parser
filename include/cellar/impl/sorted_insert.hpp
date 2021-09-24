@@ -74,7 +74,7 @@ namespace cellar
     struct typeset_sort<typeset<Item, Items...>>
     {
         using type = typename typeset_sorted_insert<Item, typename typeset_sort<typeset<Items...>>::type>::type;
-        static_assert(typeset_size<type>::value == typeset_size<typeset<Item, Items...>>::value, "Failure in typeset_sort");
+        static_assert(size<type>::value == size<typeset<Item, Items...>>::value, "Failure in typeset_sort");
 
         using profile_tag = typeset_sort_tag;
         using profile_types = profile<typeset_sort<typeset<Items...>>, typeset_sorted_insert<Item, typename typeset_sort<typeset<Items...>>::type>, type>;
