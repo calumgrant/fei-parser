@@ -1,21 +1,13 @@
 
 # Plan for the next week
 
-- Containers
-  - `range`
-  - `unordered_range`
-  - `list`
-  - `tree`
-  - `tuple` - slow and bad
-- Operations
-  - `make_tree<>::type`
-  - `make_list<>::type`
-  - `make_range`
-  - `insert`
-  - `contains`
-  - `size`
-  - `merge`
-  - `balance`
+- Better benchmarks
+  - Create a standard compilation testsuite based on the Java grammar
+  - Create targets for individual compilation stages
+  - 1) Straight compilation
+  - 2) Find all symbols
+    - 3) Potentially-empty-symbol
+    - 4) First calculation on all symbols
 
 
 - Create a "parser" front-end that works like flex/bison
