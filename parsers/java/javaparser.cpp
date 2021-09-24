@@ -311,15 +311,5 @@ class InterfaceMethodDeclaration : public symbol<
 
 char_parser java::parser()
 {
-#if 0
-    using Diagnostics = parser_diagnostics<::CompilationUnit>;
-
-    std::cout << "Here are the states:\n" << write<Diagnostics::states> << std::endl;
-
-    std::cout << "There are " << Diagnostics::number_of_states << " states in the state machine " << std::endl;   
-#endif
-    // std::cout << "Here are the template instantiation stats:\n";
-    // Diagnostics::output_stats(); 
-
     return make_parser<::CompilationUnit>(lexer());
 }

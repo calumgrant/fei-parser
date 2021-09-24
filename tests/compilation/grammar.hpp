@@ -65,16 +65,14 @@ class Modifier : public symbol<
     // Annotation,
     token<java::Public>,
     token<java::Private>,
-    token<java::Protected>
-    /*
-    ,
+    token<java::Protected>,
+#if 0
     token<java::Abstract>,
     token<java::Default>,
     token<java::Static>,
     token<java::Strictfp>,
-    token<java::Final>
-    */
-    
+#endif
+    token<java::Final>    
     > {};
 
 class OptionalModifiers : public OptionalList<java::ModifierList, Modifier> {}; 

@@ -37,6 +37,7 @@ target_link_libraries(compilation1 cellar-java)
 add_executable(compilation2 tests/compilation/compilation2.cpp tests/compilation/grammar.hpp)
 add_executable(compilation3 tests/compilation/compilation3.cpp tests/compilation/grammar.hpp)
 add_executable(compilation4 tests/compilation/compilation4.cpp tests/compilation/grammar.hpp)
+add_executable(compilation5 tests/compilation/compilation5.cpp tests/compilation/grammar.hpp)
 
 
 add_test(NAME lexertests COMMAND lexertests)
@@ -51,6 +52,7 @@ add_test(NAME compilation1 COMMAND compilation1)
 add_test(NAME compilation2 COMMAND compilation2)
 add_test(NAME compilation3 COMMAND compilation3)
 add_test(NAME compilation4 COMMAND compilation4)
+add_test(NAME compilation5 COMMAND compilation5)
 
 add_executable(ugen unicode/generator.cpp)
 

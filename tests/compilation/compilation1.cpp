@@ -8,7 +8,7 @@ char_parser parser2()
 
 int main()
 {
-    // Perform a test compilation 
+    // Perform a test compilation
 
     char input[] = "import foo.bar; /* Comment */ public class Foo ";
 
