@@ -52,36 +52,36 @@ namespace cellar
     template<typename S, int Id, int Lookahead, int Token, typename OriginalRule>
     struct item_action2<S, rule<Id>, 0, Lookahead, Token, OriginalRule>
     {
-        using shift_actions = empty_tree;
-        using reduce_actions = empty_tree;
+        using shift_actions = make_list<>::type;
+        using reduce_actions = make_list<>::type;
     };
 
     template<typename S, int Id, typename...Def, typename...Symbols, int Lookahead, int Token, typename OriginalRule>
     struct item_action2<S, rule<Id, token<Token, Def...>, Symbols...>, 0, Lookahead, Token, OriginalRule>
     {
-        using shift_actions = shift<Token, OriginalRule>;
-        using reduce_actions = empty_tree;
+        using shift_actions = typename make_list<shift<Token, OriginalRule>>::type;
+        using reduce_actions = make_list<>::type;
     };
 
     template<typename S, int Id, typename...Symbols, int Lookahead, int Token, typename OriginalRule>
     struct item_action2<S, rule<Id, token<Token>, Symbols...>, 0, Lookahead, Token, OriginalRule>
     {
-        using shift_actions = shift<Token, OriginalRule>;
-        using reduce_actions = empty_tree;
+        using shift_actions = typename make_list<shift<Token, OriginalRule>>::type;
+        using reduce_actions = make_list<>::type;
     };
 
     template<typename S, int Id, typename Symbol, typename...Symbols, int Lookahead, int Token, typename OriginalRule>
     struct item_action2<S, rule<Id, Symbol, Symbols...>, 0, Lookahead, Token, OriginalRule>
     {
-        using shift_actions = empty_tree;
-        using reduce_actions = empty_tree;
+        using shift_actions = make_list<>::type;
+        using reduce_actions = make_list<>::type;
     };
 
     template<typename S, int Id, int Lookahead, typename OriginalRule>
     struct item_action2<S, rule<Id>, 0, Lookahead, Lookahead, OriginalRule>
     {
-        using shift_actions = empty_tree;
-        using reduce_actions = reduce<Lookahead, S, OriginalRule>;
+        using shift_actions = make_list<>::type;
+        using reduce_actions = typename make_list<reduce<Lookahead, S, OriginalRule>>::type;
     };
 
     template<typename Item, int Token>
@@ -116,12 +116,12 @@ namespace cellar
     struct action
     {
         using Closure = typename closure<State>::type;
-        using shift_actions = typename forall<Closure, empty_tree, action2_loop<Token>::template shift_action_loop>::type;
-        using reduce_actions = typename forall<Closure, empty_tree, action2_loop<Token>::template reduce_action_loop>::type;
+        using shift_actions = typename forall<Closure, make_list<>::type, action2_loop<Token>::template shift_action_loop>::type;
+        using reduce_actions = typename forall<Closure, make_list<>::type, action2_loop<Token>::template reduce_action_loop>::type;
         using actions = typename merge<shift_actions, reduce_actions>::type;
 
-        static const bool shifts = !type_equals<empty_tree, shift_actions>::value;
-        static const bool reduces = !type_equals<empty_tree, reduce_actions>::value;
+        static const bool shifts = size<shift_actions>::value != 0;
+        static const bool reduces = size<reduce_actions>::value != 0;
     };
 
     // Redundant??
@@ -188,17 +188,16 @@ namespace cellar
     {
         using Closure = typename closure<State>::type;
 
-        using T0 = typename forall<Closure, empty_tree, shift_action_loop<Token>::template shift_action2>::type;
-        using type = typename make_balanced_tree<T0>::type;
+        using type = typename forall<Closure, make_list<>::type, shift_action_loop<Token>::template shift_action2>::type;
 
         using profile_tag = shift_action_tag;
-        using profile_types = profile<State, Closure, closure<State>, forall<Closure, empty_tree, shift_action_loop<Token>::template shift_action2>, make_balanced_tree<T0>>;
+        using profile_types = profile<State, Closure, closure<State>, forall<Closure, make_list<>::type, shift_action_loop<Token>::template shift_action2>>;
     };
 
     template<typename State, int Token, typename Action = typename shift_action<State, Token>::type>
     struct is_shift
     {
-        static const bool value = type_equals<Action, empty_tree>::value;
+        static const bool value = size<Action>::value != 0;
     };
 
     /*
@@ -213,7 +212,7 @@ namespace cellar
     template<typename State, int Token, typename Action = typename reduce_action<State, Token>::type>
     struct is_reduce
     {
-        static const bool value = type_equals<Action, empty_tree>::value;
+        static const bool value = size<Action>::value != 0;
     };
 
 }

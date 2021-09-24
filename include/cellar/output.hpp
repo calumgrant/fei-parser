@@ -7,6 +7,15 @@
 
 namespace cellar
 {
+    template<typename T>
+    struct output;
+
+    template<typename T> std::ostream & write(std::ostream &os)
+    {
+        output<T>::write(os);
+        return os;
+    }
+
     template<typename... Items>
     struct list {};
 
@@ -129,6 +138,16 @@ namespace cellar
         outputNode<Token>(os);
         return os;
     }
+
+    template<int Token>
+    struct output<token<Token>>
+    {
+        static void write(std::ostream & os)
+        {
+            outputNode<Token>(os);
+        }
+    };
+
 
     template<typename It>
     std::ostream & operator<<(std::ostream & os, const token_stream<It> & ts)
@@ -278,6 +297,21 @@ namespace cellar
         return os;
     }
 
+    template<typename S, int Id, typename...Symbols, int Position, int Lookahead>
+    struct output<rule_position<S, rule<Id, Symbols...>, Position, Lookahead>>
+    {
+        static void write(std::ostream & os)
+        {
+            writeSymbol(os, S());
+            os << "<";
+            outputNode<Id>(os);
+            os << "> ->"; // "rule<" << Id << "> ->";
+            write_rule<Position, Symbols...>::write(os);
+            os << ", ";
+            outputNode<Lookahead>(os);
+        }
+    };
+
     template<typename... Symbols>
     struct write_rule2;
 
@@ -306,6 +340,15 @@ namespace cellar
         return os;
     }
 
+    template<int Id, typename...Symbols>
+    struct output<rule<Id, Symbols...>>
+    {
+        static void write(std::ostream&os)
+        {
+            os << "rule<" << Id << "> ->";
+            write_rule2<Symbols...>::write(os);
+        }
+    };
 
     template<typename S, int Id, typename...Symbols, int Position, int Lookahead>
     std::ostream & operator<<(std::ostream & os, const rule_position<S, token<Id, Symbols...>, Position, Lookahead> &)
@@ -315,11 +358,31 @@ namespace cellar
         return os << ", " << Lookahead;
     }
 
+    template<typename S, int Id, typename...Symbols, int Position, int Lookahead>
+    struct output<rule_position<S, token<Id, Symbols...>, Position, Lookahead>>
+    {
+        static void write(std::ostream & os)
+        {
+            os << "rule<" << token<Id>() << "> ->";
+            write_rule<Position, token<Id>>::write(os);
+            os << ", " << Lookahead;
+        }
+    };
+
     template<int Token, typename Rule>
     std::ostream & operator<<(std::ostream & os, shift<Token, Rule>)
     {
         return os << "s" << Token << "[" << Rule() << "]";
     }
+
+    template<int Token, typename Rule>
+    struct output<shift<Token, Rule>>
+    {
+        static void write(std::ostream & os)
+        {
+            os << "s" << Token << "[" << cellar::write<Rule> << "]";
+        }
+    };
 
     template<int Token, typename S, typename Rule>
     std::ostream & operator<<(std::ostream & os, reduce<Token, S, Rule>)
@@ -328,6 +391,16 @@ namespace cellar
         outputNode<Token>(os);
         return os;
     }
+
+    template<int Token, typename S, typename Rule>
+    struct output<reduce<Token, S, Rule>>
+    {
+        static void write(std::ostream & os)
+        {
+            os << cellar::write<Rule> << " . , ";
+            outputNode<Token>(os);
+        }
+    };
 
     inline std::ostream & operator<<(std::ostream & os, syntax_error)
     {
@@ -445,8 +518,16 @@ namespace cellar
         return os << "\n}";
     }
 
-    template<typename T>
-    struct output;
+    template<typename I1, typename I2, typename I3>
+    struct output<type_tree<I1, I2, I3>>
+    {
+        static void write(std::ostream & os)
+        {
+            os << "{\n";
+            impl::write_tree<type_tree<I1, I2, I3>>::write(os);
+            os << "\n}";
+        }
+    };
 
     template<>
     struct output<empty_node>
@@ -457,11 +538,11 @@ namespace cellar
         }
     };
 
-        struct output_visitor
+    struct output_visitor
     {
         template<typename Item, typename Next> static void visit(std::ostream & os)
         {
-            os << Item();
+            os << write<Item>;
             if(size<Next>::value!=0) os << ",";
             visitor<Next>::template visit<output_visitor>(os);
         }
@@ -477,12 +558,5 @@ namespace cellar
             os << "}\n";
         }
     };
-
-    template<typename T> std::ostream & write(std::ostream &os)
-    {
-        output<T>::write(os);
-        return os;
-    }
-
 
 }

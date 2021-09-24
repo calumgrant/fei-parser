@@ -12,6 +12,11 @@ namespace cellar
 
     struct empty_tree;
 
+    struct empty_node;
+
+    template<typename H, typename T>
+    struct list_node;
+
     template<int Token, typename Rule>
     struct shift;
 
@@ -120,4 +125,15 @@ namespace cellar
         static const int value = hash_combine<Lookahead, hash_combine<hash<Symbol>::value, hash<Rule>::value>::value>::value;
     };
 
+    template<>
+    struct hash<empty_node>
+    {
+        static const int value = 0;
+    };
+
+    template<typename H, typename T>
+    struct hash<list_node<H, T>>
+    {
+        static const int value = hash_combine<hash<H>::value, hash<T>::value>::value;
+    };
 }

@@ -125,7 +125,9 @@ namespace Conflicts1
 template<typename State, int Token>
 void outputAction()
 {
-    std::cout << "Action on " << Token << " = " << typename action<State, Token>::actions() << " -> " << typename shift_action<State,Token>::type() << std::endl;
+    std::cout << "Action on " << Token << " = " << 
+        write<typename action<State, Token>::actions> << " -> " << 
+        write<typename shift_action<State,Token>::type> << std::endl;
 }
 
 template<typename State, int Token>
@@ -167,7 +169,7 @@ template<typename State>
 void outputState()
 {
     using C = typename closure<State>::type;
-    std::cout << "State kernel: " << State();
+    std::cout << "State kernel: " << write<State>;
     std::cout << "\nClosure: " << C() << std::endl;;
 
     // Show the transitions
@@ -296,8 +298,8 @@ public:
     void Test()
     {
         std::cout << "C0: " << Grammar2::C0() << std::endl;
-        std::cout << "action(S0, 0): " << Grammar2::A0a() << std::endl;
-        std::cout << Grammar2::Sa() << std::endl;
+        std::cout << "action(S0, 0): " << write<Grammar2::A0a> << std::endl;
+        std::cout << write<Grammar2::Sa> << std::endl;
         std::cout << "C1: " << Grammar2::C1() << std::endl;
         std::cout << "C3: " << Grammar2::C3() << std::endl;
         std::cout << "C4: " << Grammar2::C4() << std::endl;
