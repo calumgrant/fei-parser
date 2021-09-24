@@ -37,7 +37,7 @@ namespace cellar
         {
             using S1 = typename first<Rule, I-1>::type;
             using S2 = typename first<symbol<Rules...>, I>::type;
-            using type = typename tree_union<S1,S2>::type;
+            using type = typename merge<S1,S2>::type;
 
             using profile_tag = first_tag;
             using profile_types = profile<
@@ -69,7 +69,7 @@ namespace cellar
         {
             using S1 = typename first<Symbol, I-1>::type;
             using S2 = typename first<rule<Id, Symbols...>, I>::type;
-            using U = typename tree_union<S1,S2>::type;
+            using U = typename merge<S1,S2>::type;
             using type = typename type_if<potentially_empty_symbol<Symbol>::value, U, S1>::type;
 
             using profile_tag = first_tag;

@@ -177,7 +177,7 @@ Think about `maybe_empty` in terms of iteration.
 
 
 
-- Remove `Closure` from `expand symbol` so that each symbol has its own expansion. Then we'll use `tree_union` to complete the closure.
+- Remove `Closure` from `expand symbol` so that each symbol has its own expansion. Then we'll use `merge` to complete the closure.
 
 
 - Fix build errors on Linux

@@ -642,7 +642,7 @@ namespace cellar
 
 
     template<typename T1, typename T2>
-    struct tree_union
+    struct merge
     {
         using type = typename insert<T1, T2>::type;
         using profile_tag = tree_tag;
@@ -650,7 +650,7 @@ namespace cellar
     };
 
     template<typename T2>
-    struct tree_union<empty_tree, T2>
+    struct merge<empty_tree, T2>
     {
         using type = T2;
         using profile_tag = tree_tag;
@@ -658,14 +658,14 @@ namespace cellar
     };
 
     template<typename H, typename L, typename R, typename T2>
-    struct tree_union<type_tree<H, L, R>, T2>
+    struct merge<type_tree<H, L, R>, T2>
     {
-        using T0 = typename tree_union<L, T2>::type;
-        using T1 = typename tree_union<R, T0>::type;
+        using T0 = typename merge<L, T2>::type;
+        using T1 = typename merge<R, T0>::type;
         using type = typename insert<H, T1>::type;  
 
         using profile_tag = tree_tag;
-        using profile_types = profile<H, L, R, tree_union<L, T2>, tree_union<R, T0>, type>;
+        using profile_types = profile<H, L, R, merge<L, T2>, merge<R, T0>, type>;
     };
 
     template<typename T1, typename T2>

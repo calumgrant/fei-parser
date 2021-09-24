@@ -102,13 +102,13 @@ namespace cellar
         template<typename Item, typename List>
         struct shift_action_loop
         {
-            using type = typename tree_union<typename item_action<Item, Token>::shift_actions, List>::type;
+            using type = typename merge<typename item_action<Item, Token>::shift_actions, List>::type;
         };
 
         template<typename Item, typename List>
         struct reduce_action_loop
         {
-            using type = typename tree_union<typename item_action<Item, Token>::reduce_actions, List>::type;
+            using type = typename merge<typename item_action<Item, Token>::reduce_actions, List>::type;
         };
     };
 
@@ -118,7 +118,7 @@ namespace cellar
         using Closure = typename closure<State>::type;
         using shift_actions = typename forall<Closure, empty_tree, action2_loop<Token>::template shift_action_loop>::type;
         using reduce_actions = typename forall<Closure, empty_tree, action2_loop<Token>::template reduce_action_loop>::type;
-        using actions = typename tree_union<shift_actions, reduce_actions>::type;
+        using actions = typename merge<shift_actions, reduce_actions>::type;
 
         static const bool shifts = !type_equals<empty_tree, shift_actions>::value;
         static const bool reduces = !type_equals<empty_tree, reduce_actions>::value;

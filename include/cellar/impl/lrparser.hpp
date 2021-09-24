@@ -149,14 +149,14 @@ namespace cellar
     struct build_next_token_loop
     {
         using T1 = typename get_next_token<Item>::type;
-        using type = typename tree_union<List, T1>::type;
+        using type = typename merge<List, T1>::type;
 
         using profile_tag = build_next_token_list_tag;
         using profile_types = profile<
             Item,
             List,
             get_next_token<Item>,
-            tree_union<List, T1>
+            merge<List, T1>
             >;
     };
 

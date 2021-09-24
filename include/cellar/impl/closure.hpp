@@ -336,9 +336,9 @@ namespace cellar
         template<typename Item, typename Closure>
         struct add_to_closure_loop
         {
-            using type = typename tree_union<typename item_closure<Item>::type, Closure>::type;
+            using type = typename merge<typename item_closure<Item>::type, Closure>::type;
             using profile_tag = add_to_closure_tag;
-            using profile_types = profile<item_closure<Item>, tree_union<Closure, typename item_closure<Item>::type>>;
+            using profile_types = profile<item_closure<Item>, merge<Closure, typename item_closure<Item>::type>>;
         };
 
     }

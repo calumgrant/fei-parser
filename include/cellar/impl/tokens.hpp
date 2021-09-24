@@ -47,7 +47,7 @@ namespace cellar
         {
             using T1 = typename tokens<S, Visited>::type;
             using T2 = typename tokens<rule<Id, Ss...>, Visited>::type;
-            using type = typename tree_union<T1, T2>::type;
+            using type = typename merge<T1, T2>::type;
         };
 
         template<typename S, typename...Ss, typename Visited>
@@ -55,7 +55,7 @@ namespace cellar
         {
             using T1 = typename tokens<S, Visited>::type;
             using T2 = typename tokens<symbol<Ss...>, Visited>::type;
-            using type = typename tree_union<T1,T2>::type;
+            using type = typename merge<T1,T2>::type;
         };
 
         template<typename List, typename Item>

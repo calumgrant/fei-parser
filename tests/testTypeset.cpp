@@ -84,14 +84,14 @@ struct treetest
 
     using T1 = typename loop<typename make_range<0, N/2>::type, empty_tree, insert_test>::type;
     using T2 = typename loop<typename make_range<N/2, N>::type, empty_tree, insert_test>::type;
-    using T3 = typename tree_union<T1,T1>::type;
+    using T3 = typename merge<T1,T1>::type;
 
-    static_assert(type_equals<T1, T3>::value, "tree_union failed");
+    static_assert(type_equals<T1, T3>::value, "merge failed");
 
-    //using T4 = typename tree_union<T1,T2>::type;
+    //using T4 = typename merge<T1,T2>::type;
     //using B4 = typename make_balanced_tree<T4>::type;
 
-    //static_assert(type_equals2<B0, B4>::value, "tree_union failed");
+    //static_assert(type_equals2<B0, B4>::value, "merge failed");
 
     using profile_tag = no_tag;
     using profile_types = profile<T0, B0, T1, T2, T3>;
