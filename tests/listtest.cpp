@@ -29,8 +29,8 @@ struct build_list
 template<typename List, int N>
 struct list_test
 {
-    using T5 = typename loop2<make_range<0, 100>::type, List, build_list>::type;
-    using T6 = typename loop2<make_random<500, 0, 1000>::type, List, build_list>::type;
+    using T5 = typename loop<make_range<0, 100>::type, List, build_list>::type;
+    using T6 = typename loop<make_random<500, 0, 1000>::type, List, build_list>::type;
 
     using T7 = typename merge<T5, T6>::type;
 

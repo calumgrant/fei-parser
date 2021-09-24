@@ -173,10 +173,10 @@ namespace cellar
         {
             using T1 = rule_position<S, Rule, Position+1, Lookahead>;
             static const bool shiftsToken = shifts<Rule, Position, Token>::value;
-            using type = typename type_if<shiftsToken, typename tree_insert<T1, T2>::type, T2>::type;
+            using type = typename type_if<shiftsToken, typename insert<T1, T2>::type, T2>::type;
 
             using profile_tag = shift_action_tag;
-            using profile_types = profile<T1, shifts<Rule, Position, Token>, tree_insert<T1, T2>>;
+            using profile_types = profile<T1, shifts<Rule, Position, Token>, insert<T1, T2>>;
         };
     };
 

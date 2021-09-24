@@ -7,7 +7,7 @@
 
 namespace cellar
 {
-    template<typename State, typename Gathered = empty_tree, bool Exists = tree_contains<State, Gathered>::value>
+    template<typename State, typename Gathered = empty_tree, bool Exists = contains<State, Gathered>::value>
     struct gather_states;
 
     template<typename State, typename Gathered>
@@ -15,7 +15,7 @@ namespace cellar
     {
         using type = Gathered;
         using profile_tag = no_tag;
-        using profile_types = profile<State, Gathered, tree_contains<State, Gathered>>;
+        using profile_types = profile<State, Gathered, contains<State, Gathered>>;
     };
 
     template<typename Closure, typename Gathered, typename Tokens>
@@ -101,7 +101,7 @@ namespace cellar
     template<typename State, typename Gathered>
     struct gather_states<State, Gathered, false>
     {
-        using G0 = typename tree_insert<State, Gathered>::type;
+        using G0 = typename insert<State, Gathered>::type;
 
         using Closure = typename closure<State>::type;
         using Tokens = typename build_next_token_list<Closure>::type;
@@ -112,8 +112,8 @@ namespace cellar
 
         using profile_tag = no_tag;
         using profile_types = profile<
-            tree_contains<State, Gathered>,
-            tree_insert<State, Gathered>,
+            contains<State, Gathered>,
+            insert<State, Gathered>,
             closure<State>, 
             build_next_token_list<Closure>,
             build_goto_list<Closure>,

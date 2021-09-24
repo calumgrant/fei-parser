@@ -51,7 +51,7 @@ namespace cellar
         using T = typename first<rule<Id, Symbols...>>::type;
         using type = typename type_if<
             potentially_empty_symbol<rule<Id, Symbols...>>::value, 
-            typename tree_insert<token<Lookahead>, T>::type,
+            typename insert<token<Lookahead>, T>::type,
             T>::type;
 
         using profile_tag = follow_tag;
@@ -60,7 +60,7 @@ namespace cellar
             follow<rule_position<S, rule<Id, Symbols...>, 0, Lookahead>>,
             first<rule<Id, Symbols...>>, 
             potentially_empty_symbol<rule<Id, Symbols...>>,
-            tree_insert<token<Lookahead>, T>
+            insert<token<Lookahead>, T>
             >;
     };
 

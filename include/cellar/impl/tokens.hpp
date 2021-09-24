@@ -5,10 +5,10 @@ namespace cellar
 {
     namespace impl
     {
-        template<typename Symbol, typename Visited, bool Recursive = tree_contains<Symbol, Visited>::value>
+        template<typename Symbol, typename Visited, bool Recursive = contains<Symbol, Visited>::value>
         struct tokens
         {
-            using V2 = typename tree_insert<Symbol, Visited>::type;
+            using V2 = typename insert<Symbol, Visited>::type;
             using type = typename tokens<typename Symbol::rules, V2>::type;
         };
 

@@ -42,12 +42,12 @@ namespace cellar
                 using T1 = rule_position<S, Rule, Position+1, Lookahead>;
                 static const bool shiftsSymbol = shifts_symbol<Rule, Position, Symbol>::value;
                 // TODO: Avoid type_if if possible
-                using type = typename type_if<shiftsSymbol, typename tree_insert<T1, T2>::type, T2>::type;
+                using type = typename type_if<shiftsSymbol, typename insert<T1, T2>::type, T2>::type;
                 using profile_tag = goto_tag;
                 using profile_types = profile<
                     rule_position<S, Rule, Position, Lookahead>,
                     Symbol, T1, /* shifts_symbol<Rule, Position, Symbol>, */
-                    tree_insert<T1, T2> >;
+                    insert<T1, T2> >;
             };
 
         };

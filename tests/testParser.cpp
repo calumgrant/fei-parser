@@ -68,7 +68,7 @@ namespace FirstTests
 
     using z = first<symbol<token<0>>>::type;
     using z = first<symbol<token<0>, token<0>>>::type;
-    using z2 = tree_insert<token<0>, token<1>>::type; // typeset<token<0>, token<1>>;
+    using z2 = insert<token<0>, token<1>>::type; // typeset<token<0>, token<1>>;
     using z2 = first<symbol<token<0>, token<1>>>::type;
 
     class Empty1 : public rule<0> {};
@@ -83,10 +83,10 @@ namespace FirstTests
 
     using firstS = first<S>::type;
 
-    static_assert(tree_contains<token<0>, firstS>::value, "");
-    static_assert(tree_contains<token<1>, firstS>::value, "");
-    static_assert(tree_contains<token<2>, firstS>::value, "");
-    static_assert(!tree_contains<token<9>, firstS>::value, "");
+    static_assert(contains<token<0>, firstS>::value, "");
+    static_assert(contains<token<1>, firstS>::value, "");
+    static_assert(contains<token<2>, firstS>::value, "");
+    static_assert(!contains<token<9>, firstS>::value, "");
 };
 
 namespace TestFollow

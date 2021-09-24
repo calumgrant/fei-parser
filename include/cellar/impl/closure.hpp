@@ -76,7 +76,7 @@ namespace cellar
         /*
             Adds and item `Item` to `Closure`, returning the new closure in `type`.
          */
-        template<typename Item, typename Closure, bool NeedToExpand = !tree_contains<Item, Closure>::value && item<Item>::reads_symbol>
+        template<typename Item, typename Closure, bool NeedToExpand = !contains<Item, Closure>::value && item<Item>::reads_symbol>
         struct add_to_closure;
 
 
@@ -211,12 +211,12 @@ namespace cellar
     template<typename Item, typename Closure>
     struct add_to_closure<Item, Closure, false>
     {
-        using type = typename tree_insert<Item, Closure>::type;
+        using type = typename insert<Item, Closure>::type;
 
         using profile_tag = add_to_closure_tag;
         using profile_types = profile<
-            tree_contains<Item, Closure>,
-            tree_insert<Item, Closure>,
+            contains<Item, Closure>,
+            insert<Item, Closure>,
             type
             >;
     };
@@ -305,7 +305,7 @@ namespace cellar
     template<typename Item, typename Closure>
     struct add_to_closure<Item, Closure, true>
     {
-        using C1 = typename tree_insert<Item, Closure>::type;
+        using C1 = typename insert<Item, Closure>::type;
 
         using Follows = typename follow<Item>::type;
 
@@ -315,8 +315,8 @@ namespace cellar
 
         using profile_tag = add_to_closure_tag;
         using profile_types = profile<
-            tree_contains<Item, Closure>,
-            tree_insert<Item, Closure>, 
+            contains<Item, Closure>,
+            insert<Item, Closure>, 
             follow<Item>,
             getnext<Item>,
             expand_symbol<NextSymbol, typename NextSymbol::rules, Follows, C1>,

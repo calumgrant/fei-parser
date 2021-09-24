@@ -62,28 +62,28 @@ struct ::output<type_tree<H, L, R>>
 
 
 template<int Item, typename Tree>
-struct tree_insert_test
+struct insert_test
 {
-    using type = typename tree_insert<token<Item>, Tree>::type;
+    using type = typename insert<token<Item>, Tree>::type;
     using profile_tag = no_tag;
-    using profile_types = profile<tree_insert<token<Item>, Tree>>;
+    using profile_types = profile<insert<token<Item>, Tree>>;
 };
 
 template<int N>
 struct treetest
 {
-    using T0 = typename loop2<typename make_range<0, N>::type, empty_tree, tree_insert_test>::type;
-    static_assert(size<T0>::value == N, "Failed tree_insert");
+    using T0 = typename loop<typename make_range<0, N>::type, empty_tree, insert_test>::type;
+    static_assert(size<T0>::value == N, "Failed insert");
 
-    using I5 = typename tree_element<T0, 2>::type;
-    static_assert(type_equals<I5, token<2>>::value, "tree_element failed");
+    using I5 = typename element<T0, 2>::type;
+    static_assert(type_equals<I5, token<2>>::value, "element failed");
 
-    static_assert(tree_contains<token<2>, T0>::value, "tree contains 5");
+    static_assert(contains<token<2>, T0>::value, "tree contains 5");
 
     using B0 = typename make_balanced_tree<T0>::type;
 
-    using T1 = typename loop2<typename make_range<0, N/2>::type, empty_tree, tree_insert_test>::type;
-    using T2 = typename loop2<typename make_range<N/2, N>::type, empty_tree, tree_insert_test>::type;
+    using T1 = typename loop<typename make_range<0, N/2>::type, empty_tree, insert_test>::type;
+    using T2 = typename loop<typename make_range<N/2, N>::type, empty_tree, insert_test>::type;
     using T3 = typename tree_union<T1,T1>::type;
 
     static_assert(type_equals<T1, T3>::value, "tree_union failed");

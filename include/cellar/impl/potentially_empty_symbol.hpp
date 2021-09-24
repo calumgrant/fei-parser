@@ -90,16 +90,16 @@ namespace cellar_deleteme
         Determines whether a grammar symbol can be empty.
         It needs to guard against recursion. 
     */
-    template<typename Symbol, typename Visited = empty_tree, bool Recursive = tree_contains<Symbol, Visited>::value>
+    template<typename Symbol, typename Visited = empty_tree, bool Recursive = contains<Symbol, Visited>::value>
     struct potentially_empty_symbol
     {
-        static const bool value = potentially_empty_symbol<typename Symbol::rules, typename tree_insert<Symbol, Visited>::type>::value;
+        static const bool value = potentially_empty_symbol<typename Symbol::rules, typename insert<Symbol, Visited>::type>::value;
         using profile_tag = potentially_empty_symbol_tag;
         using profile_types = profile<
             Symbol,
             Visited,
-            tree_contains<Symbol, Visited>, tree_insert<Symbol, Visited>, 
-            potentially_empty_symbol<typename Symbol::rules, typename tree_insert<Symbol, Visited>::type>
+            contains<Symbol, Visited>, insert<Symbol, Visited>, 
+            potentially_empty_symbol<typename Symbol::rules, typename insert<Symbol, Visited>::type>
             >;
     };
 
@@ -112,7 +112,7 @@ namespace cellar_deleteme
         using profile_types = profile<
             Symbol,
             Visited,
-            tree_contains<Symbol, Visited>
+            contains<Symbol, Visited>
             >; 
     };
 
@@ -125,7 +125,7 @@ namespace cellar_deleteme
         using profile_types = profile<
             symbol<>,
             Visited,
-            tree_contains<symbol<>, Visited>
+            contains<symbol<>, Visited>
             >; 
     };
 
@@ -138,7 +138,7 @@ namespace cellar_deleteme
         using profile_types = profile<
             symbol<Rule, Rules...>,
             Visited,
-            tree_contains<symbol<Rule, Rules...>, Visited>,
+            contains<symbol<Rule, Rules...>, Visited>,
             potentially_empty_symbol<Rule, Visited>,
             potentially_empty_symbol<symbol<Rules...>, Visited>            
             >; 
@@ -154,7 +154,7 @@ namespace cellar_deleteme
         using profile_types = profile<
             token<Id, Definition...>,
             Visited,
-            tree_contains<token<Id, Definition...>, Visited>
+            contains<token<Id, Definition...>, Visited>
             >;
 
     };
@@ -168,7 +168,7 @@ namespace cellar_deleteme
         using profile_types = profile<
             rule<Id>,
             Visited,
-            tree_contains<rule<Id>, Visited>
+            contains<rule<Id>, Visited>
             >;
     };
 
@@ -182,7 +182,7 @@ namespace cellar_deleteme
         using profile_types = profile<
             rule<Id>,
             Visited,
-            tree_contains<rule<Id, Rule, Rules...>, Visited>,
+            contains<rule<Id, Rule, Rules...>, Visited>,
             potentially_empty_symbol<Rule, Visited>,
             potentially_empty_symbol<rule<Id, Rules...>, Visited>
             >;

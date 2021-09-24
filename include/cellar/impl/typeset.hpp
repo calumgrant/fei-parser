@@ -315,61 +315,6 @@ namespace cellar
         static const int value = 1 + size<L>::value + size<R>::value;
     };
 
-#if 0
-    template<typename Init, int N1, int N2, template<typename Value, int Item> typename Body>
-    struct loop
-    {
-        static_assert(N1<N2, "Invalid bounds for loop");
-        static const int Mid = (N1+N2)/2;
-        using T0 = typename loop<Init, N1, Mid, Body>::type;
-        using type = typename loop<T0, Mid, N2, Body>::type;
-    };
-
-    template<typename Init, int N, template<typename Value, int Item> typename Body>
-    struct loop<Init, N, N, Body>
-    {
-        using type = Init;
-    };
-
-    template<typename Init, int N, template<typename Value, int Item> typename Body>
-    struct loop<Init, N, N+1, Body>
-    {
-        using type = typename Body<Init, N>::type;
-    };
-#endif
-
-#if 0
-    // Loops all elements in a non-linear order
-    // Used for creating tree test-cases that aren't too linear.
-    template<typename Init, int N1, int N2, template<typename Value, int Item> typename Body>
-    struct mixed_loop
-    {
-        static_assert(N1<N2, "Invalid bounds for loop");
-        static const int Mid = (N1+N2)/2;
-        using T1 = typename mixed_loop<Init, Mid, Mid+1, Body>::type;
-        using T0 = typename mixed_loop<T1, N1, Mid, Body>::type;
-        using type = typename mixed_loop<T0, Mid+1, N2, Body>::type;
-        using profile_tag = no_tag;
-        using profile_types = profile<mixed_loop<Init, Mid, Mid+1, Body>, mixed_loop<T1, N1, Mid, Body>, mixed_loop<T0, Mid+1, N2, Body>>;
-    };
-
-    template<typename Init, int N, template<typename Value, int Item> typename Body>
-    struct mixed_loop<Init, N, N, Body>
-    {
-        using type = Init;
-        using profile_tag = no_tag;
-        using profile_types = profile<>;
-    };
-
-    template<typename Init, int N, template<typename Value, int Item> typename Body>
-    struct mixed_loop<Init, N, N+1, Body>
-    {
-        using type = typename Body<Init, N>::type;
-        using profile_tag = no_tag;
-        using profile_types = profile<Body<Init, N>>;
-    };
-#endif
-
     template<typename Tree, typename Init, template<typename Item, typename Aggregate> typename Visitor>
     struct forall
     {
@@ -417,7 +362,7 @@ namespace cellar
 
     // Extracts an element from a tree
     template<typename T, int Element>
-    struct tree_element
+    struct element
     {
         // Case where the tree consists of one element
         using type = T;
@@ -432,26 +377,26 @@ namespace cellar
     //   - element is at the root
     template<typename H, typename L, typename R, int Element, 
         bool InLeft = (Element < size<L>::value), bool InRight = (Element > size<L>::value)>
-    struct tree_element2;
+    struct element2;
 
     template<typename H, typename L, typename R, int Element>
-    struct tree_element2<H,L,R,Element,true,false>
+    struct element2<H,L,R,Element,true,false>
     {
-        using type = typename tree_element<L, Element>::type;
+        using type = typename element<L, Element>::type;
         using profile_tag = tree_tag;
-        using profile_types = profile<tree_element<L, Element>>;
+        using profile_types = profile<element<L, Element>>;
     };
 
     template<typename H, typename L, typename R, int Element>
-    struct tree_element2<H,L,R,Element,false,true>
+    struct element2<H,L,R,Element,false,true>
     {
-        using type = typename tree_element<R, Element - size<L>::value-1>::type;
+        using type = typename element<R, Element - size<L>::value-1>::type;
         using profile_tag = tree_tag;
-        using profile_types = profile<tree_element<R, Element - size<L>::value-1>>;
+        using profile_types = profile<element<R, Element - size<L>::value-1>>;
     };
 
     template<typename H, typename L, typename R, int Element>
-    struct tree_element2<H,L,R,Element,false,false>
+    struct element2<H,L,R,Element,false,false>
     {
         using type = H;
         using profile_tag = tree_tag;
@@ -459,11 +404,11 @@ namespace cellar
     };
 
     template<typename H, typename L, typename R, int Element>
-    struct tree_element<type_tree<H, L, R>, Element>
+    struct element<type_tree<H, L, R>, Element>
     {
-        using type = typename tree_element2<H, L, R, Element>::type;
+        using type = typename element2<H, L, R, Element>::type;
         using profile_tag = tree_tag;
-        using profile_types = profile<tree_element2<H, L, R, Element>>;
+        using profile_types = profile<element2<H, L, R, Element>>;
     };
 
     template<typename T, int From, int To>
@@ -524,13 +469,13 @@ namespace cellar
         static const int mid = (To+From)/2;
         using T1 = typename make_balanced_subtree<type_tree<H,L,R>, From, mid>::type;
         using T2 = typename make_balanced_subtree<type_tree<H, L, R>, mid+1, To>::type;
-        using Item = typename tree_element<type_tree<H, L, R>, mid>::type;
+        using Item = typename element<type_tree<H, L, R>, mid>::type;
         using type = type_tree<Item, T1, T2>;
         using profile_tag = tree_tag;
         using profile_types = profile<
             make_balanced_subtree<type_tree<H,L,R>, From, mid>,
             make_balanced_subtree<type_tree<H, L, R>, mid+1, To>,
-            tree_element<type_tree<H, L, R>, mid>,
+            element<type_tree<H, L, R>, mid>,
             type
             >;
     };
@@ -538,9 +483,9 @@ namespace cellar
     template<typename H, typename L, typename R, int N>
     struct make_balanced_subtree2<H, L, R, N, N+1, false, false>
     {
-        using type = typename tree_element<type_tree<H, L, R>, N>::type;
+        using type = typename element<type_tree<H, L, R>, N>::type;
         using profile_tag = tree_tag;
-        using profile_types = profile<tree_element<type_tree<H, L, R>, N>>;
+        using profile_types = profile<element<type_tree<H, L, R>, N>>;
     };
 
     template<typename H, typename L, typename R, int From, int To>
@@ -565,19 +510,19 @@ namespace cellar
 
 
     template<typename Item, typename H, typename L, typename R, bool Less = (hash<Item>::value < hash<H>::value)>
-    struct tree_insert2;
+    struct insert2;
 
 
     template<typename Item, typename T>
-    struct tree_insert
+    struct insert
     {
-        using type = typename tree_insert2<Item, T, empty_tree, empty_tree>::type;
+        using type = typename insert2<Item, T, empty_tree, empty_tree>::type;
         using profile_tag = tree_tag;
-        using profile_types = profile<Item, T, tree_insert2<Item, T, empty_tree, empty_tree>>;
+        using profile_types = profile<Item, T, insert2<Item, T, empty_tree, empty_tree>>;
     };
 
     template<typename Item>
-    struct tree_insert<Item, Item>
+    struct insert<Item, Item>
     {
         using type = Item;
         using profile_tag = tree_tag;
@@ -585,7 +530,7 @@ namespace cellar
     };
 
     template<typename H, typename L, typename R>
-    struct tree_insert<type_tree<H, L, R>, empty_tree>
+    struct insert<type_tree<H, L, R>, empty_tree>
     {
         // This special case is when you store a tree in a tree: The values nodes could get
         // confused with subtrees if we don't do this.
@@ -596,7 +541,7 @@ namespace cellar
 
 
     template<typename Item>
-    struct tree_insert<Item, empty_tree>
+    struct insert<Item, empty_tree>
     {
         using type = Item;
         using profile_tag = tree_tag;
@@ -604,25 +549,25 @@ namespace cellar
     };
 
     template<typename Item, typename H, typename L, typename R, bool Less>
-    struct tree_insert2
+    struct insert2
     {
         // False case - insert to the right
-        using type = type_tree<H, L, typename tree_insert<Item, R>::type>;
+        using type = type_tree<H, L, typename insert<Item, R>::type>;
         using profile_tag = tree_tag;
-        using profile_types = profile<tree_insert<Item, R>>;
+        using profile_types = profile<insert<Item, R>>;
     };
 
     template<typename Item, typename H, typename L, typename R>
-    struct tree_insert2<Item, H, L, R, true>
+    struct insert2<Item, H, L, R, true>
     {
         // True case - insert to the left
-        using type = type_tree<H, typename tree_insert<Item, L>::type, R>;
+        using type = type_tree<H, typename insert<Item, L>::type, R>;
         using profile_tag = tree_tag;
-        using profile_types = profile<tree_insert<Item, L>>;
+        using profile_types = profile<insert<Item, L>>;
     };
 
     template<typename Item, typename L, typename R>
-    struct tree_insert<Item, type_tree<Item,L,R>>
+    struct insert<Item, type_tree<Item,L,R>>
     {
         using type = type_tree<Item,L,R>;
         using profile_tag = tree_tag;
@@ -630,15 +575,15 @@ namespace cellar
     };
 
     template<typename Item, typename H, typename L, typename R>
-    struct tree_insert<Item, type_tree<H,L,R>>
+    struct insert<Item, type_tree<H,L,R>>
     {
-        using type = typename tree_insert2<Item, H, L, R>::type;
+        using type = typename insert2<Item, H, L, R>::type;
         using profile_tag = tree_tag;
-        using profile_types = profile<Item, type_tree<H,L,R>, tree_insert2<Item, H, L, R>>;
+        using profile_types = profile<Item, type_tree<H,L,R>, insert2<Item, H, L, R>>;
     };
 
     template<typename Item, typename T>
-    struct tree_contains
+    struct contains
     {
         static const bool value = false;
         using profile_tag = tree_tag;
@@ -646,7 +591,7 @@ namespace cellar
     };
 
     template<typename Item>
-    struct tree_contains<Item, empty_tree>
+    struct contains<Item, empty_tree>
     {
         static const bool value = false;
         using profile_tag = tree_tag;
@@ -654,7 +599,7 @@ namespace cellar
     };
 
     template<typename Item>
-    struct tree_contains<Item, Item>
+    struct contains<Item, Item>
     {
         static const bool value = true;
         using profile_tag = tree_tag;
@@ -662,7 +607,7 @@ namespace cellar
     };
 
     template<typename Item, typename L, typename R>
-    struct tree_contains<Item, type_tree<Item, L, R>>
+    struct contains<Item, type_tree<Item, L, R>>
     {
         static const bool value = true;
         using profile_tag = tree_tag;
@@ -670,38 +615,38 @@ namespace cellar
     };
 
     template<typename Item, typename H, typename L, typename R, bool Less = (hash<Item>::value < hash<H>::value)>
-    struct tree_contains2
+    struct contains2
     {
         // true case: Search left subtree
-        static const bool value = tree_contains<Item, L>::value;
+        static const bool value = contains<Item, L>::value;
         using profile_tag = tree_tag;
-        using profile_types = profile<tree_contains<Item, L>>;
+        using profile_types = profile<contains<Item, L>>;
     };
 
     template<typename Item, typename H, typename L, typename R>
-    struct tree_contains2<Item, H, L, R, false>
+    struct contains2<Item, H, L, R, false>
     {
         // false case: Search right subtree
-        static const bool value = tree_contains<Item, R>::value;
+        static const bool value = contains<Item, R>::value;
         using profile_tag = tree_tag;
-        using profile_types = profile<tree_contains<Item, R>>;
+        using profile_types = profile<contains<Item, R>>;
     };
 
     template<typename Item, typename H, typename L, typename R>
-    struct tree_contains<Item, type_tree<H, L, R>>
+    struct contains<Item, type_tree<H, L, R>>
     {
-        static const bool value = tree_contains2<Item, H, L, R>::value;
+        static const bool value = contains2<Item, H, L, R>::value;
         using profile_tag = tree_tag;
-        using profile_types = profile<H, Item, L, R, tree_contains2<Item, H, L, R>>;
+        using profile_types = profile<H, Item, L, R, contains2<Item, H, L, R>>;
     };
 
 
     template<typename T1, typename T2>
     struct tree_union
     {
-        using type = typename tree_insert<T1, T2>::type;
+        using type = typename insert<T1, T2>::type;
         using profile_tag = tree_tag;
-        using profile_types = profile<tree_insert<T1, T2>, type>;
+        using profile_types = profile<insert<T1, T2>, type>;
     };
 
     template<typename T2>
@@ -717,7 +662,7 @@ namespace cellar
     {
         using T0 = typename tree_union<L, T2>::type;
         using T1 = typename tree_union<R, T0>::type;
-        using type = typename tree_insert<H, T1>::type;  
+        using type = typename insert<H, T1>::type;  
 
         using profile_tag = tree_tag;
         using profile_types = profile<H, L, R, tree_union<L, T2>, tree_union<R, T0>, type>;
@@ -767,39 +712,39 @@ namespace cellar
     };
 
     template<typename IntSequence, typename Seed, template<int Item, typename Aggregate> typename Body>
-    struct loop2;
+    struct loop;
 
     template<int Min, int Max, typename Seed, template<int Item, typename Aggregate> typename Body>
-    struct loop2<range<Min, Max>, Seed, Body>
+    struct loop<range<Min, Max>, Seed, Body>
     {
         static const int Mid = (Min + Max)/2;
-        using L1 = typename loop2<range<Min, Mid>, Seed, Body>::type;
+        using L1 = typename loop<range<Min, Mid>, Seed, Body>::type;
         using L2 = typename Body<Mid, L1>::type;
-        using type = typename loop2<range<Mid+1, Max>, L2, Body>::type;
+        using type = typename loop<range<Mid+1, Max>, L2, Body>::type;
     };
 
     template<int N, typename Seed, template<int Item, typename Aggregate> typename Body>
-    struct loop2<range<N, N>, Seed, Body>
+    struct loop<range<N, N>, Seed, Body>
     {
         using type = Seed;
     };
 
     template<int N, typename Seed, template<int Item, typename Aggregate> typename Body>
-    struct loop2<range<N, N+1>, Seed, Body>
+    struct loop<range<N, N+1>, Seed, Body>
     {
         using type = typename Body<N, Seed>::type;
     };
 
     template<int Min, int Max, int Length, typename Seed, template<int Item, typename Aggregate> typename Body>
-    struct loop2<random_sequence<Length, Min, Max>, Seed, Body>
+    struct loop<random_sequence<Length, Min, Max>, Seed, Body>
     {
         static const int Mid = Length/2;
-        using T0 = typename loop2<random_sequence<Length-1, Min, Max>, Seed, Body>::type;
+        using T0 = typename loop<random_sequence<Length-1, Min, Max>, Seed, Body>::type;
         using type = typename Body<Min + linear_congruential<Length>::value % (Max-Min+1), T0>::type;
     };
 
     template<int Min, int Max, typename Seed, template<int Item, typename Aggregate> typename Body>
-    struct loop2<random_sequence<0, Min, Max>, Seed, Body>
+    struct loop<random_sequence<0, Min, Max>, Seed, Body>
     {
         using type = Seed;
     };
