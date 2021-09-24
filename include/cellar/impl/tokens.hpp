@@ -15,25 +15,25 @@ namespace cellar
         template<typename Symbol, typename Visited>
         struct tokens<Symbol, Visited, true>
         {
-            using type = empty_tree;
+            using type = make_list<>::type;
         };
 
         template<typename Visited>
         struct tokens<symbol<>, Visited, false>
         {
-            using type = empty_tree;
+            using type = make_list<>::type;
         };
 
         template<int Id, typename...Def, typename Visited>
         struct tokens<token<Id, Def...>, Visited, false>
         {
-            using type = token<Id, Def...>;
+            using type = typename make_list<token<Id, Def...>>::type;
         };
 
         template<int Id, typename Visited>
         struct tokens<rule<Id>, Visited, false>
         {
-            using type = empty_tree;
+            using type = make_list<>::type;
         };
     
         template<typename...Ss, typename Visited>
@@ -85,7 +85,7 @@ namespace cellar
     template<typename Symbol>
     struct make_lexer_from_grammar
     {
-        using T1 = typename impl::tokens<Symbol, empty_tree>::type;
+        using T1 = typename impl::tokens<Symbol, make_list<>::type>::type;
         using T2 = typename impl::make_lexer<T1>::type;
         using type = typename normalize<T2>::type;
     };
