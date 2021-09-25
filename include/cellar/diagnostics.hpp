@@ -283,37 +283,6 @@ namespace cellar
         using type = typename impl::find_all_symbols2<rule<Id, Symbols...>, Visited>::type;
     };
 
-    // !! Move to typesets
-    template<typename Collection, template<typename Item> typename Predicate>
-    struct filter;
-
-    template<template<typename Item> typename Predicate>
-    struct filter<empty_node, Predicate>
-    {
-        using type = empty_node;
-    };
-
-    template<typename H, typename T, template<typename Item> typename Predicate, bool Matches = Predicate<H>::value>
-    struct filter_list
-    {
-        // False case
-        using type = typename filter<T, Predicate>::type;
-    };
-
-    template<typename H, typename T, template<typename Item> typename Predicate>
-    struct filter_list<H, T, Predicate, true>
-    {
-        // True case
-        using type = list_node<H, typename filter<T, Predicate>::type>;
-    };
-
-
-    template<typename H, typename T, template<typename Item> typename Predicate>
-    struct filter<list_node<H, T>, Predicate>
-    {
-        using type = typename filter_list<H, T, Predicate>::type;
-    };
-
     template<typename Symbol>
     struct empty_symbols_in_grammar
     {

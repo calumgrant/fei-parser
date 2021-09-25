@@ -984,4 +984,70 @@ namespace cellar
         using profile_tag = no_tag;
         using profile_types = profile<>;
     };
+
+    template<typename List>
+    struct make_empty;
+
+    template<>
+    struct make_empty<empty_node>
+    {
+        using type = empty_node;
+    };
+
+    template<typename H, typename T>
+    struct make_empty<list_node<H, T>>
+    {
+        using type = empty_node;
+    };
+
+    template<template<typename Item> typename Map>
+    struct map_body
+    {
+        template<typename Item, typename List>
+        struct body
+        {
+            using type = typename insert<typename Map<Item>::type, List>::type;
+        };
+    };
+
+
+    template<typename List, template<typename Item> typename Map>
+    struct map
+    {
+        using type = typename forall<
+            List,
+            typename make_empty<List>::type, 
+            map_body<Map>::template body>::type;
+    };
+
+
+    template<typename Collection, template<typename Item> typename Predicate>
+    struct filter;
+
+    template<template<typename Item> typename Predicate>
+    struct filter<empty_node, Predicate>
+    {
+        using type = empty_node;
+    };
+
+    template<typename H, typename T, template<typename Item> typename Predicate, bool Matches = Predicate<H>::value>
+    struct filter_list
+    {
+        // False case
+        using type = typename filter<T, Predicate>::type;
+    };
+
+    template<typename H, typename T, template<typename Item> typename Predicate>
+    struct filter_list<H, T, Predicate, true>
+    {
+        // True case
+        using type = list_node<H, typename filter<T, Predicate>::type>;
+    };
+
+    template<typename H, typename T, template<typename Item> typename Predicate>
+    struct filter<list_node<H, T>, Predicate>
+    {
+        using type = typename filter_list<H, T, Predicate>::type;
+    };
+
 }
