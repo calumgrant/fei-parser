@@ -153,7 +153,12 @@ namespace cellar
         shift_action_tag,
         goto_tag,
         tree_tag,
-        ints_tag
+        ints_tag,
+        merge_tag,
+        list_merge_tag,
+        list_contains_tag,
+        list_insert_tag,
+        forall_tag
     >;
 
     static const char * TagNames[] = {
@@ -186,7 +191,12 @@ namespace cellar
         "shift_action_tag",
         "goto_tag",
         "tree_tag",
-        "ints_tag"
+        "ints_tag",
+        "merge_tag",
+        "list_merge_tag",
+        "list_contains_tag",
+        "list_insert_tag",
+        "forall_tag"
     };
 
     inline void output_profiler()

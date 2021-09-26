@@ -25,7 +25,8 @@ namespace cellar
     template<typename Type>
     struct profile_traits
     {
-        // TODO
+        using profile_tag = typename Type::profile_tag;
+        using profile_types = typename Type::profile_types;
     };
 
     template<typename...Items>
@@ -47,7 +48,7 @@ namespace cellar
         if(created)
         {
             // First initialization
-            Type::profile_types::collect_stats();
+            profile_traits<Type>::profile_types::collect_stats();
         }
     }
 
@@ -56,7 +57,7 @@ namespace cellar
     {
         static void collect_stats()
         {
-            profile_template<Item, typename Item::profile_tag /* Explicit for better error messages*/>();
+            profile_template<Item, typename profile_traits<Item>::profile_tag /* Explicit for better error messages*/>();
             profile<Items...>::collect_stats();
         }
     };    

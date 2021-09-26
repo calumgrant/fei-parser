@@ -34,4 +34,9 @@ namespace cellar
     struct goto_tag;
     struct tree_tag;
     struct ints_tag;
+    struct merge_tag;
+    struct list_merge_tag;
+    struct list_contains_tag;
+    struct list_insert_tag;
+    struct forall_tag;
 }

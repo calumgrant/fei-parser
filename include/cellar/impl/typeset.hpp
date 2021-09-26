@@ -906,6 +906,8 @@ namespace cellar
         // true case
         // H1 goes on first
         using type = list_node<H1, typename merge<T1, list_node<H2, T2>>::type>;
+        using profile_tag = list_merge_tag;
+        using profile_types = profile<merge<T1, list_node<H2, T2>>>;
     };
 
     template<typename H1, typename T1, typename H2, typename T2>
@@ -914,6 +916,8 @@ namespace cellar
         // false case
         // H2 goes first
         using type = list_node<H2, typename merge<list_node<H1, T1>, T2>::type>;
+        using profile_tag = list_merge_tag;
+        using profile_types = profile<merge<list_node<H1, T1>, T2>>;
     };
 
     template<typename H, typename T1, typename T2>
@@ -921,12 +925,16 @@ namespace cellar
     {
         // Only one H is added to the result
         using type = list_node<H, typename merge<T1, T2>::type>;
+        using profile_tag = list_merge_tag;
+        using profile_types = profile<merge<T1, T2>>;
     };
 
     template<typename H1, typename T1, typename H2, typename T2>
     struct merge<list_node<H1, T1>, list_node<H2, T2>>
     {
         using type = typename list_merge<H1, T1, H2, T2>::type;
+        using profile_tag = merge_tag;
+        using profile_types = profile<list_merge<H1, T1, H2, T2>>;
     };
 
     template<typename Item, typename List>
@@ -936,7 +944,7 @@ namespace cellar
     struct contains<Item, empty_node>
     {
         static const bool value = false;
-        using profile_tag = no_tag;
+        using profile_tag = contains_tag;
         using profile_types = profile<>;
     };
 
@@ -945,12 +953,16 @@ namespace cellar
     {
         // False case - go to next item.
         static const bool value = contains<Item, T>::value;
+        using profile_tag = list_contains_tag;
+        using profile_types = profile<contains<Item, T>>;
     };
 
     template<typename Item, typename T>
     struct list_contains<Item, Item, T, false>
     {
         static const bool value = true;
+        using profile_tag = list_contains_tag;
+        using profile_types = profile<>;
     };
 
     template<typename Item, typename H, typename T>
@@ -958,22 +970,25 @@ namespace cellar
     {
         // True case: Item not in list
         static const bool value = false;
+        using profile_tag = list_contains_tag;
+        using profile_types = profile<>;
     };
 
     template<typename Item, typename H, typename T>
     struct contains<Item, list_node<H, T>>
     {
         static const bool value = list_contains<Item, H, T>::value;
-        using profile_tag = no_tag;
-        using profile_types = profile<>;
+        using profile_tag = list_contains_tag;
+        using profile_types = profile<list_contains<Item, H, T>>;
     };
 
     template<typename Init, template<typename Item, typename Aggregate> typename Visitor>
     struct forall<empty_node, Init, Visitor>
     {
         using type = Init;
-        using profile_tag = no_tag;
-        using profile_types = profile<>;
+
+        using profile_tag = forall_tag;
+        using profile_types = profile<Init>;
     };
 
     template<typename H, typename T, typename Init, template<typename Item, typename Aggregate> typename Visitor>
@@ -981,8 +996,9 @@ namespace cellar
     {
         using T0 = typename Visitor<H, Init>::type;
         using type = typename forall<T, T0, Visitor>::type;
-        using profile_tag = no_tag;
-        using profile_types = profile<>;
+
+        using profile_tag = forall_tag;
+        using profile_types = profile<Visitor<H, Init>, forall<T, T0, Visitor>, Init, type>;
     };
 
     template<typename List>

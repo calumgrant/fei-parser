@@ -3,6 +3,10 @@
 
 - Compilation 6 - 10.15s with 145 states.
 
+- Create a "call graph" of templates and visualize them.
+
+- Profile-traits -> interrogate the class itself.
+
 - Better benchmarks
   - Create a standard compilation testsuite based on the Java grammar
   - Create targets for individual compilation stages
