@@ -1,6 +1,8 @@
 
 # Plan for the next week
 
+- Compilation 6 - 10.15s with 145 states.
+
 - Better benchmarks
   - Create a standard compilation testsuite based on the Java grammar
   - Create targets for individual compilation stages
@@ -8,6 +10,18 @@
   - 2) Find all symbols
     - 3) Potentially-empty-symbol
     - 4) First calculation on all symbols
+
+- Strategies
+  - For each state, need to figure out:
+    - What can be shifted
+    - What can be reduced.
+    - What are the gotos
+    - Where are the gotos to
+  - Can we figure these out without building a closure?
+    - Shifts:
+  - Can we compact each state by storing a set of 
+
+
 
 
 - Create a "parser" front-end that works like flex/bison
@@ -17,7 +31,7 @@
 - All output is done via std::cout << write<T>;
 
 
-- potentially_empty_symbol is slightly faster
+- potentially_empty_symbol is slightly faster with iteration.
 
 - Look at shift-reduce conflicts in Java.
   - Report them better

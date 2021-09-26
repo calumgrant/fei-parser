@@ -554,8 +554,9 @@ namespace cellar
     {
         template<typename Item, typename Next> static void visit(std::ostream & os)
         {
-            os << write<Item>;
+            os << "  " << write<Item>;
             if(size<Next>::value!=0) os << ",";
+            os << std::endl;
             visitor<Next>::template visit<output_visitor>(os);
         }
     };
@@ -565,9 +566,9 @@ namespace cellar
     {
         static void write(std::ostream & os)
         {
-            os << "{";
+            os << "{\n";
             visitor<list_node<H,T>>::template visit<output_visitor>(os);
-            os << "}\n";
+            os << "}";
         }
     };
 

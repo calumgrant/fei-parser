@@ -227,6 +227,15 @@ namespace cellar
         }
     };
 
+    template<typename G>
+    struct output<parser_diagnostics<G>>
+    {
+        static void write(std::ostream & os)
+        {
+            parser_diagnostics<G>::output_stats();
+        }
+    };
+
 
     template<typename Symbol, typename Visited = make_list<>::type, bool Recursive = contains<Symbol, Visited>::value>
     struct find_all_symbols

@@ -39,6 +39,7 @@ add_executable(compilation3 tests/compilation/compilation3.cpp tests/compilation
 add_executable(compilation4 tests/compilation/compilation4.cpp tests/compilation/grammar.hpp)
 add_executable(compilation5 tests/compilation/compilation5.cpp tests/compilation/grammar.hpp)
 add_executable(compilation6 tests/compilation/compilation6.cpp tests/compilation/grammar.hpp)
+add_executable(compilation7 tests/compilation/compilation7.cpp tests/compilation/grammar.hpp)
 
 add_test(NAME lexertests COMMAND lexertests)
 add_test(NAME javaparse COMMAND javabench tokenize ${CMAKE_CURRENT_SOURCE_DIR}/data/AllInOne8.java)
@@ -54,6 +55,7 @@ add_test(NAME compilation3 COMMAND compilation3)
 add_test(NAME compilation4 COMMAND compilation4)
 add_test(NAME compilation5 COMMAND compilation5)
 add_test(NAME compilation6 COMMAND compilation6)
+add_test(NAME compilation7 COMMAND compilation7)
 
 add_executable(ugen unicode/generator.cpp)
 
