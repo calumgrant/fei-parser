@@ -144,7 +144,7 @@ struct outputActions
 template<typename State, typename Symbol>
 void outputGoto()
 {
-    std::cout << "GOTO " << Symbol() << " -> " << typename goto_<State, Symbol>::type() << std::endl;
+    std::cout << "GOTO " << Symbol() << " -> " << write<typename goto_<State, Symbol>::type> << std::endl;
 }
 
 template<typename State>

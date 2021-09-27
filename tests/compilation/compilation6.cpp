@@ -11,5 +11,5 @@ int main()
 
     std::cout << write<C> << std::endl;
     std::cout << "There are " << size<C>::value << " states in the parser\n";
-//    static_assert(size<S>::value == 56);
+//    static_assert(size<S>::value == 56); 
 }

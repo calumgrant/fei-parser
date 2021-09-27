@@ -1,7 +1,8 @@
 
 # Plan for the next week
 
-- Compilation 6 - 10.15s with 145 states.
+- Compilation 6 - 8.34 141 states
+  - Was: 10.15s with 145 states.
 
 - Create a "call graph" of templates and visualize them.
 

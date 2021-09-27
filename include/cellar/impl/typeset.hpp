@@ -814,6 +814,8 @@ namespace cellar
     {
         // true case: Item < H
         using type = list_node<Item, list_node<H,T>>;
+        using profile_tag = list_insert_tag;
+        using profile_types = profile<>;
     };
 
     template<typename Item, typename H, typename T>
@@ -821,14 +823,16 @@ namespace cellar
     {
         // true case: Item < H
         using type = list_node<H, typename insert<Item, T>::type>;
+        using profile_tag = list_insert_tag;
+        using profile_types = profile<insert<Item, T>>;
     };
 
     template<typename Item, typename H, typename T>
     struct insert<Item, list_node<H, T>>
     {
         using type = typename list_insert<Item, H, T>::type;
-        using profile_tag = no_tag;
-        using profile_types = profile<>;
+        using profile_tag = insert_tag;
+        using profile_types = profile<list_insert<Item, H, T>>;
     };
 
 
@@ -998,7 +1002,7 @@ namespace cellar
         using type = typename forall<T, T0, Visitor>::type;
 
         using profile_tag = forall_tag;
-        using profile_types = profile<Visitor<H, Init>, forall<T, T0, Visitor>, Init, type>;
+        using profile_types = profile<T0, Visitor<H, Init>, forall<T, T0, Visitor>, Init, type>;
     };
 
     template<typename List>

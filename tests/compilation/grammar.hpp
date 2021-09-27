@@ -63,10 +63,13 @@ class Annotation : public symbol<NormalAnnotation /*, MarkerAnnotation, SingleEl
 */
 class Modifier : public symbol<
     // Annotation,
+#if !defined(MIN_GRAMMAR)
     token<java::Public>,
     token<java::Private>,
-    token<java::Protected>,
+#endif
+
 #if 0
+    token<java::Protected>,
     token<java::Abstract>,
     token<java::Default>,
     token<java::Static>,
@@ -239,12 +242,17 @@ class TypeDeclaration : public symbol<ClassDeclaration, /* InterfaceDeclaration,
 class CompilationUnit : public symbol<
     rule<java::CompilationUnit, 
         PackageDeclaration, 
-        OptionalList<java::ImportDeclarationList, ImportDeclaration>,
+        OptionalList<java::ImportDeclarationList, ImportDeclaration>
+#if !defined(MIN_GRAMMAR)
+        ,
         OptionalList<java::TypeDeclarationList, TypeDeclaration>
+#endif
         >,
     rule<java::CompilationUnit, 
-        List<ImportDeclaration>,
-        OptionalList<java::TypeDeclarationList, TypeDeclaration>        
+        List<ImportDeclaration>
+#if !defined(MIN_GRAMMAR)
+        , OptionalList<java::TypeDeclarationList, TypeDeclaration>       
+#endif 
         >> {};
 
 

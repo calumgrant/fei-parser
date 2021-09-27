@@ -19,7 +19,7 @@ namespace cellar
             using type = typename first2<typename Symbol::rules, Iteration>::type;
 
             using profile_tag = first_tag;
-            using profile_types = profile<>;
+            using profile_types = profile<first2<typename Symbol::rules, Iteration>>;
         };
 
         template<int I>

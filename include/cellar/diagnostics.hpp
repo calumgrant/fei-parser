@@ -77,6 +77,8 @@ namespace cellar
         {
             using NextState = typename goto_<Closure, Goto>::type;
             using type = typename gather_states<NextState, Gathered>::type;
+            using profile_tag = no_tag;
+            using profile_types = profile<goto_<Closure, Goto>, gather_states<NextState, Gathered>>;
         };
 
     };
@@ -100,7 +102,8 @@ namespace cellar
             closure<State>, 
             build_next_token_list<Closure>,
             build_goto_list<Closure>,
-            gather_shift_states<Closure, G0, Tokens>
+            gather_shift_states<Closure, G0, Tokens>,
+            forall<Gotos, G1, gather_goto_states2<Closure>::template visit>
             >;
     };
 

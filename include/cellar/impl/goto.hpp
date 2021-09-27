@@ -61,11 +61,10 @@ namespace cellar
     struct goto_
     {
         using C = typename closure<State>::type;
-        using T0 = typename forall<C, empty_tree, impl::goto_loop<Symbol>::template loop>::type;
-        using type = typename make_balanced_tree<T0>::type;
+        using type = typename forall<C, make_list<>::type, impl::goto_loop<Symbol>::template loop>::type;
 
         using profile_tag = goto_tag;
-        using profile_types = profile<closure<State>, State, C, forall<C, empty_tree, impl::goto_loop<Symbol>::template loop>, make_balanced_tree<T0>>;
+        using profile_types = profile<closure<State>, State, C, forall<C, make_list<>::type, impl::goto_loop<Symbol>::template loop>>;
     };
 
     // TODO: Consolidate with is_symbol
