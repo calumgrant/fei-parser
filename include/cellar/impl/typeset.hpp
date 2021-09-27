@@ -986,6 +986,24 @@ namespace cellar
         using profile_types = profile<list_contains<Item, H, T>>;
     };
 
+    // Special case just to speed up compilation
+    template<typename Item, typename A, typename B, typename T>
+    struct contains<Item, list_node<A, list_node<B, T>>>
+    {
+        static const bool value = type_equals<Item, A>::value || list_contains<Item, B, T>::value; // type_equals<Item, C>::value || contains<Item, T>::value;
+        using profile_tag = list_contains_tag;
+        using profile_types = profile<list_contains<Item, B, T>>;
+    };
+    
+    // Special case just to speed up compilation
+    template<typename Item, typename A, typename B, typename C, typename T>
+    struct contains<Item, list_node<A, list_node<B, list_node<C, T>>>>
+    {
+        static const bool value = type_equals<Item, A>::value || type_equals<Item, B>::value || list_contains<Item, C, T>::value; // type_equals<Item, C>::value || contains<Item, T>::value;
+        using profile_tag = list_contains_tag;
+        using profile_types = profile<list_contains<Item, C, T>>;
+    };
+
     template<typename Init, template<typename Item, typename Aggregate> typename Visitor>
     struct forall<empty_node, Init, Visitor>
     {

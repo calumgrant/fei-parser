@@ -52,6 +52,9 @@ namespace cellar
 
         };
     }
+
+    using goto_container = make_list<>::type;
+
     /*
         Computes the goto of symbol `Symbol` in state `State`.
 
@@ -61,10 +64,10 @@ namespace cellar
     struct goto_
     {
         using C = typename closure<State>::type;
-        using type = typename forall<C, make_list<>::type, impl::goto_loop<Symbol>::template loop>::type;
+        using type = typename forall<C, goto_container, impl::goto_loop<Symbol>::template loop>::type;
 
         using profile_tag = goto_tag;
-        using profile_types = profile<closure<State>, State, C, forall<C, make_list<>::type, impl::goto_loop<Symbol>::template loop>>;
+        using profile_types = profile<closure<State>, State, C, forall<C, goto_container, impl::goto_loop<Symbol>::template loop>>;
     };
 
     // TODO: Consolidate with is_symbol
